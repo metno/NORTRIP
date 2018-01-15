@@ -18,7 +18,7 @@
     real :: z0t                 !Defines the rougness length for temperature relative to that for momentum
     real length_veh(num_veh)    !Vehicle lengths used to calculate the vehicle heat flux    
     integer :: retain_water_by_snow=1 !Decides if water is allowed to drain off normally when snow is present
-    real :: surface_moisture_min=1e-6 !Mimimum allowable total surface wetness 
+    real :: surface_moisture_min=1e-12 !Mimimum allowable total surface wetness 
 
     !Local arrays and variables
     real :: g_road_0_data(num_moisture)
@@ -79,8 +79,6 @@
     length_veh(li)=5            !Vehicle lengths used to calculate the vehicle heat flux
     length_veh(he)=15
     
-    surface_moisture_min=1e-6   !Mimimum allowable total surface wetness 
-
     b_factor=1./(1000*b_road_lanes(ro)*f_track(tr)) !Coverts g/km to g/m^2
 
     !Sub surface temperature given as weighted sum of surface temperatures
@@ -207,9 +205,7 @@
         !melting between snow and ice    
         do mm=1,2
             m=snow_ice_index(mm)
-            g_road_balance_data(m,S_melt_index,ti,tr,ro) &
-                =g_road_balance_data(m,S_melt_index,ti,tr,ro) &
-                +S_melt_temp*g_road_0_data(m)/(g_road_0_data(snow_index)+g_road_0_data(ice_index))
+            g_road_balance_data(m,S_melt_index,ti,tr,ro)=S_melt_temp*g_road_0_data(m)/(g_road_0_data(snow_index)+g_road_0_data(ice_index))
         enddo
         
     endif
@@ -325,7 +321,7 @@
         +R_ploughing(1:num_moisture)
     !--------------------------------------------------------------------------
 
-    !Calculate change in water and snow
+    !Calculate change in water, ice and snow
     !--------------------------------------------------------------------------
     do m=1,num_moisture
         g_road_data(m,ti,tr,ro)=mass_balance_func(g_road_0_data(m),g_road_balance_data(m,P_total_index,ti,tr,ro),R_total(m),dt)

@@ -39,7 +39,7 @@
  
  	write(*,'(A)') ''
  	write(*,'(A)') '################################################################'
-	write(*,'(A)') 'Starting program NORTRIP_fortran_v3.5 (64 bit)'
+	write(*,'(A)') 'Starting program NORTRIP_fortran_v3.6 (64 bit)'
 	write(*,'(A)') '################################################################'
     
     
@@ -103,6 +103,8 @@
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
+        if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions
+        if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
         

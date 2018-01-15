@@ -167,6 +167,7 @@ subroutine read_NORTRIP_inputdata
     !Grid data
     if (.not.allocated(x_road)) allocate (x_road(2,0:n_roads))
     if (.not.allocated(y_road)) allocate (y_road(2,0:n_roads))
+    if (.not.allocated(length_road)) allocate (length_road(0:n_roads))
     if (.not.allocated(line_or_grid_data_flag)) allocate (line_or_grid_data_flag(0:n_roads))
     !if (.not.allocated(adt_road)) allocate (adt_road(0:n_roads))
     
@@ -236,6 +237,7 @@ subroutine read_NORTRIP_inputdata
     call find_read_line_valn(unit_in,unit_logfile_temp,y_road(1,1:n_roads),n_roads,'Road position y1',0.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,x_road(2,1:n_roads),n_roads,'Road position x2',0.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,y_road(2,1:n_roads),n_roads,'Road position y2',0.0)
+    call find_read_line_valn(unit_in,unit_logfile_temp,length_road(1:n_roads),n_roads,'Road length',0.0)
     !call find_read_line_valn(unit_in,unit_logfile_temp,adt_road(1:n_roads),n_roads,'Road ADT',0.0) !Not used for anything in NORTRIP 
    
     call find_read_line_intn(unit_in,unit_logfile_temp,road_type_activity_flag(road_type_salt_index(1),1:n_roads),n_roads,'road_type_salting_flag',1)
@@ -247,7 +249,7 @@ subroutine read_NORTRIP_inputdata
     
     !Test to see if any gridding is necessary or not
     !Only if gridding is specified and a grid is defined
-    if (maxval(line_or_grid_data_flag).eq.2.and.minval(grid_dim).gt.0) then
+    if ((maxval(line_or_grid_data_flag).eq.2.or.maxval(line_or_grid_data_flag).eq.3).and.minval(grid_dim).gt.0) then
         grid_road_data_flag=.true.
     else
         grid_road_data_flag=.false.
@@ -776,7 +778,18 @@ subroutine read_NORTRIP_inputdata
     if (trim(calculation_type).eq.'Normal') then
         if (n_roads_total.eq.1) NORTRIP_save_all_data_flag=.true.
     endif
-    
+
+    !Save emissions, initi data, summary road meteo and summary emission and mass data for uEMEP calculation type
+    if (trim(calculation_type).eq.'uEMEP') then
+        if (unit_logfile.gt.0) write(*,'(A)') 'Saving uEMEP emission and initial files'
+        NORTRIP_save_init_data_flag=.true.
+        NORTRIP_save_uEMEP_emissions_flag=.true.
+        NORTRIP_save_uEMEP_grid_emissions_flag=.true.
+        NORTRIP_save_road_meteo_data_flag=.true.
+        NORTRIP_save_road_emission_and_mass_data_flag=.true.
+        use_ospm_flag=1
+    endif
+
     end subroutine set_NORTRIP_save_file_flags
 !----------------------------------------------------------------------
 

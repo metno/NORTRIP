@@ -60,15 +60,25 @@
     call NORTRIP_initialise_data
 
     !Read in init file and reinitialise. If not available then nothing happens
-    call NORTRIP_read_init_data
-
+    if (.not.use_single_road_loop_flag) then
+        call NORTRIP_read_init_data
+    endif
+    
     !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
-    call NORTRIP_running_mean_temperature(sub_surf_average_time)
+    !call NORTRIP_running_mean_temperature(sub_surf_average_time)
     
     !Main road loop
     !----------------------------------------------------------------------
     do ro=n_roads_start,n_roads_end
     
+        !Read in init file and reinitialise. If not available then nothing happens
+        if (use_single_road_loop_flag) then
+            call NORTRIP_read_init_data_single
+        endif
+        
+        !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
+        call NORTRIP_running_mean_temperature(sub_surf_average_time)
+
         !Print road to screen to see progress
         if (mod(ro,100).eq.0) then
         if (unit_logfile.gt.0) then

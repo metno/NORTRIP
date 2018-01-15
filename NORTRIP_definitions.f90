@@ -66,9 +66,9 @@
     integer snow_ice_index(2)
     data (snow_ice_index(ii),ii=1,2) /snow_index,ice_index/
     
-    !Size fraction index
-    integer pm_all,pm_200,pm_10,pm_25,num_size
-    parameter(pm_all=1,pm_200=2,pm_10=3,pm_25=4,num_size=4) 
+    !Size fraction index. pm_exhaust included here but only used for saving data purposes, not in the model
+    integer pm_all,pm_200,pm_10,pm_25,num_size,pm_exhaust,nox_exhaust
+    parameter(pm_all=1,pm_200=2,pm_10=3,pm_25=4,num_size=4,pm_exhaust=5,nox_exhaust=6)
     integer pm_sus(3)
     data (pm_sus(ii),ii=1,3) /pm_200,pm_10,pm_25/
     
@@ -301,6 +301,8 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_all_data_flag=.false.
+    logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
+    logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
 
 !Declare unit numbers for saving and writing data
 !-----------------------------------------------------------------------
@@ -311,7 +313,7 @@
     integer :: unit_save_road_meteo_data=70
     integer :: unit_save_road_emission_and_mass_data=71
     integer :: unit_save_road_emission_and_mass_data_stats=72
-    integer :: unit_save_all_data=73
+    integer :: unit_save_all_data=75
     integer :: unit_read_NORTRIP_inputdata=10
     integer :: unit_read_NORTRIP_parameters=11
     integer :: unit_read_NORTRIP_flags=12
@@ -431,52 +433,52 @@
     !Auto activity data
     real :: salting_hour(2)
     data salting_hour /5.0,20.0/
-    real :: delay_salting_day=0.20 !        	(day)                                                           
-    real :: check_salting_day=0.50 !       	(day)                                                           
-    real :: min_temp_salt=-6.00 !      	(C)                                                             
-    real :: max_temp_salt=0.00 !       	(C)                                                             
-    real :: precip_rule_salt=0.10 !       	(mm/hr)                                                         
-    real :: RH_rule_salt=90.00 !      	(!)                                                             
-    real :: g_salting_rule=0.25 !       	(mm)                                                            
-    real :: salt_mass=3.00 !       	(g/m2)                                                          
-    real :: salt_dilution=0.20 !       	(g_water/(g_water+g_salt))                                      
-    real :: salt_type_distribution=1.00 !       	M(salt)=M(NaCl)*salt_type+M(MgCl2)*(1-salt_type)                
+    real :: delay_salting_day=0.20 !        	(day)
+    real :: check_salting_day=0.50 !       	(day)
+    real :: min_temp_salt=-6.00 !      	(C)
+    real :: max_temp_salt=0.00 !       	(C)
+    real :: precip_rule_salt=0.10 !       	(mm/hr)
+    real :: RH_rule_salt=90.00 !      	(!)
+    real :: g_salting_rule=0.25 !       	(mm)
+    real :: salt_mass=3.00 !       	(g/m2)
+    real :: salt_dilution=0.20 !       	(g_water/(g_water+g_salt))
+    real :: salt_type_distribution=1.00 !       	M(salt)=M(NaCl)*salt_type+M(MgCl2)*(1-salt_type)
     
     real :: sanding_hour(2)
     data sanding_hour /5.0, 5.0/
-    real :: delay_sanding_day=0.90 !       	(day)                                                           
-    real :: check_sanding_day=0.50 !       	(day)                                                           
-    real :: min_temp_sand=-12.00 !     	(C)                                                             
-    real :: max_temp_sand=-4.00  !     	(C)                                                             
-    real :: precip_rule_sand=0.10 !       	(mm/hr)                                                         
-    real :: RH_rule_sand=95.00  !     	(%)                                                             
-    real :: g_sanding_rule=0.10 !       	(mm)                                                            
-    real :: sand_mass=250.00 !     	(g/m2)                                                          
-    real :: sand_dilution=0.00 !       	(g_water/(g_water+g_sand))                                      
+    real :: delay_sanding_day=0.90 !       	(day)
+    real :: check_sanding_day=0.50 !       	(day)
+    real :: min_temp_sand=-12.00 !     	(C)
+    real :: max_temp_sand=-4.00  !     	(C)                    
+    real :: precip_rule_sand=0.10 !       	(mm/hr)
+    real :: RH_rule_sand=95.00  !     	(%)
+    real :: g_sanding_rule=0.10 !       	(mm)
+    real :: sand_mass=250.00 !     	(g/m2)
+    real :: sand_dilution=0.00 !       	(g_water/(g_water+g_sand))
     
-    real :: delay_ploughing_hour=3.00 !       	(hr)                                                            
-    real :: ploughing_thresh_2=3.00 !       	(mm.w.e.)                                                       
-    real :: delay_cleaning_hour=72.00 !      	(hr)                                                            
-    real :: min_temp_cleaning=0.00 !       	(C)                                                             
+    real :: delay_ploughing_hour=3.00 !       	(hr)
+    real :: ploughing_thresh_2=3.00 !       	(mm.w.e.)
+    real :: delay_cleaning_hour=72.00 !      	(hr)
+    real :: min_temp_cleaning=0.00 !       	(C)
     integer :: clean_with_salting=0 !       	                                                                
-    real :: start_month_cleaning=2.00 !       	(MM_num)                                                        
-    real :: end_month_cleaning=3.00 !       	(MM_num)                                                        
-    real :: wetting_with_cleaning=0.10 !       	(mm)                
+    real :: start_month_cleaning=2.00 !       	(MM_num)
+    real :: end_month_cleaning=3.00 !       	(MM_num)
+    real :: wetting_with_cleaning=0.10 !       	(mm)
     real :: efficiency_of_cleaning=1.0
 
     real :: binding_hour(2)
     data binding_hour /5.0,20.0/
-    real :: delay_binding_day=0.20 !        	(day)                                                           
-    real :: check_binding_day=0.50 !       	(day)                                                           
-    real :: min_temp_binding=-6.00 !      	(C)                                                             
-    real :: max_temp_binding=0.00 !       	(C)                                                             
-    real :: precip_rule_binding=0.10 !       	(mm/hr)                                                         
-    real :: RH_rule_binding=50.00 !      	(!)                                                             
-    real :: g_binding_rule=0.25 !       	(mm)                                                            
-    real :: binding_mass=3.00 !       	(g/m2)                                                          
-    real :: binding_dilution=0.20 !       	(g_water/(g_water+g_salt))                                      
-    real :: start_month_binding=2.00 !       	(MM_num)                                                        
-    real :: end_month_binding=3.00 !       	(MM_num)                                                        
+    real :: delay_binding_day=0.20 !        	(day)
+    real :: check_binding_day=0.50 !       	(day)
+    real :: min_temp_binding=-6.00 !      	(C)
+    real :: max_temp_binding=0.00 !       	(C)
+    real :: precip_rule_binding=0.10 !       	(mm/hr)
+    real :: RH_rule_binding=50.00 !      	(!)
+    real :: g_binding_rule=0.25 !       	(mm)
+    real :: binding_mass=3.00 !       	(g/m2)
+    real :: binding_dilution=0.20 !       	(g_water/(g_water+g_salt))
+    real :: start_month_binding=2.00 !       	(MM_num)
+    real :: end_month_binding=3.00 !       	(MM_num)
 
 !Road metadata variables
     
@@ -594,11 +596,12 @@
     
     integer, allocatable :: road_ID(:)
     integer, allocatable :: save_road_data_flag(:)
-    integer, allocatable :: line_or_grid_data_flag(:) !1 is line, 2 is grid
+    integer, allocatable :: line_or_grid_data_flag(:) !1 is line, 2 is grid, 3 is both line and grid
     
     real, allocatable :: x_road(:,:)
     real, allocatable :: y_road(:,:)
     !real, allocatable :: adt_road(:)
+    real, allocatable :: length_road(:)
     
     !Special BB declaration for database ID. Only reads when type is 'Bedre Byluft'
     character(256) BB_output_ID(num_size)
@@ -879,7 +882,6 @@
     airquality_match_str(NOX_net_index)='NOX_net'
     airquality_match_str(NOX_emis_index)='NOX_emis'
     airquality_match_str(EP_emis_index)='EP_emis'
-    airquality_match_str(NOX_emis_index)='NOX_emis'
     airquality_match_str(f_conc_index)='Disp_fac'
     
     if (operating_system.eq.1) then
@@ -903,6 +905,8 @@
     use NORTRIP_definitions
  
     implicit none
+    
+    real memory_size
     
     !Allocates all the arrays used in NORTRIP calculations except the input data
     !Input data is allocated in the input data routine 'read_NORTRIP_inputdata'
@@ -941,35 +945,60 @@
     !Order is (time,track,road)
     allocate (f_q_obs(n_time,num_track,0:n_roads))
 
-    write(*,'(a)')'Storage size of arrays in mega bytes'
-    write(*,'(a,f12.2)') 'M_road_data ',real(storage_size(M_road_data)*size(M_road_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'M_road_bin_data ',real(storage_size(M_road_bin_data)*size(M_road_bin_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'M_road_bin_balance_data ',real(storage_size(M_road_bin_balance_data)*size(M_road_bin_balance_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'C_data ',real(storage_size(C_data)*size(C_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'E_road_data ',real(storage_size(E_road_data)*size(E_road_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'E_road_bin_data ',real(storage_size(E_road_bin_data)*size(E_road_bin_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'WR_time_data ',real(storage_size(WR_time_data)*size(WR_time_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'road_salt_data ',real(storage_size(road_salt_data)*size(road_salt_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'road_meteo_data ',real(storage_size(road_meteo_data)*size(road_meteo_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'g_road_balance_data ',real(storage_size(g_road_balance_data)*size(g_road_balance_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'f_q ',real(storage_size(f_q)*size(f_q)/8./1000000.)
-    write(*,'(a,f12.2)') 'f_q_obs ',real(storage_size(f_q_obs)*size(f_q_obs)/8./1000000.)
-    write(*,'(a,f12.2)') 'traffic_data ',real(storage_size(traffic_data)*size(traffic_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'meteo_data ',real(storage_size(meteo_data)*size(meteo_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'airquality_data ',real(storage_size(airquality_data)*size(airquality_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'activity_data ',real(storage_size(activity_data)*size(activity_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'activity_input_data ',real(storage_size(activity_input_data)*size(activity_input_data)/8./1000000.)
-    write(*,'(a,f12.2)') 'M_road_init ',real(storage_size(M_road_init)*size(M_road_init)/8./1000000.)
-    write(*,'(a,f12.2)') 'g_road_init ',real(storage_size(g_road_init)*size(g_road_init)/8./1000000.)
-    write(*,'(a,f12.2)') 'Others,approx ',real(storage_size(slope_road)*size(slope_road)/8./1000000.)*40.
-    write(*,'(a,f12.2)') 'azimuth_ang ',real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.)
-    write(*,'(a,f12.2)') 'zenith_ang ',real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
-       
-    
     !Radiation parameters
     allocate (azimuth_ang(n_time,0:n_roads))
     allocate (zenith_ang(n_time,0:n_roads))
     
+    !write(*,'(a)')'Storage size of arrays in mega bytes'
+    !write(*,'(a,f12.2)') 'M_road_data ',real(storage_size(M_road_data)*size(M_road_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'M_road_bin_data ',real(storage_size(M_road_bin_data)*size(M_road_bin_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'M_road_bin_balance_data ',real(storage_size(M_road_bin_balance_data)*size(M_road_bin_balance_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'C_data ',real(storage_size(C_data)/8.)*real(size(C_data)/1000000.)
+    !write(*,'(a,f12.2)') 'E_road_data ',real(storage_size(E_road_data)/8.)*real(size(E_road_data)/1000000.)
+    !write(*,'(a,f12.2)') 'E_road_bin_data ',real(storage_size(E_road_bin_data)*size(E_road_bin_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'WR_time_data ',real(storage_size(WR_time_data)*size(WR_time_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'road_salt_data ',real(storage_size(road_salt_data)*size(road_salt_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'road_meteo_data ',real(storage_size(road_meteo_data)*size(road_meteo_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'g_road_balance_data ',real(storage_size(g_road_balance_data)*size(g_road_balance_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'f_q ',real(storage_size(f_q)*size(f_q)/8./1000000.)
+    !write(*,'(a,f12.2)') 'f_q_obs ',real(storage_size(f_q_obs)*size(f_q_obs)/8./1000000.)
+    !write(*,'(a,f12.2)') 'traffic_data ',real(storage_size(traffic_data)*size(traffic_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'meteo_data ',real(storage_size(meteo_data)*size(meteo_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'airquality_data ',real(storage_size(airquality_data)*size(airquality_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'activity_data ',real(storage_size(activity_data)*size(activity_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'activity_input_data ',real(storage_size(activity_input_data)*size(activity_input_data)/8./1000000.)
+    !write(*,'(a,f12.2)') 'M_road_init ',real(storage_size(M_road_init)*size(M_road_init)/8./1000000.)
+    !write(*,'(a,f12.2)') 'g_road_init ',real(storage_size(g_road_init)*size(g_road_init)/8./1000000.)
+    !write(*,'(a,f12.2)') 'Others,approx ',real(storage_size(slope_road)*size(slope_road)/8./1000000.)*40.
+    !write(*,'(a,f12.2)') 'azimuth_ang ',real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.)
+    !write(*,'(a,f12.2)') 'zenith_ang ',real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
+       
+    memory_size=real(storage_size(M_road_data)*size(M_road_data)/8./1000000.) + &
+        real(storage_size(M_road_bin_data)*size(M_road_bin_data)/8./1000000.) + &
+        real(storage_size(M_road_bin_balance_data)*size(M_road_bin_balance_data)/8./1000000.) + &
+        real(storage_size(C_data)/8.)*real(size(C_data)/1000000.) + &
+        real(storage_size(E_road_data)/8.)*real(size(E_road_data)/1000000.) + &
+        real(storage_size(E_road_bin_data)*size(E_road_bin_data)/8./1000000.) + &
+        real(storage_size(WR_time_data)*size(WR_time_data)/8./1000000.) + &
+        real(storage_size(road_salt_data)*size(road_salt_data)/8./1000000.) + &
+        real(storage_size(road_meteo_data)*size(road_meteo_data)/8./1000000.) + &
+        real(storage_size(g_road_balance_data)*size(g_road_balance_data)/8./1000000.) + &
+        real(storage_size(f_q)*size(f_q)/8./1000000.) + &
+        real(storage_size(f_q_obs)*size(f_q_obs)/8./1000000.) + &
+        real(storage_size(traffic_data)*size(traffic_data)/8./1000000.) + &
+        real(storage_size(meteo_data)*size(meteo_data)/8./1000000.) + &
+        real(storage_size(airquality_data)*size(airquality_data)/8./1000000.) + &
+        real(storage_size(activity_data)*size(activity_data)/8./1000000.) + &
+        real(storage_size(activity_input_data)*size(activity_input_data)/8./1000000.) + &
+        real(storage_size(M_road_init)*size(M_road_init)/8./1000000.) + &
+        real(storage_size(g_road_init)*size(g_road_init)/8./1000000.) + &
+        real(storage_size(slope_road)*size(slope_road)/8./1000000.)*40. + &
+        real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.) + &
+        real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
+    
+    !Times 2 because RAM in 64 bit is actually double and long anyway
+    write(*,'(a,f12.3)')'Estimated total storage size of arrays in gigabytes: ',memory_size/1000.*2.
+
     !Auto road maintenace
     allocate (time_since_last_salting(0:n_roads))
     allocate (time_since_last_binding(0:n_roads))
@@ -983,7 +1012,6 @@
     M_road_bin_data=0.0
     M_road_bin_balance_data=0.0
     M_road_balance_data=0.0
-    !C_bin_data=0.0
     C_data=0.0
     E_road_data=0.0
     E_road_bin_data=0.0

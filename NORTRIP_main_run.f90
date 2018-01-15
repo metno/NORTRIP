@@ -54,13 +54,11 @@
     call NORTRIP_initialise_data
 
     !Read in init file and reinitialise. If not available then nothing happens
-    !Does not work for single road application, version 2 is used for this which is called later
+    !Does not work for single road application, version 'single' is used for this which is called later
     if (.not.use_single_road_loop_flag) then
         call NORTRIP_read_init_data
     endif
     
-    !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
-    call NORTRIP_running_mean_temperature(sub_surf_average_time)
     
     !Main road loop
     !----------------------------------------------------------------------
@@ -71,6 +69,8 @@
             call NORTRIP_read_init_data_single
         endif
         
+        !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
+        call NORTRIP_running_mean_temperature(sub_surf_average_time)
         
         !Print road to screen to see progress
         if ((mod(ro,1000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,1000).eq.0.and.use_single_road_loop_flag)) then
@@ -112,7 +112,6 @@
                     ,g_road_data(water_index,ti,tr,ro),g_road_data(snow_index,ti,tr,ro),g_road_data(ice_index,ti,tr,ro)
                 endif
                 
-
                 !Calculate road emissions and dust loading
                 call NORTRIP_dust_emission_submodel
                 

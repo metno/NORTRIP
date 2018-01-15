@@ -18,6 +18,7 @@
     logical :: save_bin=.false.
     integer n_roads_init,num_track_init,num_source_all_init,num_road_meteo_init,num_moisture_init
     logical exists
+    integer ro_init
     
     !Do not read init. Hardcode for testing
     !hours_between_init=0
@@ -60,7 +61,7 @@
         open(unit_out,file=trim(filename_asc),access='sequential',status='old',readonly)
        
         read(unit_out,'(5A16)') text_temp,text_temp,text_temp,text_temp,text_temp
-        read(unit_out,*) n_roads_init,num_track_init,num_source_all_init,num_road_meteo_init,num_moisture_init
+        read(unit_out,'(5i16)') n_roads_init,num_track_init,num_source_all_init,num_road_meteo_init,num_moisture_init
             
         if (n_roads_init.ne.n_roads.or.num_track_init.ne.num_track.or.num_source_all_init.ne.num_source_all &
             .or.num_road_meteo_init.ne.num_road_meteo.or.num_moisture_init.ne.num_moisture) then
@@ -72,29 +73,36 @@
             
         ti=min_time
         
-            read(unit_out,'(A)') text_temp  
+            !read(unit_out,'(A)') text_temp  
             do ro=1,n_roads
+            
+            read(unit_out,'(i16)') ro_init 
+            if (ro_init.ne.ro) then
+                write(unit_logfile,'(A,2i6)')' ERROR: Mismatch in road index during init file reading (ro_init,ro): ', ro_init,ro
+                stop
+            endif
+                
             do tr=1,num_track
                 read(unit_out,'(<num_source_all*num_size>e12.4)') ((M_road_data(s,x,ti,tr,ro),s=1,num_source_all),x=1,num_size)
             enddo
-            enddo
+            !enddo
         
-            read(unit_out,'(A)') text_temp
-            do ro=1,n_roads
+            !read(unit_out,'(A)') text_temp
+            !do ro=1,n_roads
             do tr=1,num_track
                  read(unit_out,'(<num_road_meteo>e12.4)') (road_meteo_data(i,ti,tr,ro),i=1,num_road_meteo)
             enddo
-            enddo
+            !enddo
 
-            read(unit_out,'(A)') text_temp
-            do ro=1,n_roads
+            !read(unit_out,'(A)') text_temp
+            !do ro=1,n_roads
             do tr=1,num_track
                 read(unit_out,'(<num_moisture>e12.4)') (g_road_data(m,ti,tr,ro),m=1,num_moisture)
             enddo
-            enddo
+            !enddo
 
-            read(unit_out,'(A)') text_temp
-            do ro=1,n_roads
+            !read(unit_out,'(A)') text_temp
+            !do ro=1,n_roads
                 read(unit_out,'(5e12.4)') time_since_last_salting(ro),time_since_last_binding(ro), &
                     time_since_last_sanding(ro),time_since_last_cleaning(ro),time_since_last_ploughing(ro)
                 !May be round off errors due to real precision of data and saving to init files so set mimimum of 0 hours

@@ -17,7 +17,7 @@
     integer min_running_index
     logical :: use_running_mean=.false.
 
-    do ro=n_roads_start,n_roads_end
+    !do ro=n_roads_start,n_roads_end
         do tr=1,num_track
             if (available_meteo_data(T_sub_input_index)) then
                road_meteo_data(T_sub_index,:,tr,ro)=meteo_data(T_sub_input_index,:,ro)
@@ -36,8 +36,11 @@
                             road_meteo_data(T_sub_index,ti,tr,ro)= &
                                  road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/num_running_hours) &
                                  +meteo_data(T_a_index,ti,ro)*dt/num_running_hours
+                            
+                            !write(*,*) ti,road_meteo_data(T_sub_index,ti,tr,ro),road_meteo_data(T_sub_index,max(1,ti-1),tr,ro),meteo_data(T_a_index,ti,ro)
                         endif
                     endif
+                    !write(*,*) ti,road_meteo_data(T_sub_index,ti,tr,ro)
                 end do    
             endif
 
@@ -67,7 +70,7 @@
 	        write(unit_logfile,'(A)') '----------------------------------------------------------------'
         endif
     
-    enddo
+    !enddo
     
     end subroutine NORTRIP_running_mean_temperature
 !----------------------------------------------------------------------

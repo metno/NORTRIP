@@ -17,7 +17,7 @@
     real conversion
     character(8) :: pm_str=''
     real emis_road
-    real length_road(0:n_roads)
+    !real length_road(0:n_roads)
     real, save :: emis_sum(num_size)
     real, save, allocatable :: emis_epi(:,:,:)
     integer unit_count
@@ -49,7 +49,7 @@
     call incrtm(-1,a_start(1),a_start(2),a_start(3),a_start(4))
 
     !Check that path exists after filling in date stamp
-    call date_to_datestr(a_start,path_output_emis,temp_name)
+    call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -84,7 +84,7 @@
             temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(pm_str)//'.txt'
         
             !Put in date in path and filename if required
-            call date_to_datestr(a_start,temp_name,temp_name)
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
             write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
 
@@ -109,8 +109,9 @@
 
     
         !Calculate road lengths for total emission calculations. If no gridding involved then these will be 0
+        !If they are missing then recalculate. Will be missing when there are no sublinks or when no gridding is to be used
         do ro=n_roads_start,n_roads_end
-            length_road(ro)=sqrt((x_road(1,ro)-x_road(2,ro))**2+(y_road(1,ro)-y_road(2,ro))**2)
+            if (length_road(ro).eq.0) length_road(ro)=sqrt((x_road(1,ro)-x_road(2,ro))**2+(y_road(1,ro)-y_road(2,ro))**2)
         enddo
         
         !if (sum(length_road).eq.0) then 
@@ -122,7 +123,7 @@
         do ti=min_time_save,max_time_save
             do ro=n_roads_start,n_roads_end
                 
-            if (line_or_grid_data_flag(ro).le.1) then
+            if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.-1) then
                 
                 if (line_or_grid_data_flag(ro).eq.1) then
                     emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))*conversion
@@ -152,7 +153,7 @@
                 do ti=min_time_save,max_time_save
                 do ro=1,n_roads_total
                 
-                    if (line_or_grid_data_flag(ro).le.1) then
+                    if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.-1) then
                 
                         if (line_or_grid_data_flag(ro).eq.1) then
                             emis_road=emis_epi(x,ti,ro)
@@ -210,7 +211,7 @@
     real x_grid(2),y_grid(2)
     !real f_grid(grid_dim(1),grid_dim(2),n_roads)
     real f_grid(0:n_roads)
-    real length_road(0:n_roads)
+    !real length_road(0:n_roads)
     integer unit_count
     
     real, save :: emis_sum(num_size)
@@ -245,7 +246,7 @@
     call incrtm(-1,a_start(1),a_start(2),a_start(3),a_start(4))
 
     !Check that path exists after filling in date stamp
-    call date_to_datestr(a_start,path_output_emis,temp_name)
+    call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -263,7 +264,7 @@
     !This error trap indicates if NaN values in the grid but will not fix the problem which will propogate through the init files
     do ro=n_roads_start,n_roads_end
         
-        length_road(ro)=sqrt((x_road(1,ro)-x_road(2,ro))**2+(y_road(1,ro)-y_road(2,ro))**2)
+        if (length_road(ro).eq.0) length_road(ro)=sqrt((x_road(1,ro)-x_road(2,ro))**2+(y_road(1,ro)-y_road(2,ro))**2)
         
         !Check data
         do ti=min_time_save,max_time_save
@@ -335,7 +336,7 @@
         temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'.txt'
         
         !Put in date in path and filename if required
-        call date_to_datestr(a_start,temp_name,temp_name)
+        call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
         write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
 

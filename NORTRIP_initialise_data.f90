@@ -41,9 +41,12 @@
             road_meteo_data(RH_s_index,min_time,tr,ro)=meteo_data(RH_index,min_time,ro)
         enddo
 
-        !Set or transfer exhaust emission into pm_25 and all tracks.
+        !Set or transfer exhaust emission into all sizes and all tracks.
+        !Only pm2.5 is used when placed in the model in NORTRIP_dust_emission_submodel
+        !The values set here will be overwritten to be correct for multitrack cases as well
         !----------------------------------------------------------------------
         if (exhaust_EF_available.eq.1.and.exhaust_flag.gt.0) then
+            E_road_data(exhaust_index,:,E_total_index,:,:,ro)=0.
             do x=1,num_size
             do tr=1,num_track
             do v=1,num_veh
@@ -64,12 +67,9 @@
             enddo
         endif
     
-        !Initialise the binned mass balance specified through M_road_init
+        !Initialise the mass balance specified through M_road_init
         !----------------------------------------------------------------------
         M_road_data(:,:,min_time,:,ro)=M_road_init(:,:,:,ro)
-        !do x=1,num_size-1
-        !    M_road_bin_data(:,x,ti_bin,:,ro_bin)=M_road_data(:,x,min_time,:,ro)-M_road_data(:,x+1,min_time,:,ro)
-        !enddo        
         g_road_data(:,min_time,:,ro)=g_road_init(:,:,ro)
     
         !Set pressure to default if not available
@@ -87,7 +87,17 @@
         meteo_data(RH_index,:,ro)=max(0.,min(100.,meteo_data(RH_index,:,ro)+RH_offset))
         meteo_data(T_a_index,:,ro)=meteo_data(T_a_index,:,ro)+T_a_offset
         meteo_data(long_rad_in_index,:,ro)= meteo_data(long_rad_in_index,:,ro)+long_rad_in_offset
-        
+ 
+        !Initialise the activity last time variables
+        !Will be overwritten by init files if they are read in
+        !----------------------------------------------------------------------
+        time_since_last_salting(ro)=0.
+        time_since_last_binding(ro)=0.
+        time_since_last_sanding(ro)=0.
+        time_since_last_cleaning(ro)=0.
+        time_since_last_ploughing(ro)=0.
+    
+
     enddo !End the road loop
     
     if (ro_tot.eq.1) then

@@ -95,14 +95,6 @@ subroutine NORTRIP_initialise_time
     !    close(unit_logfile,status='keep')
     !endif
 
-    !Initialise the activity last time variables
-    !Will be overwritten by init files if they are read in
-    time_since_last_salting=0.
-    time_since_last_binding=0.
-    time_since_last_sanding=0.
-    time_since_last_cleaning=0.
-    time_since_last_ploughing=0.
-    
     endif
 
         

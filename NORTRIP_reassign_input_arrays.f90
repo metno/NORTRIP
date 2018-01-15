@@ -7,6 +7,8 @@
     
     implicit none
     
+    if (.not.use_single_road_loop_flag) return
+    
   	!write(unit_logfile,'(A)') ''
     !write(unit_logfile,'(A)') 'Reassigning input arrays for single road run (NORTRIP_reassign_input_arrays)'
   	!write(unit_logfile,'(A)') '================================================================'
@@ -63,6 +65,7 @@
         !Grid data
         x_road(:,0)=x_road(:,ro_tot)
         y_road(:,0)=y_road(:,ro_tot)
+        length_road(0)=length_road(ro_tot)
         line_or_grid_data_flag(0)=line_or_grid_data_flag(ro_tot)
         !adt_road(0)=
 
@@ -73,6 +76,26 @@
 
         az_skyview(:,0)=az_skyview(:,ro_tot)
         zen_skyview(:,0)=zen_skyview(:,ro_tot)
+               
+    !Initialise all arrays to 0
+    !M_road_data=0.0
+    !M_road_bin_data=0.0
+    !M_road_bin_balance_data=0.0
+    !M_road_balance_data=0.0
+    !C_bin_data=0.0
+    !C_data=0.0
+    !E_road_data=0.0
+    !E_road_bin_data=0.0
+    !WR_time_data=0.0
+    !road_salt_data=0.0
+    !road_meteo_data=0.0
+    !g_road_balance_data=0.0
+    !g_road_data=0.0
+    !f_q=0.0
+    !f_q_obs=0.0
+    
+    !azimuth_ang=0.0
+    !zenith_ang=0.0
     
     end subroutine NORTRIP_reassign_input_arrays
     

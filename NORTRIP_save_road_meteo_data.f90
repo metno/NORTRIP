@@ -54,7 +54,7 @@
         !Put in date if required
         a=date_data(:,min_time_save)
         
-        call date_to_datestr(a,temp_name,temp_name)
+        call date_to_datestr_bracket(a,temp_name,temp_name)
         
         write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
 

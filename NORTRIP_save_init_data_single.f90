@@ -20,11 +20,12 @@
     integer a(num_date_index)
     integer unit_save_init_data_temp
     integer unit_counter
+    integer hour_test
     
     unit_out=unit_save_init_data
     
     !Leave this if it is not relevant
-    if (hours_between_init.le.0) then
+    if (hours_between_init.lt.0) then
 	    if (ro_tot.eq.1) then
             write(unit_logfile,'(A)') ' WARNING: Not saving data to init file for single road loop'
         endif
@@ -32,13 +33,15 @@
         return
     endif
     
-    unit_counter=0
-    if (mod(ti,hours_between_init).eq.0) then
+    hour_test=1
+    if (hours_between_init.ne.0) hour_test=mod(ti,hours_between_init)
+    if (hour_test.eq.0.or.ti.eq.max_time) then
 
         !This can happen more than once so a new unit must be opened every time
         !So many can be open simultaneously
         
-        unit_counter=unit_counter+1
+        unit_counter=0
+        if (hours_between_init.ne.0.and.ti.ne.max_time) unit_counter=int(ti/hours_between_init)
         unit_out=unit_save_init_data+unit_counter
         
         !If it is the first loop then open the file
@@ -55,7 +58,7 @@
  
             !Check that path exists after filling in date stamp
             a=date_data(:,min_time_save)
-            call date_to_datestr(a,path_init,temp_name)
+            call date_to_datestr_bracket(a,path_init,temp_name)
     
             inquire(directory=trim(temp_name),exist=exists)
             if (.not.exists) then
@@ -76,8 +79,8 @@
             !Open the outputfile for date
             filename_asc=trim(path_init)//trim(filename_outputdata)//'_init.txt'
             filename_bin=trim(path_init)//trim(filename_outputdata)//'_init.dat'
-            call date_to_datestr(current_date,filename_asc,filename_asc)
-            call date_to_datestr(current_date,filename_bin,filename_bin)
+            call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
+            call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
         
             if (save_bin) then
                 
