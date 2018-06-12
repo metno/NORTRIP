@@ -45,8 +45,8 @@
             endif
 
             !Treat this differently in a tunnel
-            if (roadtype_index(ro).eq.tunnel_roadtype) then
-                    
+            if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
+                !Not certain what to do here as not enough information is available about a tnnels temperature
             endif
          
             !Treat this differently on a bridge. Set sublayer temperature to atmospheric layer

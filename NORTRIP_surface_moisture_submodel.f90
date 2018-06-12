@@ -438,11 +438,14 @@
         f_q(exhaust_index,ti,tr,ro)=1.!No retention for exhaust when using observed moisture        
     endif
 
-    !If the road is a tunnel roadtype then no retention occurs (never wet)
-    if (roadtype_index(ro).eq.tunnel_roadtype) then
+    !If the road is a tunnel roadtype then no retention occurs and is never wet
+    if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
         f_q(1:num_source,ti,tr,ro)=1.
         f_q(brake_index,ti,tr,ro)=1.
-        f_q(exhaust_index,ti,tr,ro)=1.       
+        f_q(exhaust_index,ti,tr,ro)=1.
+        do m=1,num_moisture
+            g_road_data(m,ti,tr,ro)=0.
+        enddo
     endif
 
     !--------------------------------------------------------------------------

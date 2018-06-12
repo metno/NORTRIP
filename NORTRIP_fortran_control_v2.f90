@@ -77,7 +77,7 @@
         n_roads_end=n_roads
         n_roads_start=1   
     endif
-    
+
     !Allocate arrays based on input data
     call allocate_NORTRIP_arrays
     

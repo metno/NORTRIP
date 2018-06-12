@@ -605,7 +605,7 @@
     !Define if the routine uses the single road option for large datasets
     use_single_road_loop_temp=match_string_int('use_single_road_loop_flag',unit_in,unit_logfile_temp,0)
     use_single_road_loop_flag=.false.
-    if (use_single_road_loop_temp.eq.1) use_single_road_loop_flag=.true.   
+    if (use_single_road_loop_temp.eq.1) use_single_road_loop_flag=.true.
     !Operating system. Only used for deleting files that have been unzipped. 1 is windows, 2 is linux
     operating_system=match_string_int('operating_system',unit_in,unit_logfile_temp,operating_system)
     

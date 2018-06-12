@@ -30,6 +30,7 @@ subroutine read_NORTRIP_inputdata
     real temp_val
     integer n_date  !Number of rows for the date data index_val
     logical file_available(n_file_type)
+    integer dummy_int !For reading in files to determine lengths
 
     !Set which road to be read.
     !Muliple road files will require multiple 'filename_inputdata' names
@@ -486,23 +487,30 @@ subroutine read_NORTRIP_inputdata
     write(unit_logfile,*) 'Number of columns= ',i_head
   
     !Find out how long the file is, reading a dummy variable
-    index_val=0
-    do while(.not.eof(unit_in))
-        index_val=index_val+1
-        read(unit_in,*,ERR=5)
-    enddo  
-5   write(unit_logfile,*) 'Number of rows= ',index_val
+    !Does this only for the date file and assumes the rest are the same, as they should be
+    if (input_file_type.eq.date_file_type) then
+        index_val=0
+        do while(.not.eof(unit_in))
+            index_val=index_val+1
+            read(unit_in,*,ERR=5)
+        enddo  
+5       write(unit_logfile,*) 'Number of rows= ',index_val
     
-    !Read data
-    n_date=int(index_val/n_roads+.5)
-    write(unit_logfile,*) 'Number of roads= ',n_roads
-    write(unit_logfile,*) 'Number of dates= ',n_date
+        !Read data
+        n_date=int(index_val/n_roads+.5)
+        !write(unit_logfile,*) 'Number of roads= ',n_roads
+        !write(unit_logfile,*) 'Number of dates= ',n_date
+    endif
+    
     !allocate (input_array(i_head,index_val))
     allocate (input_array(i_head,n_date,0:n_roads))
     input_array=nodata
     
     rewind(unit_in)
-    read(unit_in,*,ERR=5) !Skip header
+    read(unit_in,*,ERR=6) !Skip header
+6   write(unit_logfile,*) 'Number of roads= ',n_roads
+    write(unit_logfile,*) 'Number of dates= ',n_date
+
     !do jj=1,index_val
     !    read(unit_in,*) (input_array(ii,jj),ii=1,i_head)
     !    write(*,*) jj
@@ -784,10 +792,10 @@ subroutine read_NORTRIP_inputdata
         if (unit_logfile.gt.0) write(*,'(A)') 'Saving uEMEP emission and initial files'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.true.
-        NORTRIP_save_uEMEP_grid_emissions_flag=.true.
-        NORTRIP_save_road_meteo_data_flag=.true.
-        NORTRIP_save_road_emission_and_mass_data_flag=.true.
-        use_ospm_flag=1
+        NORTRIP_save_uEMEP_grid_emissions_flag=.false.
+        NORTRIP_save_road_meteo_data_flag=.false.
+        NORTRIP_save_road_emission_and_mass_data_flag=.false.
+        use_ospm_flag=0
     endif
 
     end subroutine set_NORTRIP_save_file_flags

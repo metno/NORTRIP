@@ -22,7 +22,7 @@
     real, save, allocatable :: emis_epi(:,:,:)
     integer unit_count
     
-    unit_out=unit_save_episode_emissions
+    unit_out=unit_save_emissions
     
     !Declare functions
     
@@ -72,7 +72,7 @@
     do x=pm_10,pm_25
    
         unit_count=unit_count+1
-        unit_out=unit_save_episode_emissions+unit_count
+        unit_out=unit_save_emissions+unit_count
 
         if (x.eq.pm_25) pm_str='PM2.5'
         if (x.eq.pm_10) pm_str='PM10'
@@ -220,7 +220,7 @@
     !Declare functions
     real line_fraction_in_grid_func
     
-    unit_out=unit_save_episode_grid_emissions
+    unit_out=unit_save_grid_emissions
     
     if (ro_tot.eq.1) then
 
@@ -327,7 +327,7 @@
     do x=pm_10,pm_25
    
         unit_count=unit_count+1
-        unit_out=unit_save_episode_grid_emissions+unit_count
+        unit_out=unit_save_grid_emissions+unit_count
       
         if (x.eq.pm_25) pm_str='PM2.5'
         if (x.eq.pm_10) pm_str='PM10'

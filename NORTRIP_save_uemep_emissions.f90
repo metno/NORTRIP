@@ -1,4 +1,4 @@
-!NORTRIP_save_uemepsode_emissions.f90
+!NORTRIP_save_uemep_emissions.f90
     
 !----------------------------------------------------------------------
     subroutine NORTRIP_save_uemep_emissions
@@ -25,10 +25,11 @@
     integer x_loop,save_size(4)
     integer n_roads_total_save
     
-    unit_out=unit_save_episode_emissions
+    unit_out=unit_save_emissions
     
     !Declare functions
-    
+    n_time_save=max_time_save-min_time_save+1
+   
     if (ro_tot.eq.1) then
         
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
@@ -72,7 +73,7 @@
    
         x=save_size(x_loop)
         unit_count=x_loop
-        unit_out=unit_save_episode_emissions+unit_count
+        unit_out=unit_save_emissions+unit_count
 
         if (x.eq.pm_25) pm_str='PM25'
         if (x.eq.pm_10) pm_str='PM10'
@@ -99,7 +100,7 @@
             
             
             !Open the outputfile for date
-            temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(pm_str)//'.txt'
+            temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
         
             !Put in date in path and filename if required
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
@@ -167,9 +168,15 @@
                         emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))*conversion
                     elseif (x.eq.nox_exhaust) then
                         emis_road=0.
-                        do v=1,num_veh
-                            emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
-                        enddo
+                        if (available_airquality_data(NOX_emis_index)) then
+                            emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
+                        elseif (NOX_EF_available.ne.0) then
+                            do v=1,num_veh
+                                emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                            enddo
+                        else
+                            emis_road=0.
+                        endif                              
                     else
                         emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))*conversion
                     endif
@@ -188,6 +195,7 @@
             
             enddo
 
+            !write(*,*) ro_tot,ro,road_ID(ro_tot),n_time_save
             if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.-1.or.line_or_grid_data_flag(ro).eq.3) then
                 if (use_single_road_loop_flag) then 
                     write(unit_out,'(i12,<n_time_save>es12.4)') road_ID(ro_tot),emis_time(min_time_save:max_time_save)
@@ -246,7 +254,9 @@
     !Declare functions
     real line_fraction_in_grid_func
     
-    unit_out=unit_save_episode_grid_emissions
+    return
+    
+    unit_out=unit_save_grid_emissions
     save_size(1)=pm_10;save_size(2)=pm_25;save_size(3)=pm_exhaust;save_size(4)=nox_exhaust
     
     if (ro_tot.eq.1) then
@@ -329,7 +339,7 @@
             !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then          
             if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
                 f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
-                !if (f_grid(ro).ne.0) write(*,*) f_grid(ro)
+                !if (f_grid(ro).ne.0) write(*,*) ro,f_grid(ro)
             else
                 f_grid(ro)=0.
             endif 
@@ -344,9 +354,15 @@
                         emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
                     elseif (x.eq.nox_exhaust) then
                         emis_road=0.
-                        do v=1,num_veh
-                            emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)
-                        enddo
+                        if (available_airquality_data(NOX_emis_index)) then
+                            emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
+                        elseif (NOX_EF_available.ne.0) then
+                            do v=1,num_veh
+                                emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                            enddo
+                        else
+                            emis_road=0.
+                        endif                              
                     else
                         emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))
                     endif                    
@@ -375,7 +391,7 @@
         
         x=save_size(x_loop)
         unit_count=x_loop
-        unit_out=unit_save_episode_grid_emissions+unit_count
+        unit_out=unit_save_grid_emissions+unit_count
       
         if (x.eq.pm_25) pm_str='PM25'
         if (x.eq.pm_10) pm_str='PM10'
@@ -384,7 +400,7 @@
 
         
             !Open the outputfile for date
-            temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'.txt'
+            temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
         
             !Put in date in path and filename if required
             call date_to_datestr_bracket(a_start,temp_name,temp_name)

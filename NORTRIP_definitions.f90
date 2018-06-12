@@ -218,8 +218,8 @@
     parameter (num_track_max=5)
  
     !Road type indexes
-    integer normal_roadtype,tunnel_roadtype,bridge_roadtype,bicyclepath_roadtype
-    parameter (normal_roadtype=1,tunnel_roadtype=2,bridge_roadtype=3,bicyclepath_roadtype=4)
+    integer normal_roadtype,tunnel_roadtype,bridge_roadtype,bicyclepath_roadtype,tunnelportal_roadtype
+    parameter (normal_roadtype=1,tunnel_roadtype=2,bridge_roadtype=3,bicyclepath_roadtype=4,tunnelportal_roadtype=6)
     
     !Road type activity. Only in Fortran version since it is multiroad only
     integer road_type_salting_index,road_type_sanding_index,road_type_cleaning_index,road_type_ploughing_index,road_type_binding_index
@@ -241,7 +241,7 @@
     implicit none
     
     !Define the flag that determines if a single road option is to be used for large datasets
-    logical :: use_single_road_loop_flag=.false.
+    logical :: use_single_road_loop_flag=.true.
     integer :: operating_system=1
     
     real :: nodata=-999.
@@ -308,8 +308,8 @@
 !-----------------------------------------------------------------------
     integer :: unit_read_init_data=100
     integer :: unit_save_init_data=101
-    integer :: unit_save_episode_emissions=50
-    integer :: unit_save_episode_grid_emissions=60
+    integer :: unit_save_emissions=50
+    integer :: unit_save_grid_emissions=60
     integer :: unit_save_road_meteo_data=70
     integer :: unit_save_road_emission_and_mass_data=71
     integer :: unit_save_road_emission_and_mass_data_stats=72

@@ -291,7 +291,9 @@
             *f_PM_bin(exhaust_index,pm_25,1)*f_track(tr)*(1-f_0_dir(exhaust_index))        
         E_road_bin_data(exhaust_index,pm_25,E_direct_index,ti_bin,tr,ro_bin) &
             =E_road_data(exhaust_index,pm_25,E_total_index,ti,tr,ro) &
-            *f_PM_bin(exhaust_index,pm_25,1)*f_track(tr)*f_0_dir(exhaust_index)        
+            *f_PM_bin(exhaust_index,pm_25,1)*f_track(tr)*f_0_dir(exhaust_index)
+        !M_road_bin_balance_data(exhaust_index,pm_10,P_depo_index,ti_bin,tr,ro_bin)=M_road_bin_balance_data(exhaust_index,pm_25,P_depo_index,ti_bin,tr,ro_bin)
+        !E_road_bin_data(exhaust_index,pm_10,E_direct_index,ti_bin,tr,ro_bin)=E_road_bin_data(exhaust_index,pm_25,E_direct_index,ti_bin,tr,ro_bin)
     else
         M_road_bin_balance_data(exhaust_index,1:num_size,P_depo_index,ti_bin,tr,ro_bin)=0
         E_road_bin_data(exhaust_index,1:num_size,E_direct_index,ti_bin,tr,ro_bin)=0
