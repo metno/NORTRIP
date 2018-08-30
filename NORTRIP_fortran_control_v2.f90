@@ -20,6 +20,7 @@
 !                   NORTRIP_save_episode_emissions
 !                   NORTRIP_save_road_meteo_data
 !                   NORTRIP_save_road_emission_and_mass_data
+!                   NORTRIP_save_road_summary_data
 !                   NORTRIP_save_road_emission_and_mass_data_stat
 !                   call NORTRIP_save_data
 !                   deallocate_NORTRIP_arrays           
@@ -31,7 +32,7 @@
 !
 !****************************************************************************
 
-    program NORTRIP_fortran_control_v2
+    subroutine NORTRIP_fortran_control_v2
 
     use NORTRIP_definitions
     
@@ -42,25 +43,31 @@
 	write(*,'(A)') 'Starting program NORTRIP_fortran_v3.6 (64 bit)'
 	write(*,'(A)') '################################################################'
     
-    
+
     !NOTE: When use_single_road_loop_flag=.true. then cannot use the following routine:
     !NORTRIP_save_all_data
     
     !Initialise and set constants
     call set_constant_string_values
 
-	!Read in commandline, input paths and input parameters
-    if (unit_logfile.gt.0) write(*,'(A)') 'Reading parameters'
-    call read_NORTRIP_commandline
-    call read_NORTRIP_pathnames !Opens logfile here
+    if (.not.NORTRIP_fortran_combined_flag) then
+	    !Read in commandline, input paths and input parameters
+        if (unit_logfile.gt.0) write(*,'(A)') 'Reading parameters' 
+        call read_NORTRIP_commandline
+        call read_NORTRIP_pathnames !Opens logfile here
+    endif
+    
     call read_NORTRIP_parameters
     call read_NORTRIP_flags
     call read_NORTRIP_activities
     
     !Read in and check the input data
     if (unit_logfile.gt.0) write(*,'(A)') 'Reading inputdata'      
-    call read_NORTRIP_inputdata
+    if (.not.NORTRIP_fortran_combined_flag) then
+        call read_NORTRIP_inputdata        
+    endif
     call check_NORTRIP_inputdata
+    call override_NORTRIP_inputdata
     
     !Set which file types to save based on the calculation_type
     call set_NORTRIP_save_file_flags
@@ -101,9 +108,10 @@
         if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
+        if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
-        if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions
+        if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions_all
         if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
@@ -120,7 +128,7 @@
     !Close log file that was opened in read_NORTRIP_pathnames
     call close_logfile    
 
-    end program NORTRIP_fortran_control_v2
+    end subroutine NORTRIP_fortran_control_v2
     
     
 

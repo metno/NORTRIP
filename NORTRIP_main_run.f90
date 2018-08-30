@@ -107,8 +107,8 @@
                 
                 !For debugging purposes only
                 if (show_time_moisture) then
-                    write(unit_logfile,'(a24,a2,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ' &
-                    ,meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(T_s_dewpoint_index,ti,tr,ro) &
+                    write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
+                    ,meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(T_sub_index,ti,tr,ro),road_meteo_data(T_s_dewpoint_index,ti,tr,ro) &
                     ,g_road_data(water_index,ti,tr,ro),g_road_data(snow_index,ti,tr,ro),g_road_data(ice_index,ti,tr,ro)
                 endif
                 
@@ -133,6 +133,10 @@
         !End main time loop
         !----------------------------------------------------------------------
     
+        !Only calculate concentrations for the special road links if required. NOT IMPLEMENTED YET
+        if (save_road_data_flag(ro).ne.0) then
+        endif
+        
         if (use_ospm_flag.eq.1) then
             if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using OSPM'
@@ -155,7 +159,8 @@
             write(unit_logfile,'(A)')'Calculating concentrations'
         endif
         call NORTRIP_concentrations
-
+        
+        
     enddo
     !End road loop
     !--------------------------------------------------------------------------

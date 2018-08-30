@@ -198,7 +198,7 @@ subroutine read_NORTRIP_inputdata
     call find_read_line_intn(unit_in,unit_logfile_temp,roadtype_index(1:n_roads),n_roads,'Road type',normal_roadtype)
 
     call find_read_line_intn(unit_in,unit_logfile_temp,n_lanes(1:n_roads),n_roads,'Number of lanes',2)
-    call find_read_line_valn(unit_in,unit_logfile_temp,b_lane(1:n_roads),n_roads,'Width of lane',3.5)
+    call find_read_line_valn(unit_in,unit_logfile_temp,b_lane(1:n_roads),n_roads,'Width of lane',3.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,b_canyon(1:n_roads),n_roads,'Street canyon width',100.)
     call find_read_line_valn(unit_in,unit_logfile_temp,h_canyon(1,1:n_roads),n_roads,'Street canyon height',0.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,h_canyon(1,1:n_roads),n_roads,'Street canyon height north',h_canyon(1,i_road))
@@ -268,7 +268,6 @@ subroutine read_NORTRIP_inputdata
         NOX_EF_available=1
     endif
 
-    
     call find_read_line_str1(unit_in,unit_logfile_temp,start_date_str,'Start date',start_date_str)
     call find_read_line_str1(unit_in,unit_logfile_temp,start_date_save_str,'Start save date',start_date_save_str)
     call find_read_line_str1(unit_in,unit_logfile_temp,end_date_str,'End date',end_date_str)
@@ -281,14 +280,6 @@ subroutine read_NORTRIP_inputdata
         command_line_zip=trim(delete_file_command)//' '//trim(temp_name)
         write(unit_logfile,'(a,a)') 'Command line zip: ',trim(command_line_zip)      
         CALL EXECUTE_COMMAND_LINE (trim(command_line_zip),wait=.true.)
-    endif
-
-    !Override these values
-    if (override_wind_speed_correction.ne.nodata_orig) then
-        wind_speed_correction=override_wind_speed_correction
-    endif
-    if (override_albedo_road_offset.ne.nodata_orig) then
-        albedo_road=albedo_road+override_albedo_road_offset
     endif
 
     !Set road width based on lane width
@@ -377,17 +368,6 @@ subroutine read_NORTRIP_inputdata
             CALL EXECUTE_COMMAND_LINE (trim(command_line_zip),wait=.true.)
         endif
 
-    endif
-
-    !Override these values
-    if (override_long_rad_in_offset.ne.nodata_orig) then
-        long_rad_in_offset=override_long_rad_in_offset
-    endif
-    if (override_RH_offset.ne.nodata_orig) then
-        RH_offset=override_RH_offset
-    endif
-    if (override_T_a_offset.ne.nodata_orig) then
-        T_a_offset=override_T_a_offset
     endif
 
     !Distribute the initial suspendable mass according to road wear over all tracks and convert from g/m^2 to g/km
@@ -739,6 +719,34 @@ subroutine read_NORTRIP_inputdata
 !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
+    subroutine override_NORTRIP_inputdata
+
+    use NORTRIP_definitions
+    
+    implicit none
+    
+    !Override these values that come in the parameter flag files
+    !Used to adjust all roads in NORTRIP
+    if (override_wind_speed_correction.ne.nodata_orig) then
+        wind_speed_correction=override_wind_speed_correction
+    endif
+    if (override_albedo_road_offset.ne.nodata_orig) then
+        albedo_road=albedo_road+override_albedo_road_offset
+    endif
+    if (override_long_rad_in_offset.ne.nodata_orig) then
+        long_rad_in_offset=override_long_rad_in_offset
+    endif
+    if (override_RH_offset.ne.nodata_orig) then
+        RH_offset=override_RH_offset
+    endif
+    if (override_T_a_offset.ne.nodata_orig) then
+        T_a_offset=override_T_a_offset
+    endif
+
+    end subroutine override_NORTRIP_inputdata
+!----------------------------------------------------------------------
+
+!----------------------------------------------------------------------
     subroutine set_NORTRIP_save_file_flags
 
     use NORTRIP_definitions
@@ -795,6 +803,7 @@ subroutine read_NORTRIP_inputdata
         NORTRIP_save_uEMEP_grid_emissions_flag=.false.
         NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
+        NORTRIP_save_road_summary_data_flag=.true.
         use_ospm_flag=0
     endif
 

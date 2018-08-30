@@ -24,6 +24,7 @@
     integer n_time_save
     integer x_loop,save_size(4)
     integer n_roads_total_save
+    integer n_x_save
     
     unit_out=unit_save_emissions
     
@@ -68,8 +69,10 @@
 
     unit_count=0
     
+    n_x_save=4
     save_size(1)=pm_10;save_size(2)=pm_25;save_size(3)=pm_exhaust;save_size(4)=nox_exhaust
-    do x_loop=1,4
+    
+    do x_loop=1,n_x_save
    
         x=save_size(x_loop)
         unit_count=x_loop
@@ -221,6 +224,209 @@
                 
  
     end subroutine NORTRIP_save_uemep_emissions
+!----------------------------------------------------------------------
+
+!----------------------------------------------------------------------
+    subroutine NORTRIP_save_uemep_emissions_all
+    
+    use NORTRIP_definitions
+    
+    implicit none
+    
+    integer :: unit_out
+    character(24) uemep_start_date_str
+    character(24) uemep_end_date_str
+    character(24) :: uemep_date_format_str='yyyymmddHH'
+    character(256) temp_name,filename_temp
+    logical exists
+    integer a_start(num_date_index),a_end(num_date_index)
+    real conversion
+    character(12) :: pm_str=''
+    real emis_road
+    real length_road_km(0:n_roads)
+    real, save, allocatable :: emis_sum(:)
+    real emis_time(n_time)
+    integer unit_count
+    integer n_time_save
+    integer x_loop
+    integer n_roads_total_save
+    integer n_x_save
+    parameter (n_x_save=4)
+    integer save_size(n_x_save)
+    character(10) save_str(n_x_save)
+    
+    save_size(1)=pm_10;save_size(2)=pm_25;save_size(3)=pm_exhaust;save_size(4)=nox_exhaust
+    save_str(1)='PM10';save_str(2)='PM25';save_str(3)='PMex';save_str(4)='NOX'
+
+    unit_out=unit_save_emissions
+    
+    !Declare functions
+    n_time_save=max_time_save-min_time_save+1
+   
+    if (ro_tot.eq.1) then
+        
+	write(unit_logfile,'(A)') '----------------------------------------------------------------'
+	write(unit_logfile,'(A)') 'Saving uEMEP emissions to file'
+	write(unit_logfile,'(A)') '----------------------------------------------------------------'
+
+    !Set start and end date stamps
+    n_time_save=max_time_save-min_time_save+1
+    a_start=date_data(:,min_time_save)
+    a_end=date_data(:,max_time_save)
+    call date_to_datestr(a_start,uemep_date_format_str,uemep_start_date_str)
+    call date_to_datestr(a_end,uemep_date_format_str,uemep_end_date_str)
+
+    !Change the date stamp to follow NILU conventions
+    !call incrtm(-1,a_start(1),a_start(2),a_start(3),a_start(4))
+  
+    if (.not.allocated(emis_sum)) then
+        allocate (emis_sum(num_size+2))
+    endif
+
+    !Check that path exists after filling in date stamp
+    call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
+    
+    inquire(directory=trim(temp_name),exist=exists)
+    if (.not.exists) then
+        write(unit_logfile,'(A)')'ERROR: Path '//trim(temp_name)//' does not exist. No file saved'
+        return
+    endif
+
+    
+    endif
+    
+    !NORTRIP emissions are g/km/hour. 
+    conversion=1.
+    !conversion=1.e6/1000./3600 !Convert to ug/s/m for use in EMEP (ug/s)
+
+    unit_out=unit_save_emissions
+
+        if (ro_tot.eq.1) then
+            
+            !Calculate number of roads that will be saved
+            n_roads_total_save=0
+            if (use_single_road_loop_flag) then
+            do ro=1,n_roads_total
+                if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.3) then
+                    n_roads_total_save=n_roads_total_save+1
+                endif
+            enddo  
+            else
+            do ro=1,n_roads
+                if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.3) then
+                    n_roads_total_save=n_roads_total_save+1
+                endif
+            enddo
+            endif
+            
+            
+            !Open the outputfile for date
+            !temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//'all'//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
+            temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//'all'//'_'//trim(uemep_start_date_str)//'.txt'
+        
+            !Put in date in path and filename if required
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
+
+            write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
+            
+            open(unit_out,file=temp_name,status='replace')
+
+            
+            write(unit_out,'(A)') '# NORTRIP emission output for uEMEP'
+            write(unit_out,'(A)') '# Hourly traffic non-exhaust and exhaust emission '
+            write(unit_out,'(A)') '# Number of compounds '
+            write(unit_out,'(i4)') n_x_save
+            write(unit_out,'(A)') '# Compound names '
+            write(unit_out,'(A,<n_x_save>A)') save_str(1:n_x_save)            
+            write(unit_out,'(A)')   '# Emission data unit'
+            write(unit_out,'(A)')   '"g/km/hr"'
+            write(unit_out,'(A)')   '# Emission data start and end date'
+            write(unit_out,'(A)')    trim(uemep_start_date_str)//'   '//trim(uemep_end_date_str)
+            write(unit_out,'(A)')   '# Number of roads     Number of hours'
+            write(unit_out,'(2i)')   n_roads_total_save,n_time_save      
+            write(unit_out,'(A)')   '# RoadLinkID    Emission'
+        
+            emis_sum(x)=0.
+        
+        endif
+        
+        !Note that if line_or_grid_data_flag(ro).eq.0 then this is a link without traffic data.
+        !Must be saved but with no information
+        do ro=n_roads_start,n_roads_end
+            
+            !Length of road in km for calculating sum of emissions
+            if (length_road(ro).eq.0) then
+                length_road_km(ro)=sqrt((x_road(1,ro)-x_road(2,ro))**2+(y_road(1,ro)-y_road(2,ro))**2)/1000.
+            else
+                length_road_km(ro)=length_road(ro)/1000.
+            endif
+             
+                
+            if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.-1.or.line_or_grid_data_flag(ro).eq.3) then
+                
+                if (use_single_road_loop_flag) then 
+                    write(unit_out,'(i12)') road_ID(ro_tot)
+                else
+                    write(unit_out,'(i12)') road_ID(ro)
+                endif
+
+                do x_loop=1,n_x_save
+   
+                    x=save_size(x_loop)
+
+                    do ti=min_time_save,max_time_save
+
+                        emis_road=0.
+                        !If line_or_grid_data_flag(ro).eq.-1 then missing data and so set to 0
+                        if (line_or_grid_data_flag(ro).eq.1.or.line_or_grid_data_flag(ro).eq.3) then
+                            if (x.eq.pm_exhaust) then
+                                emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))*conversion
+                            elseif (x.eq.nox_exhaust) then
+                                emis_road=0.
+                                if (available_airquality_data(NOX_emis_index)) then
+                                    emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
+                                elseif (NOX_EF_available.ne.0) then
+                                    do v=1,num_veh
+                                        emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                                    enddo
+                                endif                              
+                            else
+                                emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))*conversion
+                            endif
+                        endif
+            
+                        !Save emissions when using single roads to get it in the right order
+                        !Write them at end of calculation
+                        emis_time(ti)=emis_road            
+                        emis_sum(x)=emis_sum(x)+emis_road*length_road_km(ro)
+                
+                    enddo
+                
+                    !Write the time values
+                    write(unit_out,'(<n_time_save>es12.4)') emis_time(min_time_save:max_time_save)
+            
+                enddo
+            
+            endif
+            
+        enddo
+    
+        if (ro_tot.eq.n_roads_total) then           
+
+            close (unit_out)
+    
+            !Write the total emissions to the log file
+            do x_loop=1,n_x_save
+                x=save_size(x_loop)
+                !Conversion is for g to kg
+                write(unit_logfile,'(A,a,a,es12.2)') ' Total emissions of ',save_str(x_loop),' (kg) for all road links over this period = ',emis_sum(x)*1.e-3*dt
+            enddo
+        endif
+        
+   if (allocated(emis_sum).and.(ro_tot.eq.n_roads_total)) deallocate(emis_sum)
+                
+ 
+    end subroutine NORTRIP_save_uemep_emissions_all
 !----------------------------------------------------------------------
     
 !----------------------------------------------------------------------

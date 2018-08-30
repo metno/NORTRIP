@@ -589,6 +589,7 @@
     auto_sanding_flag=match_string_int('auto_sanding_flag',unit_in,unit_logfile_temp,0)
     auto_ploughing_flag=match_string_int('auto_ploughing_flag',unit_in,unit_logfile_temp,0)
     auto_cleaning_flag=match_string_int('auto_cleaning_flag',unit_in,unit_logfile_temp,0)
+    salt_type(2)=match_string_int('binding_salt_flag',unit_in,unit_logfile_temp,2)
     !OUTPUT                                                          
     plot_type_flag=match_string_int('plot_type_flag',unit_in,unit_logfile_temp,0)
     save_type_flag=match_string_int('save_type_flag',unit_in,unit_logfile_temp,0)

@@ -97,7 +97,7 @@
     T_s_0=road_meteo_data(T_s_index,max(min_time,ti-1),tr,ro)
     RH_s_0=road_meteo_data(RH_s_index,max(min_time,ti-1),tr,ro)
     M2_road_salt_0(1:num_salt)=M_road_data(salt_index,pm_all,max(min_time,ti-1),tr,ro)*b_factor
-    
+
     !Set precipitation production term
     !This assumes that the rain is in mm for the given dt period
     !--------------------------------------------------------------------------
@@ -219,6 +219,8 @@
         =dewpoint_from_RH_func(meteo_data(T_a_index,ti,ro) &
         ,meteo_data(RH_index,ti,ro))
 
+    !write(*,*) road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(RH_s_index,ti,tr,ro),meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro)
+    
     !Set the evaporation/condensation rates
     !Distribute evaporation between water and ice according to the share of water and ice
     !Distribute the condensation between water and ice according to temperature

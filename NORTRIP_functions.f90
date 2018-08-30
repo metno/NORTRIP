@@ -46,7 +46,8 @@
 
             !Treat this differently in a tunnel
             if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
-                !Not certain what to do here as not enough information is available about a tnnels temperature
+                !Not certain what to do here as not enough information is available about a tunnels temperature. Set at ambient temperature
+                road_meteo_data(T_sub_index,:,tr,ro)=meteo_data(T_a_index,:,ro)
             endif
          
             !Treat this differently on a bridge. Set sublayer temperature to atmospheric layer
@@ -70,6 +71,10 @@
 	        write(unit_logfile,'(A)') '----------------------------------------------------------------'
         endif
     
+        !(*,*) road_meteo_data(T_sub_index,min_time:max_time,1,ro)
+        !write(*,*) meteo_data(T_a_index,min_time:max_time,ro)
+        !write(*,*) num_running_hours
+        !stop
     !enddo
     
     end subroutine NORTRIP_running_mean_temperature

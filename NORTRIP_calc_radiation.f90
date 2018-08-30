@@ -64,14 +64,14 @@
         else   
         !Calculate short wave net radiation when global radiation is not available
             !+dt/2 is there so that it extracts between the solar time further west (ti-1 and ti), as in the solar angle 30 minutes ago sinc ehte radiation at time tt is based on accumulated between tt and tt-1
-            call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)+dt/2,Z_SURF(ro),meteo_data(cloud_cover_index,ti,ro),albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
+            call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),meteo_data(cloud_cover_index,ti,ro),albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
             road_meteo_data(short_rad_net_index,ti,1:num_track,ro) =short_rad_net_temp
         endif
             
                 
         !Calculate clear sky short radiation
-        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)+dt/2,Z_SURF(ro),0.,0.,meteo_data(short_rad_in_clearsky_index,ti,ro),azimuth_ang(ti,ro),zenith_ang(ti,ro))
-        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)+dt/2,Z_SURF(ro),0.,albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
+        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),0.,0.,meteo_data(short_rad_in_clearsky_index,ti,ro),azimuth_ang(ti,ro),zenith_ang(ti,ro))
+        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),0.,albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
         road_meteo_data(short_rad_net_clearsky_index,ti,1:num_track,ro) = short_rad_net_temp
         !write(*,*) short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro)
 

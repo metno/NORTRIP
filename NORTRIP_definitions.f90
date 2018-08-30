@@ -40,6 +40,9 @@
     module NORTRIP_index_definitions
 
     implicit none
+    !private
+    
+    logical :: NORTRIP_fortran_combined_flag=.false.
 
     integer ii,jj
     private ii,jj 
@@ -300,6 +303,7 @@
     logical :: NORTRIP_save_road_meteo_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
+    logical :: NORTRIP_save_road_summary_data_flag=.false.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -313,6 +317,7 @@
     integer :: unit_save_road_meteo_data=70
     integer :: unit_save_road_emission_and_mass_data=71
     integer :: unit_save_road_emission_and_mass_data_stats=72
+    integer :: unit_save_road_summary_data=73
     integer :: unit_save_all_data=75
     integer :: unit_read_NORTRIP_inputdata=10
     integer :: unit_read_NORTRIP_parameters=11
@@ -508,7 +513,7 @@
 !Input data variables
 !-----------------------------------------------------------------------
     !Order is (date_type,time)
-    real, allocatable :: date_data(:,:)
+    integer, allocatable :: date_data(:,:)
     character(24), allocatable :: date_str(:,:)
     !Order is (variable_type,time,road)
     real, allocatable :: traffic_data(:,:,:)
@@ -604,7 +609,7 @@
     real, allocatable :: length_road(:)
     
     !Special BB declaration for database ID. Only reads when type is 'Bedre Byluft'
-    character(256) BB_output_ID(num_size)
+    character(256) :: BB_output_ID(num_size)='{}'
     
     !Activity control flags allocatable to each road (road_type_activity_index,road)
     integer, allocatable :: road_type_activity_flag(:,:)
