@@ -353,6 +353,7 @@
             R_suspension(s,1:num_size)=R_suspension(s,1:num_size)+R_suspension_array(1:num_size)
         enddo
         enddo
+
         !Diagnose the suspension sink 
 	    M_road_bin_balance_data(s,1:num_size,S_suspension_index,ti_bin,tr,ro_bin) &
         =R_suspension(s,1:num_size)*M_road_bin_0_data(s,1:num_size)

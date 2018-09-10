@@ -73,7 +73,7 @@
         call NORTRIP_running_mean_temperature(sub_surf_average_time)
         
         !Print road to screen to see progress
-        if ((mod(ro,1000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,1000).eq.0.and.use_single_road_loop_flag)) then
+        if ((mod(ro,10000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,10000).eq.0.and.use_single_road_loop_flag)) then
         if (unit_logfile.gt.0) then
             write(*,'(A6,2I9)') 'ROAD: ',ro,ro_tot
         else

@@ -12,6 +12,7 @@
   	write(unit_logfile,'(A)') '================================================================'
     endif
     
+    !write(unit_logfile,'(a,1f12.1)') ' Maximum initial dust layer transferred',maxval(M_road_init(road_index,pm_all,1,:)/b_road_lanes(:)/1000.)
     !Start the road loop
     do ro=n_roads_start,n_roads_end
         
