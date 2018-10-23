@@ -62,7 +62,7 @@ subroutine read_NORTRIP_inputdata
         if (.not.exists) then
             write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name)//' does not exist.'
             write(unit_logfile,'(a)')'STOPPING'
-            stop
+            stop 31
         endif
         !Unzip
         write(unit_logfile,'(a,a)') 'Extracting from zip format: ',trim(temp_name)       
@@ -82,7 +82,7 @@ subroutine read_NORTRIP_inputdata
     if (.not.exists) then
         write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name)//' does not exist.'
         write(unit_logfile,'(a)')'STOPPING'
-        stop
+        stop 32
     endif
     
     open(unit_in,file=temp_name,access='sequential',status='old',readonly)  
@@ -296,7 +296,7 @@ subroutine read_NORTRIP_inputdata
         if (.not.exists) then
             write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name)//' does not exist.'
             write(unit_logfile,'(a)')'STOPPING'
-            stop
+            stop 33
         endif
         !Unzip
         write(unit_logfile,'(a,a)') 'Extracting from zip format: ',trim(temp_name)       
@@ -423,7 +423,7 @@ subroutine read_NORTRIP_inputdata
         if (.not.exists.and.input_file_type.ne.activity_file_type) then
             write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name_zip)//' does not exist.'
             write(unit_logfile,'(a)')'STOPPING'
-            stop
+            stop 34
         endif
         !Unzip
         write(unit_logfile,'(a,a)') 'Extracting from zip format: ',trim(temp_name_zip)       
@@ -536,7 +536,7 @@ subroutine read_NORTRIP_inputdata
         !Allocate the meteorology array
         if (n_time.ne.n_date) then
             write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in meteo input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
-            stop
+            stop 35
         endif
         if (.not.allocated(meteo_data)) allocate(meteo_data(num_meteo_index,n_time,0:n_roads))
         allocate(file_match_str(num_meteo_index))
@@ -561,7 +561,7 @@ subroutine read_NORTRIP_inputdata
         !Allocate the airquality array using n_time
         if (n_time.ne.n_date) then
             write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in airquality input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
-            stop
+            stop 36
         endif
         if (.not.allocated(airquality_data)) allocate(airquality_data(num_airquality_index,n_time,0:n_roads))
         allocate(file_match_str(num_airquality_index))
@@ -855,6 +855,11 @@ subroutine read_NORTRIP_inputdata
     do i=1,num_activity_index
         call check_available_data_sub(activity_data(i,:,ro),available_activity_data(i),nodata_input,percent_available)
  	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_data(i,:,ro)),maxval(activity_data(i,:,ro))
+        !Special case, must be set to 0 if not available
+        if (.not.available_activity_data(i)) then
+            activity_data(i,:,ro)=0.
+        endif
+        
     enddo
     
     !Check air quality data. Only checks availability

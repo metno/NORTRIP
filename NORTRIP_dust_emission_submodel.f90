@@ -277,6 +277,8 @@
         activity_data(M_sanding_index,ti,ro)/dt*f_PM_bin(sand_index,1:num_size,1) &
         *1000*b_road_lanes(ro)*f_track(tr)*use_sanding_data_flag &
         *road_type_activity_flag(road_type_sanding_index,ro)
+    !write(*,*) 'PROBLEM IS HERE, activity data:',activity_data(M_sanding_index,ti,ro)/dt
+    !stop
     !--------------------------------------------------------------------------
 
     !--------------------------------------------------------------------------
@@ -494,7 +496,6 @@
         +M_road_bin_balance_data(1:num_source,1:num_size,P_abrasion_index,ti_bin,tr,ro_bin) &
         +M_road_bin_balance_data(1:num_source,1:num_size,P_crushing_index,ti_bin,tr,ro_bin) &
         +M_road_bin_balance_data(1:num_source,1:num_size,P_depo_index,ti_bin,tr,ro_bin)
-    !write(*,*) sum(M_road_bin_balance_data(road_index,1:num_size,P_dusttotal_index,ti,tr,ro))/1000./b_road_lanes(ro)
     !--------------------------------------------------------------------------
 
     !--------------------------------------------------------------------------
@@ -508,12 +509,12 @@
         +R_crushing(1:num_source,1:num_size) &
         +R_suspension(1:num_source,1:num_size) &
         +R_windblown(1:num_source,1:num_size)  
-     !write(*,*) R_spray(road_index,pm_10),R_spray(salt_index(1),pm_all),R_spray(salt_index(2),pm_all)
     !--------------------------------------------------------------------------
     
     !--------------------------------------------------------------------------
     !Calculate mass balance for the road
     !--------------------------------------------------------------------------
+    
     do s=1,num_source
     do x=1,num_size
         M_road_bin_data(s,x,ti_bin,tr,ro_bin) &
@@ -561,9 +562,6 @@
                 +M_road_bin_balance_data(s,1:num_size,S_dustdrainage_index,ti_bin,tr,ro_bin)
         enddo
     endif
-    !write(*,*) sum(M_road_bin_balance_data(road_index,:,P_dusttotal_index,ti_bin,tr,ro_bin))/b_road_lanes(ro)/1000, &
-    !    sum(M_road_bin_balance_data(road_index,:,S_dusttotal_index,ti_bin,tr,ro_bin))/b_road_lanes(ro)/1000, &
-    !    sum(M_road_bin_balance_data(road_index,:,S_suspension_index,ti_bin,tr,ro_bin))/b_road_lanes(ro)/1000
     
     !--------------------------------------------------------------------------
     !Remove any negative values in mass (round off errors)

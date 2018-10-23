@@ -47,7 +47,7 @@
     inquire(file=trim(commandline_filename),exist=exists)
     if (.not.exists) then
         write(unit_out,'(A)')'ERROR: Main NORTRIP input file does not exist. Stopping: '//trim(commandline_filename)
-        stop
+        stop 37
     endif
 
     !Read in the date strings, check for length and then allocate to save date strings

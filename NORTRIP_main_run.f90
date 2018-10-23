@@ -33,7 +33,7 @@
     
     !Declare internal logical variables for showing results
     logical :: show_time_moisture=.false.
-    logical :: show_time_dust=.true. !Not implemented
+    logical :: show_time_dust=.false.
 
     !Open log file for main run. Already established in NORTRIP_read_pathnames
     !if (unit_logfile.gt.0) then
@@ -94,7 +94,6 @@
                 !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
             endif
               
-            
             !Use activity rules to determine salting, sanding and cleaning activities
             call NORTRIP_set_activity_data
         
@@ -114,11 +113,15 @@
                 
                 !Calculate road emissions and dust loading
                 call NORTRIP_dust_emission_submodel
-                
+                if (show_time_dust) then
+                    write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
+                    ,road_meteo_data(H_index,ti,tr,ro),road_meteo_data(L_index,ti,tr,ro),road_meteo_data(G_index,ti,tr,ro),road_meteo_data(G_sub_index,ti,tr,ro),road_meteo_data(evap_index,ti,tr,ro) &
+                    ,road_meteo_data(RH_s_index,ti,tr,ro),M_road_bin_data(road_index,pm_200,ti_bin,tr,ro_bin),M_road_bin_data(salt_index(1),pm_all,ti_bin,tr,ro_bin)
+                endif
             end do
             !End main track loop
             !----------------------------------------------------------------------
-      
+
             !Redistribute mass and moisture between tracks. Not yet implemented
       
             !Put the binned variables in the unbinned ones 

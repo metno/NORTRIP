@@ -97,7 +97,7 @@
     T_s_0=road_meteo_data(T_s_index,max(min_time,ti-1),tr,ro)
     RH_s_0=road_meteo_data(RH_s_index,max(min_time,ti-1),tr,ro)
     M2_road_salt_0(1:num_salt)=M_road_data(salt_index,pm_all,max(min_time,ti-1),tr,ro)*b_factor
-
+    
     !Set precipitation production term
     !This assumes that the rain is in mm for the given dt period
     !--------------------------------------------------------------------------
@@ -156,7 +156,7 @@
         !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
         !    
         !    endif
-        
+               
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &
@@ -197,7 +197,7 @@
             ,road_meteo_data(long_rad_net_index,ti,tr,ro) &
             ,road_meteo_data(rad_net_index,ti,tr,ro) &
             ,road_meteo_data(G_sub_index,ti,tr,ro))
-    
+            
          !Taken out of the call to avoid overlapping in and outputs to the subroutine
         road_meteo_data(RH_s_index,ti,tr,ro)=RH_s_final
                 

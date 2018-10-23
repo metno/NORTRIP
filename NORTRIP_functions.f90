@@ -166,7 +166,8 @@
     parameter (a=6.1121,b=17.67,c=243.5)
 
     esat=a*exp(b*TC/(c+TC))
-    eair=RH/100*esat
+    !+.01 to avoid a NaN error in the log when RH=0
+    eair=(RH+.01)/100.*esat
     dewpoint_from_RH_func=c*log(eair/a)/(b-log(eair/a))
 
     end function dewpoint_from_RH_func
