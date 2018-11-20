@@ -51,6 +51,8 @@
     integer mm
     real middle_max_road_wetness_obs
     real observed_moisture_cutoff_value_temp
+    real f_q_temp,f_q_binder_temp,f_q_brake_temp
+    real :: f_q_limit=1.0e-8
     
     !Functions
     real r_aero_func
@@ -393,9 +395,16 @@
         f_q(1:num_source,ti,tr,ro)=max(0.,min(1.,1-g_ratio_binder))*f_q(1:num_source,ti,tr,ro)
         f_q(brake_index,ti,tr,ro)=max(0.,min(1.,1-g_ratio_brake))
     elseif (retention_flag.eq.2) then
-        f_q(1:num_source,ti,tr,ro)=exp(-2*max(0.,g_ratio_road))
-        f_q(1:num_source,ti,tr,ro)=exp(-2*max(0.,g_ratio_binder))*f_q(1:num_source,ti,tr,ro)
-        f_q(brake_index,ti,tr,ro)=exp(-2*max(0.,g_ratio_brake))
+        f_q_temp=exp(-2*max(0.,g_ratio_road))
+        f_q_binder_temp=exp(-2*max(0.,g_ratio_binder))
+        f_q_brake_temp=exp(-2*max(0.,g_ratio_brake))
+        !Put in limits to avoid very small numbers
+        if (f_q_temp.lt.f_q_limit) f_q_temp=0.
+        if (f_q_binder_temp.lt.f_q_limit) f_q_binder_temp=0.
+        if (f_q_brake_temp.lt.f_q_limit) f_q_brake_temp=0.
+        f_q(1:num_source,ti,tr,ro)=f_q_temp
+        f_q(1:num_source,ti,tr,ro)=f_q_binder_temp*f_q_temp
+        f_q(brake_index,ti,tr,ro)=f_q_brake_temp
     elseif (retention_flag.eq.3) then        
         f_q(1:num_source,ti,tr,ro)=0.
     else        
