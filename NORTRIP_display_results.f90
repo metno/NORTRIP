@@ -134,6 +134,7 @@
             !Show traffic data
             !Number of days    	Mean ADT          	HDV (%)           	Mean speed (km/hr)	Mean studded (%LDV)	Max studded (%LDV)	Total salt (ton/km)	Salting(1) events 	Salting(2) events 	Sanding events    	Cleaning events   	Ploughing events  
             mean_factor=1./(max_time_save-min_time_save+1)
+            mean_traffic=0.
             i=0;
             i=i+1;mean_traffic(i)=date_data(datenum_index,max_time_save)-date_data(datenum_index,min_time_save);mean_traffic_text(i)='Days'
             i=i+1;mean_traffic(i)=sum(traffic_data(N_total_index,min_time_save:max_time_save,ro))*mean_factor*24;mean_traffic_text(i)='ADT'

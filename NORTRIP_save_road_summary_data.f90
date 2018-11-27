@@ -56,7 +56,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12)') &
+        write(unit_out,'(a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -88,11 +88,18 @@
             'M_sand_PM200',achar(9), &
             'f_q',achar(9), &
             'T_air',achar(9), &
+            'Td_air',achar(9), &
             'RH_air',achar(9), &
             'Wind_FF',achar(9), &
+            'Wind_DD',achar(9), &
             'Rain',achar(9), &
             'Snow',achar(9), &
             'T_surf_mod',achar(9), &
+            'SW_rad_cls',achar(9), &
+            'SW_rad_net',achar(9), &
+            'LW_rad_net',achar(9), &
+            'H_in',achar(9), &
+            'L_in',achar(9), &
             'W_surf_mod',achar(9), &
             'I_surf_mod',achar(9), &
             'S_surf_mod'
@@ -121,7 +128,7 @@
                     fr_hdv=traffic_data(N_he_index,ti,ro)/traffic_data(N_total_index,ti,ro)*100.
                     if (isnan(fr_hdv)) fr_hdv=0.
                     
-                    write(unit_out,'(i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3)') &
+                    write(unit_out,'(i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,ti)),achar(9), &
@@ -153,11 +160,18 @@
                         sum(M_road_data(sand_index,pm_200,ti,:,ro))*conversion,achar(9), &
                         f_q(road_index,ti,tr,ro),achar(9), &
                         meteo_data(T_a_index,ti,ro),achar(9), &
+                        meteo_data(T_dewpoint_index,ti,ro),achar(9), &
                         meteo_data(RH_index,ti,ro),achar(9), &
                         meteo_data(FF_index,ti,ro),achar(9), &
+                        meteo_data(DD_index,ti,ro),achar(9), &
                         meteo_data(Rain_precip_index,ti,ro),achar(9), &
                         meteo_data(Snow_precip_index,ti,ro),achar(9), &
                         road_meteo_data(T_s_index,ti,tr,ro),achar(9), &
+                        meteo_data(short_rad_in_clearsky_index,ti,ro),achar(9), &
+                        road_meteo_data(short_rad_net_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(long_rad_net_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(H_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(L_index,ti,tr,ro),achar(9), &
                         g_road_data(water_index,ti,tr,ro),achar(9), &
                         g_road_data(ice_index,ti,tr,ro),achar(9), &
                         g_road_data(snow_index,ti,tr,ro)
@@ -165,7 +179,7 @@
                 enddo
             endif
         enddo
-    
+
     if (ro_tot.eq.n_roads_total) close (unit_out)
     
     end subroutine NORTRIP_save_road_summary_data
