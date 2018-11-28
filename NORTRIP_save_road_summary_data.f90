@@ -56,7 +56,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12)') &
+        write(unit_out,'(a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12,a,a12)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -68,6 +68,7 @@
             'HDV(%)',achar(9), &
             'Studs(li%)',achar(9), &
             'Studs(he%)',achar(9), &
+            'Speed(li)',achar(9), &
             'NOX_E_tot',achar(9), &
             'PM10_E_tot',achar(9), &
             'PM25_E_tot',achar(9), &
@@ -128,7 +129,7 @@
                     fr_hdv=traffic_data(N_he_index,ti,ro)/traffic_data(N_total_index,ti,ro)*100.
                     if (isnan(fr_hdv)) fr_hdv=0.
                     
-                    write(unit_out,'(i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3)') &
+                    write(unit_out,'(i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,i12,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3,a,es12.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,ti)),achar(9), &
@@ -140,6 +141,7 @@
                         fr_hdv,achar(9), &
                         st_li,achar(9), &
                         st_he,achar(9), &
+                        traffic_data(V_li_index,ti,ro),achar(9), &
                         airquality_data(NOX_emis_index,ti,ro),achar(9), &
                         sum(E_road_data(total_dust_index,pm_10,E_total_index,ti,:,ro)),achar(9), &
                         sum(E_road_data(total_dust_index,pm_25,E_total_index,ti,:,ro)),achar(9), &
