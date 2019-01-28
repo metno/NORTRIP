@@ -172,8 +172,8 @@
                         meteo_data(short_rad_in_clearsky_index,ti,ro),achar(9), &
                         road_meteo_data(short_rad_net_index,ti,tr,ro),achar(9), &
                         road_meteo_data(long_rad_net_index,ti,tr,ro),achar(9), &
-                        road_meteo_data(H_index,ti,tr,ro),achar(9), &
-                        road_meteo_data(L_index,ti,tr,ro),achar(9), &
+                        -road_meteo_data(H_index,ti,tr,ro),achar(9), &
+                        -road_meteo_data(L_index,ti,tr,ro),achar(9), &
                         g_road_data(water_index,ti,tr,ro),achar(9), &
                         g_road_data(ice_index,ti,tr,ro),achar(9), &
                         g_road_data(snow_index,ti,tr,ro)

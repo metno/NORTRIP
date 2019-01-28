@@ -22,6 +22,7 @@
     !Set day fraction to the nearest second. Avoiding round off errors
     day_int=idint(date_num)
     day_fraction=(date_num-day_int)
+    !write(*,*) day_fraction
       
     !Determine hours, minutes and seconds
     date_array=0
@@ -523,7 +524,6 @@
     double precision date_to_number
 
     a=a_in
-    a(2)=2
     ref_year=2000
     b_start=0
     b_end=0
@@ -544,7 +544,11 @@
     summer_time_europe=.false.
     if (datenum.ge.datenum_start.and.datenum.lt.datenum_end) summer_time_europe=.true.
     
-    !write(*,*) b_start(3),b_end(3),summer_time_europe
+    !write(*,'(6i6)') a
+    !write(*,'(6i6)') b_start
+    !write(*,'(6i6)') b_end
+    !write(*,*) summer_time_europe
+    !write(*,*) datenum_start,datenum_end,datenum
    
     end function summer_time_europe
 !----------------------------------------------------------------------
