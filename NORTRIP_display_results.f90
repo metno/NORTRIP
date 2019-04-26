@@ -74,10 +74,10 @@
             sum_P(2)=sum(M_road_balance_data(tyre_index,x_load,P_wear_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(2)='Tyrewear'
             sum_P(3)=sum(M_road_balance_data(brake_index,x_load,P_wear_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(3)='Brakewear'
             sum_P(4)=sum(M_road_balance_data(exhaust_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(4)='Exhaust'
-            sum_P(5)=sum(M_road_balance_data(fugitive_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro));sum_P_text(5)='Fugitive'
-            sum_P(6)=sum(M_road_balance_data(sand_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro));sum_P_text(6)='Sand'
-            sum_P(7)=sum(M_road_balance_data(depo_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro));sum_P_text(7)='Depo'
-            sum_P(8)=sum(M_road_balance_data(road_index,x_load,P_abrasion_index,min_time_save:max_time_save,tr,ro));sum_P_text(8)='Abrasion'
+            sum_P(5)=sum(M_road_balance_data(fugitive_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(5)='Fugitive'
+            sum_P(6)=sum(M_road_balance_data(sand_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(6)='Sand'
+            sum_P(7)=sum(M_road_balance_data(depo_index,x_load,P_depo_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(7)='Depo'
+            sum_P(8)=sum(M_road_balance_data(road_index,x_load,P_abrasion_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(8)='Abrasion'
             sum_P(9)=sum(sum(M_road_balance_data(all_source_index,x_load,P_crushing_index,min_time_save:max_time_save,tr,ro),1))*b_factor;sum_P_text(9)='Crushing'
         
             sum_P(10)=sum(-M_road_balance_data(total_dust_index,x_load,S_suspension_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(10)='Suspens.'
@@ -138,13 +138,37 @@
             i=0;
             i=i+1;mean_traffic(i)=date_data(datenum_index,max_time_save)-date_data(datenum_index,min_time_save);mean_traffic_text(i)='Days'
             i=i+1;mean_traffic(i)=sum(traffic_data(N_total_index,min_time_save:max_time_save,ro))*mean_factor*24;mean_traffic_text(i)='ADT'
-            i=i+1;mean_traffic(i)=sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro))/sum(traffic_data(N_total_index,min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%_HE'
-            i=i+1;mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro)*traffic_data(N_v_index(li),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_LI'
-                if (sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro)).eq.0) mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro))*mean_factor      
-            i=i+1;mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro)*traffic_data(N_v_index(he),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_HE'
-                if (sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro)).eq.0) mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro))*mean_factor
-            i=i+1;mean_traffic(i)=sum(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%ST'
-            i=i+1;mean_traffic(i)=maxval(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro)/traffic_data(N_v_index(li),min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%ST_max'
+            i=i+1;
+            if (sum(traffic_data(N_total_index,min_time_save:max_time_save,ro)).eq.0) then
+                mean_traffic(i)=sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro))*mean_factor*100;mean_traffic_text(i)='%_HE'
+            else
+                mean_traffic(i)=sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro))/sum(traffic_data(N_total_index,min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%_HE'
+            endif                
+            i=i+1;
+            if (sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro)).eq.0) then
+                mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro))*mean_factor
+            else
+                mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro)*traffic_data(N_v_index(li),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_LI'
+            endif                
+            i=i+1;
+            if (sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro)).eq.0) then 
+                mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro))*mean_factor
+            else
+                mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro)*traffic_data(N_v_index(he),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_HE'
+            endif           
+            i=i+1;
+            if (sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro)).eq.0) then
+                mean_traffic(i)=sum(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro))*mean_factor*100;mean_traffic_text(i)='%ST'
+            else
+                mean_traffic(i)=sum(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%ST'
+            endif
+            i=i+1;
+            if (sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro)).eq.0) then
+                !This will not give the right answer but it should never call this either
+                mean_traffic(i)=maxval(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro))*mean_factor*100;mean_traffic_text(i)='%ST_max'
+            else
+                mean_traffic(i)=maxval(traffic_data(N_t_v_index(st,li),min_time_save:max_time_save,ro)/traffic_data(N_v_index(li),min_time_save:max_time_save,ro))*100;mean_traffic_text(i)='%ST_max'
+            endif           
             i=i+1;mean_traffic(i)=sum(M_road_balance_data(salt_index(1),pm_all,P_depo_index,min_time_save:max_time_save,tr,ro))*1e-3;mean_traffic_text(i)='S1(kg/km)'
             i=i+1;mean_traffic(i)=sum(M_road_balance_data(salt_index(2),pm_all,P_depo_index,min_time_save:max_time_save,tr,ro))*1e-3;mean_traffic_text(i)='S2(kg/km)'
 

@@ -109,6 +109,7 @@
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
         if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data
+        if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
         if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions_all

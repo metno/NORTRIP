@@ -34,6 +34,7 @@
     
     !Dimmension internal arrays without time dependence
     real :: M_road_bin_0_data(num_source,num_size)
+    real :: M_road_0_data(num_source,num_size)
     real :: P_wear(num_size)
     real :: E_wear(num_size)
     real :: V_temp
@@ -65,7 +66,10 @@
     real :: R_total(num_source,num_size)
     real :: drain_factor
     integer :: loop_index(3)
-
+    real :: h_eff_cleaning_temp(num_source,num_size)
+    real :: f_cleaning=500. !Hard coded parameter for the new cleaning
+    logical :: use_new_cleaning=.true.
+    
     !Allows salt that is dissolved to be suspended and sprayed
     integer :: use_dissolved_ratio
 
@@ -116,6 +120,7 @@
     !--------------------------------------------------------------------------
     !Set the 0 binned mass loading prior to the time step from unbinned mass
     !--------------------------------------------------------------------------
+    M_road_0_data(1:num_source,1:num_size)=M_road_data(1:num_source,1:num_size,max(min_time,ti-1),tr,ro)
     x=num_size
     M_road_bin_0_data(1:num_source,x)=M_road_data(1:num_source,x,max(min_time,ti-1),tr,ro)
     do x=1,num_size-1
@@ -243,13 +248,14 @@
                 do x2=x+1,num_size
                     do tr2=1,num_track
                         M_road_bin_balance_data(s,x2,P_crushing_index,ti_bin,tr2,ro_bin) &
-                            =M_road_bin_balance_data(s,x,S_crushing_index,ti_bin,tr,ro_bin) &
-                            *(1-f_0_dir(crushing_index)*f_q(s,ti,tr,ro))*f_PM_bin(crushing_index,x2,1)
+                            =M_road_bin_balance_data(s,x2,P_crushing_index,ti_bin,tr2,ro_bin) &
+                             +M_road_bin_balance_data(s,x,S_crushing_index,ti_bin,tr,ro_bin) &
+                             *(1-f_0_dir(crushing_index)*f_q(s,ti,tr,ro))*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x2:num_size,1))
                     enddo
                     E_road_bin_data(s,x2,E_direct_index,ti_bin,tr,ro_bin) &
                         =E_road_bin_data(s,x2,E_direct_index,ti_bin,tr,ro_bin) &
                         +M_road_bin_balance_data(s,x,S_crushing_index,ti_bin,tr,ro_bin) &
-                        *f_0_dir(crushing_index)*f_q(s,ti,tr,ro)*f_PM_bin(crushing_index,x2,1)
+                        *f_0_dir(crushing_index)*f_q(s,ti,tr,ro)*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x2:num_size,1))
                 enddo
                 enddo
             endif  
@@ -439,11 +445,21 @@
     !--------------------------------------------------------------------------
     if (activity_data(t_cleaning_index,ti,ro).gt.0) then
     do s=1,num_source
-        R_cleaning(s,1:num_size)=-log(1-min(0.99999,h_eff(cleaning_eff_index,s,1:num_size) &
+        !The new cleaning efficiency is based on the amount of PM_200 available. Converted to g/m2
+        if (use_new_cleaning) then
+            !For all size bins make the efficiency dependent on the pm_200 value
+            h_eff_cleaning_temp(s,1:num_size)=(1-exp(-max(M_road_0_data(s,pm_200)/1000./b_road(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,1:num_size)
+            !For the sand bin size the efficiency is specified based on the the sand mass, making it very efficient, determined by h_eff
+            h_eff_cleaning_temp(s,pm_all)=(1-exp(-max(M_road_0_data(s,pm_all)/1000./b_road(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,pm_all)
+        else
+            h_eff_cleaning_temp(s,1:num_size)=h_eff(cleaning_eff_index,s,1:num_size)
+        endif
+        R_cleaning(s,1:num_size)=-log(1-min(0.99999,h_eff_cleaning_temp(s,1:num_size) &
             *activity_data(t_cleaning_index,ti,ro)))/dt*use_cleaning_data_flag &
             *road_type_activity_flag(road_type_cleaning_index,ro)
 	    M_road_bin_balance_data(s,1:num_size,S_cleaning_index,ti_bin,tr,ro_bin)= &
             R_cleaning(s,1:num_size)*M_road_bin_0_data(s,1:num_size)      
+        !write(*,'(3i,6f)') ro_tot,ti,s,M_road_0_data(s,pm_200)/1000./b_road(ro),h_eff(cleaning_eff_index,s,pm_200),h_eff_cleaning_temp(s,pm_200),h_eff_cleaning_temp(s,pm_all),activity_data(t_cleaning_index,ti,ro),R_cleaning(s,pm_200)
     enddo
     endif
     !--------------------------------------------------------------------------

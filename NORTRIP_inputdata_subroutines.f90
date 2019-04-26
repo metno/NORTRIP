@@ -714,6 +714,9 @@ subroutine read_NORTRIP_inputdata
     if (file_available(activity_file_type)) then
         call process_NORTRIP_activity_inputdata
     endif
+
+
+
     
     end subroutine read_NORTRIP_inputdata
 !----------------------------------------------------------------------
@@ -796,7 +799,8 @@ subroutine read_NORTRIP_inputdata
     endif
 
     !Save emissions, initi data, summary road meteo and summary emission and mass data for uEMEP calculation type
-    if (trim(calculation_type).eq.'uEMEP') then
+    !if (trim(calculation_type).eq.'uEMEP') then
+    if (index(calculation_type,'uEMEP').gt.0) then
         if (unit_logfile.gt.0) write(*,'(A)') 'Saving uEMEP emission and initial files'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.true.
@@ -804,6 +808,7 @@ subroutine read_NORTRIP_inputdata
         NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
         NORTRIP_save_road_summary_data_flag=.true.
+        NORTRIP_save_road_emission_activity_data_flag=.true.
         use_ospm_flag=0
     endif
 

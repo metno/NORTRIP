@@ -666,74 +666,135 @@
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Salting (salt1+salt2)'
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
-    salting_hour(1)=match_string_val('salting_hour(1)',unit_in,unit_logfile_temp,0.0)
-    salting_hour(2)=match_string_val('salting_hour(2)',unit_in,unit_logfile_temp,0.0)                                                          
-    delay_salting_day=match_string_val('delay_salting_day',unit_in,unit_logfile_temp,0.0)                                                           
-    check_salting_day=match_string_val('check_salting_day',unit_in,unit_logfile_temp,0.0)                                                          
-    min_temp_salt=match_string_val('min_temp_salt',unit_in,unit_logfile_temp,0.0)                                                            
-    max_temp_salt=match_string_val('max_temp_salt',unit_in,unit_logfile_temp,0.0)                                                             
-    precip_rule_salt=match_string_val('precip_rule_salt',unit_in,unit_logfile_temp,0.0)                                                         
-    RH_rule_salt=match_string_val('RH_rule_salt',unit_in,unit_logfile_temp,0.0)                                                            
-    g_salting_rule=match_string_val('g_salting_rule',unit_in,unit_logfile_temp,0.0)                                                        
-    salt_mass=match_string_val('salt_mass',unit_in,unit_logfile_temp,0.0)                                                        
-    salt_dilution=match_string_val('salt_dilution',unit_in,unit_logfile_temp,0.0)                                     
-    salt_type_distribution=match_string_val('salt_type_distribution',unit_in,unit_logfile_temp,1.0)               
+    salting_hour_ref(1)=match_string_val('salting_hour(1)',unit_in,unit_logfile_temp,0.0)
+    salting_hour_ref(2)=match_string_val('salting_hour(2)',unit_in,unit_logfile_temp,0.0)                                                          
+    delay_salting_day_ref=match_string_val('delay_salting_day',unit_in,unit_logfile_temp,0.0)                                                           
+    check_salting_day_ref=match_string_val('check_salting_day',unit_in,unit_logfile_temp,0.0)                                                          
+    min_temp_salt_ref=match_string_val('min_temp_salt',unit_in,unit_logfile_temp,0.0)                                                            
+    max_temp_salt_ref=match_string_val('max_temp_salt',unit_in,unit_logfile_temp,0.0)                                                             
+    precip_rule_salt_ref=match_string_val('precip_rule_salt',unit_in,unit_logfile_temp,0.0)                                                         
+    RH_rule_salt_ref=match_string_val('RH_rule_salt',unit_in,unit_logfile_temp,0.0)                                                            
+    g_salting_rule_ref=match_string_val('g_salting_rule',unit_in,unit_logfile_temp,0.0)                                                        
+    salt_mass_ref=match_string_val('salt_mass',unit_in,unit_logfile_temp,0.0)                                                        
+    salt_dilution_ref=match_string_val('salt_dilution',unit_in,unit_logfile_temp,0.0)                                     
+    salt_type_distribution_ref=match_string_val('salt_type_distribution',unit_in,unit_logfile_temp,1.0)               
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Sanding'
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
-    sanding_hour(1)=match_string_val('sanding_hour(1)',unit_in,unit_logfile_temp,0.0)                                                           
-    sanding_hour(2)=match_string_val('sanding_hour(2)',unit_in,unit_logfile_temp,0.0)                                                            
-    delay_sanding_day=match_string_val('delay_sanding_day',unit_in,unit_logfile_temp,0.0)                                                          
-    check_sanding_day=match_string_val('check_sanding_day',unit_in,unit_logfile_temp,0.0)                                                         
-    min_temp_sand=match_string_val('min_temp_sand',unit_in,unit_logfile_temp,0.0)                                                            
-    max_temp_sand=match_string_val('max_temp_sand',unit_in,unit_logfile_temp,0.0)                                                          
-    precip_rule_sand=match_string_val('precip_rule_sand',unit_in,unit_logfile_temp,0.0)                                                        
-    RH_rule_sand=match_string_val('RH_rule_sand',unit_in,unit_logfile_temp,0.0)                                                           
-    g_sanding_rule=match_string_val('g_sanding_rule',unit_in,unit_logfile_temp,0.0)                                                           
-    sand_mass=match_string_val('sand_mass',unit_in,unit_logfile_temp,0.0)                                                          
-    sand_dilution=match_string_val('sand_dilution',unit_in,unit_logfile_temp,0.0)                                    
+    sanding_hour_ref(1)=match_string_val('sanding_hour(1)',unit_in,unit_logfile_temp,0.0)                                                           
+    sanding_hour_ref(2)=match_string_val('sanding_hour(2)',unit_in,unit_logfile_temp,0.0)                                                            
+    delay_sanding_day_ref=match_string_val('delay_sanding_day',unit_in,unit_logfile_temp,0.0)                                                          
+    check_sanding_day_ref=match_string_val('check_sanding_day',unit_in,unit_logfile_temp,0.0)                                                         
+    min_temp_sand_ref=match_string_val('min_temp_sand',unit_in,unit_logfile_temp,0.0)                                                            
+    max_temp_sand_ref=match_string_val('max_temp_sand',unit_in,unit_logfile_temp,0.0)                                                          
+    precip_rule_sand_ref=match_string_val('precip_rule_sand',unit_in,unit_logfile_temp,0.0)                                                        
+    RH_rule_sand_ref=match_string_val('RH_rule_sand',unit_in,unit_logfile_temp,0.0)                                                           
+    g_sanding_rule_ref=match_string_val('g_sanding_rule',unit_in,unit_logfile_temp,0.0)                                                           
+    sand_mass_ref=match_string_val('sand_mass',unit_in,unit_logfile_temp,0.0)                                                          
+    sand_dilution_ref=match_string_val('sand_dilution',unit_in,unit_logfile_temp,0.0)                                    
  	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Snow ploughing'
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
-    delay_ploughing_hour=match_string_val('delay_ploughing_hour',unit_in,unit_logfile_temp,0.0)  
-    ploughing_thresh_2=match_string_val('ploughing_thresh',unit_in,unit_logfile_temp,0.0)
-    if (ploughing_thresh_2.gt.0) then
-        ploughing_thresh(snow_index)=ploughing_thresh_2
-        ploughing_thresh(ice_index)=ploughing_thresh_2
+    delay_ploughing_hour_ref=match_string_val('delay_ploughing_hour',unit_in,unit_logfile_temp,0.0)  
+    ploughing_thresh_2_ref=match_string_val('ploughing_thresh',unit_in,unit_logfile_temp,0.0)
+    if (ploughing_thresh_2_ref.gt.0) then
+        ploughing_thresh(snow_index)=ploughing_thresh_2_ref
+        ploughing_thresh(ice_index)=ploughing_thresh_2_ref
     endif
  	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Cleaning'
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
-    delay_cleaning_hour=match_string_val('delay_cleaning_hour',unit_in,unit_logfile_temp,0.0)                                                            
-    min_temp_cleaning=match_string_val('min_temp_cleaning',unit_in,unit_logfile_temp,0.0)                                                            
-    clean_with_salting=match_string_int('clean_with_salting',unit_in,unit_logfile_temp,0)                                                                
-    start_month_cleaning=match_string_val('start_month_cleaning',unit_in,unit_logfile_temp,0.0)                                                       
-    end_month_cleaning=match_string_val('end_month_cleaning',unit_in,unit_logfile_temp,0.0)                                                        
-    wetting_with_cleaning=match_string_val('wetting_with_cleaning',unit_in,unit_logfile_temp,0.0)                                                          
-    efficiency_of_cleaning=match_string_val('efficiency_of_cleaning',unit_in,unit_logfile_temp,0.0)                                                          
+    cleaning_hour_ref(1)=match_string_val('cleaning_hour(1)',unit_in,unit_logfile_temp,cleaning_hour_ref(1))
+    cleaning_hour_ref(2)=match_string_val('cleaning_hour(2)',unit_in,unit_logfile_temp,cleaning_hour_ref(2))                                                          
+    delay_cleaning_hour_ref=match_string_val('delay_cleaning_hour',unit_in,unit_logfile_temp,0.0)                                                            
+    delay_cleaning_day_ref=match_string_val('delay_cleaning_day',unit_in,unit_logfile_temp,0.0)
+    !If no day value is read then use the hour value. Otherwise the rest is in days
+    if (delay_cleaning_day_ref.eq.0.0) delay_cleaning_day_ref=delay_cleaning_hour_ref/24.
+    min_temp_cleaning_ref=match_string_val('min_temp_cleaning',unit_in,unit_logfile_temp,0.0)
+    clean_with_salting_ref=match_string_int('clean_with_salting',unit_in,unit_logfile_temp,0)                                                                
+    start_month_cleaning_ref=match_string_val('start_month_cleaning',unit_in,unit_logfile_temp,0.0)                                                       
+    end_month_cleaning_ref=match_string_val('end_month_cleaning',unit_in,unit_logfile_temp,0.0)                                                        
+    wetting_with_cleaning_ref=match_string_val('wetting_with_cleaning',unit_in,unit_logfile_temp,0.0)                                                          
+    efficiency_of_cleaning_ref=match_string_val('efficiency_of_cleaning',unit_in,unit_logfile_temp,0.0)                                                          
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Binding (salt2)'
 	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
-    binding_hour(1)=match_string_val('binding_hour(1)',unit_in,unit_logfile_temp,0.0)
-    binding_hour(2)=match_string_val('binding_hour(2)',unit_in,unit_logfile_temp,0.0)                                                          
-    delay_binding_day=match_string_val('delay_binding_day',unit_in,unit_logfile_temp,0.0)                                                           
-    check_binding_day=match_string_val('check_binding_day',unit_in,unit_logfile_temp,0.0)                                                          
-    min_temp_binding=match_string_val('min_temp_binding',unit_in,unit_logfile_temp,0.0)                                                            
-    max_temp_binding=match_string_val('max_temp_binding',unit_in,unit_logfile_temp,0.0)                                                             
-    precip_rule_binding=match_string_val('precip_rule_binding',unit_in,unit_logfile_temp,0.0)                                                         
-    RH_rule_binding=match_string_val('RH_rule_binding',unit_in,unit_logfile_temp,0.0)                                                            
-    g_binding_rule=match_string_val('g_binding_rule',unit_in,unit_logfile_temp,0.0)                                                        
-    binding_mass=match_string_val('binding_mass',unit_in,unit_logfile_temp,0.0)                                                        
-    binding_dilution=match_string_val('binding_dilution',unit_in,unit_logfile_temp,0.0)                                     
-    start_month_binding=match_string_val('start_month_binding',unit_in,unit_logfile_temp,0.0)                                                       
-    end_month_binding=match_string_val('end_month_binding',unit_in,unit_logfile_temp,0.0)                                                        
+    binding_hour_ref(1)=match_string_val('binding_hour(1)',unit_in,unit_logfile_temp,0.0)
+    binding_hour_ref(2)=match_string_val('binding_hour(2)',unit_in,unit_logfile_temp,0.0)                                                          
+    delay_binding_day_ref=match_string_val('delay_binding_day',unit_in,unit_logfile_temp,0.0)                                                           
+    check_binding_day_ref=match_string_val('check_binding_day',unit_in,unit_logfile_temp,0.0)                                                          
+    min_temp_binding_ref=match_string_val('min_temp_binding',unit_in,unit_logfile_temp,0.0)                                                            
+    max_temp_binding_ref=match_string_val('max_temp_binding',unit_in,unit_logfile_temp,0.0)                                                             
+    precip_rule_binding_ref=match_string_val('precip_rule_binding',unit_in,unit_logfile_temp,0.0)                                                         
+    RH_rule_binding_ref=match_string_val('RH_rule_binding',unit_in,unit_logfile_temp,0.0)                                                            
+    g_binding_rule_ref=match_string_val('g_binding_rule',unit_in,unit_logfile_temp,0.0)                                                        
+    binding_mass_ref=match_string_val('binding_mass',unit_in,unit_logfile_temp,0.0)                                                        
+    binding_dilution_ref=match_string_val('binding_dilution',unit_in,unit_logfile_temp,0.0)                                     
+    start_month_binding_ref=match_string_val('start_month_binding',unit_in,unit_logfile_temp,0.0)                                                       
+    end_month_binding_ref=match_string_val('end_month_binding',unit_in,unit_logfile_temp,0.0)                                                        
   
     !if (unit_logfile.gt.0) then
     !    close(unit_logfile,status='keep')
     !endif
     
 10	close(unit_in,status='keep')
-     
+    
+    !Transfer the ref values to the read-in multiple road values if the multiple road values are 'nodata_activity'
+    !Only checks the first road value
+    if (salting_hour(1,1).eq.nodata_activity) salting_hour(1,:)=salting_hour_ref(1)
+    if (salting_hour(2,1).eq.nodata_activity) salting_hour(2,:)=salting_hour_ref(2)
+    if (delay_salting_day(1).eq.nodata_activity) delay_salting_day(:)=delay_salting_day_ref
+    if (check_salting_day(1).eq.nodata_activity) check_salting_day(:)=check_salting_day_ref
+    if (min_temp_salt(1).eq.nodata_activity) min_temp_salt(:)=min_temp_salt_ref 
+    if (max_temp_salt(1).eq.nodata_activity) max_temp_salt(:)=max_temp_salt_ref
+    if (precip_rule_salt(1).eq.nodata_activity) precip_rule_salt(:)=precip_rule_salt_ref
+    if (RH_rule_salt(1).eq.nodata_activity) RH_rule_salt(:)=RH_rule_salt_ref 
+    if (g_salting_rule(1).eq.nodata_activity) g_salting_rule(:)=g_salting_rule_ref
+    if (salt_mass(1).eq.nodata_activity) salt_mass(:)=salt_mass_ref 
+    if (salt_dilution(1).eq.nodata_activity) salt_dilution(:)=salt_dilution_ref 
+    if (salt_type_distribution(1).eq.nodata_activity) salt_type_distribution(:)=salt_type_distribution_ref 
+    
+    if (sanding_hour(1,1).eq.nodata_activity) sanding_hour(1,:)=sanding_hour_ref(1)
+    if (sanding_hour(2,1).eq.nodata_activity) sanding_hour(2,:)=sanding_hour_ref(2)
+    if (delay_sanding_day(1).eq.nodata_activity) delay_sanding_day(:)=delay_sanding_day_ref 
+    if (check_sanding_day(1).eq.nodata_activity) check_sanding_day(:)=check_sanding_day_ref
+    if (min_temp_sand(1).eq.nodata_activity) min_temp_sand(:)=min_temp_sand_ref 
+    if (max_temp_sand(1).eq.nodata_activity) max_temp_sand(:)=max_temp_sand_ref
+    if (precip_rule_sand(1).eq.nodata_activity) precip_rule_sand(:)=precip_rule_sand_ref
+    if (RH_rule_sand(1).eq.nodata_activity) RH_rule_sand(:)=RH_rule_sand_ref 
+    if (g_sanding_rule(1).eq.nodata_activity) g_sanding_rule(:)=g_sanding_rule_ref 
+    if (sand_mass(1).eq.nodata_activity) sand_mass(:)=sand_mass_ref 
+    if (sand_dilution(1).eq.nodata_activity) sand_dilution(:)=sand_dilution_ref
+    
+    if (delay_ploughing_hour(1).eq.nodata_activity) delay_ploughing_hour(:)=delay_ploughing_hour_ref
+    if (ploughing_thresh_2(1).eq.nodata_activity) ploughing_thresh_2(:)=ploughing_thresh_2_ref
+
+    if (cleaning_hour(1,1).eq.nodata_activity) cleaning_hour(1,:)=cleaning_hour_ref(1)
+    if (cleaning_hour(2,1).eq.nodata_activity) cleaning_hour(2,:)=cleaning_hour_ref(2)
+    if (delay_cleaning_day(1).eq.nodata_activity) delay_cleaning_day(:)=delay_cleaning_day_ref
+    if (min_temp_cleaning(1).eq.nodata_activity) min_temp_cleaning(:)=min_temp_cleaning_ref
+    if (clean_with_salting(1).eq.nodata_activity) clean_with_salting(:)=clean_with_salting_ref
+    if (start_month_cleaning(1).eq.nodata_activity) start_month_cleaning(:)=start_month_cleaning_ref
+    if (end_month_cleaning(1).eq.nodata_activity) end_month_cleaning(:)=end_month_cleaning_ref
+    if (wetting_with_cleaning(1).eq.nodata_activity) wetting_with_cleaning(:)=wetting_with_cleaning_ref
+    if (efficiency_of_cleaning(1).eq.nodata_activity) efficiency_of_cleaning(:)=efficiency_of_cleaning_ref
+
+    if (binding_hour(1,1).eq.nodata_activity) binding_hour(1,:)=binding_hour_ref(1)
+    if (binding_hour(2,1).eq.nodata_activity) binding_hour(2,:)=binding_hour_ref(2)
+    if (delay_binding_day(1).eq.nodata_activity) delay_binding_day(:)=delay_binding_day_ref
+    if (check_binding_day(1).eq.nodata_activity) check_binding_day(:)=check_binding_day_ref
+    if (min_temp_binding(1).eq.nodata_activity) min_temp_binding(:)=min_temp_binding_ref
+    if (max_temp_binding(1).eq.nodata_activity) max_temp_binding(:)=max_temp_binding_ref
+    if (precip_rule_binding(1).eq.nodata_activity) precip_rule_binding(:)=precip_rule_binding_ref
+    if (RH_rule_binding(1).eq.nodata_activity) RH_rule_binding(:)=RH_rule_binding_ref
+    if (g_binding_rule(1).eq.nodata_activity) g_binding_rule(:)=g_binding_rule_ref
+    if (binding_mass(1).eq.nodata_activity) binding_mass(:)=binding_mass_ref
+    if (binding_dilution(1).eq.nodata_activity) binding_dilution(:)=binding_dilution_ref
+    if (start_month_binding(1).eq.nodata_activity) start_month_binding(:)=start_month_binding_ref
+    if (end_month_binding(1).eq.nodata_activity) end_month_binding(:)=end_month_binding_ref
+    
+
+
 end subroutine read_NORTRIP_activities
 !----------------------------------------------------------------------
 

@@ -67,7 +67,6 @@
         y_road(:,0)=y_road(:,ro_tot)
         length_road(0)=length_road(ro_tot)
         line_or_grid_data_flag(0)=line_or_grid_data_flag(ro_tot)
-        !adt_road(0)=
 
         M_road_init(:,:,:,0)=M_road_init(:,:,:,ro_tot)
         g_road_init(:,:,0)=g_road_init(:,:,ro_tot)
@@ -77,6 +76,57 @@
         az_skyview(:,0)=az_skyview(:,ro_tot)
         zen_skyview(:,0)=zen_skyview(:,ro_tot)
                
+        
+        salting_hour(:,0)=salting_hour(:,ro_tot)
+        !salting_hour(1,0)=salting_hour(1,ro_tot)
+        !salting_hour(2,0)=salting_hour(2,ro_tot)
+        delay_salting_day(0)=delay_salting_day(ro_tot)
+        check_salting_day(0)=check_salting_day(ro_tot)
+        min_temp_salt(0)=min_temp_salt(ro_tot)
+        max_temp_salt(0)=max_temp_salt(ro_tot)
+        precip_rule_salt(0)=precip_rule_salt(ro_tot)
+        RH_rule_salt(0)=RH_rule_salt(ro_tot)
+        g_salting_rule(0)=g_salting_rule(ro_tot)
+        salt_mass(0)=salt_mass(ro_tot)
+        salt_dilution(0)=salt_dilution(ro_tot) 
+        salt_type_distribution(0)=salt_type_distribution (ro_tot)
+    
+        sanding_hour(:,0)=sanding_hour(:,ro_tot)
+        delay_sanding_day(0)=delay_sanding_day(ro_tot) 
+        check_sanding_day(0)=check_sanding_day(ro_tot)
+        min_temp_sand(0)=min_temp_sand(ro_tot)
+        max_temp_sand(0)=max_temp_sand(ro_tot)
+        precip_rule_sand(0)=precip_rule_sand(ro_tot)
+        RH_rule_sand(0)=RH_rule_sand(ro_tot) 
+        g_sanding_rule(0)=g_sanding_rule(ro_tot) 
+        sand_mass(0)=sand_mass(ro_tot) 
+        sand_dilution(0)=sand_dilution(ro_tot)
+    
+        delay_ploughing_hour(0)=delay_ploughing_hour(ro_tot)
+        ploughing_thresh_2(0)=ploughing_thresh_2(ro_tot) 
+
+        cleaning_hour(:,0)=cleaning_hour(:,ro_tot)
+        delay_cleaning_day(0)=delay_cleaning_day(ro_tot)
+        min_temp_cleaning(0)=min_temp_cleaning(ro_tot)
+        clean_with_salting(0)=clean_with_salting(ro_tot)
+        start_month_cleaning(0)=start_month_cleaning(ro_tot)
+        end_month_cleaning(0)=end_month_cleaning(ro_tot)
+        wetting_with_cleaning(0)=wetting_with_cleaning(ro_tot)
+        efficiency_of_cleaning(0)=efficiency_of_cleaning(ro_tot)
+
+        binding_hour(:,0)=binding_hour(:,ro_tot)
+        delay_binding_day(0)=delay_binding_day(ro_tot)
+        check_binding_day(0)=check_binding_day(ro_tot)
+        min_temp_binding(0)=min_temp_binding(ro_tot)
+        max_temp_binding(0)=max_temp_binding(ro_tot)
+        precip_rule_binding(0)=precip_rule_binding(ro_tot)
+        RH_rule_binding(0)=RH_rule_binding(ro_tot)
+        g_binding_rule(0)=g_binding_rule(ro_tot)
+        binding_mass(0)=binding_mass(ro_tot)
+        binding_dilution(0)=binding_dilution(ro_tot)
+        start_month_binding(0)=start_month_binding(ro_tot)
+        end_month_binding(0)=end_month_binding(ro_tot)
+
     !Initialise all arrays to 0
     !M_road_data=0.0
     !M_road_bin_data=0.0

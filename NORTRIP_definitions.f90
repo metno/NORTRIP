@@ -247,6 +247,7 @@
     logical :: use_single_road_loop_flag=.true.
     integer :: operating_system=1
     
+    real :: nodata_activity=-999.
     real :: nodata=-999.
     real :: nodata_input=-999.
     real :: nodata_orig=-999.
@@ -307,6 +308,7 @@
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
+    logical :: NORTRIP_save_road_emission_activity_data_flag=.false.
 
 !Declare unit numbers for saving and writing data
 !-----------------------------------------------------------------------
@@ -318,6 +320,7 @@
     integer :: unit_save_road_emission_and_mass_data=71
     integer :: unit_save_road_emission_and_mass_data_stats=72
     integer :: unit_save_road_summary_data=73
+    integer :: unit_save_road_activity_data=74
     integer :: unit_save_all_data=75
     integer :: unit_read_NORTRIP_inputdata=10
     integer :: unit_read_NORTRIP_parameters=11
@@ -436,55 +439,109 @@
     
 
     !Auto activity data
-    real :: salting_hour(2)
-    data salting_hour /5.0,20.0/
-    real :: delay_salting_day=0.20 !        	(day)
-    real :: check_salting_day=0.50 !       	(day)
-    real :: min_temp_salt=-6.00 !      	(C)
-    real :: max_temp_salt=0.00 !       	(C)
-    real :: precip_rule_salt=0.10 !       	(mm/hr)
-    real :: RH_rule_salt=90.00 !      	(!)
-    real :: g_salting_rule=0.25 !       	(mm)
-    real :: salt_mass=3.00 !       	(g/m2)
-    real :: salt_dilution=0.20 !       	(g_water/(g_water+g_salt))
-    real :: salt_type_distribution=1.00 !       	M(salt)=M(NaCl)*salt_type+M(MgCl2)*(1-salt_type)
+    real :: salting_hour_ref(2)
+    data salting_hour_ref /5.0,20.0/
+    real :: delay_salting_day_ref=0.20 !        	(day)
+    real :: check_salting_day_ref=0.50 !       	(day)
+    real :: min_temp_salt_ref=-6.00 !      	(C)
+    real :: max_temp_salt_ref=0.00 !       	(C)
+    real :: precip_rule_salt_ref=0.10 !       	(mm/hr)
+    real :: RH_rule_salt_ref=90.00 !      	(!)
+    real :: g_salting_rule_ref=0.25 !       	(mm)
+    real :: salt_mass_ref=3.00 !       	(g/m2)
+    real :: salt_dilution_ref=0.20 !       	(g_water/(g_water+g_salt))
+    real :: salt_type_distribution_ref=1.00 !       	M(salt)=M(NaCl)*salt_type+M(MgCl2)*(1-salt_type)
     
-    real :: sanding_hour(2)
-    data sanding_hour /5.0, 5.0/
-    real :: delay_sanding_day=0.90 !       	(day)
-    real :: check_sanding_day=0.50 !       	(day)
-    real :: min_temp_sand=-12.00 !     	(C)
-    real :: max_temp_sand=-4.00  !     	(C)                    
-    real :: precip_rule_sand=0.10 !       	(mm/hr)
-    real :: RH_rule_sand=95.00  !     	(%)
-    real :: g_sanding_rule=0.10 !       	(mm)
-    real :: sand_mass=250.00 !     	(g/m2)
-    real :: sand_dilution=0.00 !       	(g_water/(g_water+g_sand))
+    real :: sanding_hour_ref(2)
+    data sanding_hour_ref /5.0, 5.0/
+    real :: delay_sanding_day_ref=0.90 !       	(day)
+    real :: check_sanding_day_ref=0.50 !       	(day)
+    real :: min_temp_sand_ref=-12.00 !     	(C)
+    real :: max_temp_sand_ref=-4.00  !     	(C)                    
+    real :: precip_rule_sand_ref=0.10 !       	(mm/hr)
+    real :: RH_rule_sand_ref=95.00  !     	(%)
+    real :: g_sanding_rule_ref=0.10 !       	(mm)
+    real :: sand_mass_ref=250.00 !     	(g/m2)
+    real :: sand_dilution_ref=0.00 !       	(g_water/(g_water+g_sand))
     
-    real :: delay_ploughing_hour=3.00 !       	(hr)
-    real :: ploughing_thresh_2=3.00 !       	(mm.w.e.)
-    real :: delay_cleaning_hour=72.00 !      	(hr)
-    real :: min_temp_cleaning=0.00 !       	(C)
-    integer :: clean_with_salting=0 !       	                                                                
-    real :: start_month_cleaning=2.00 !       	(MM_num)
-    real :: end_month_cleaning=3.00 !       	(MM_num)
-    real :: wetting_with_cleaning=0.10 !       	(mm)
-    real :: efficiency_of_cleaning=1.0
+    real :: delay_ploughing_hour_ref=3.00 !       	(hr)
+    real :: ploughing_thresh_2_ref=3.00 !       	(mm.w.e.)
 
-    real :: binding_hour(2)
-    data binding_hour /5.0,20.0/
-    real :: delay_binding_day=0.20 !        	(day)
-    real :: check_binding_day=0.50 !       	(day)
-    real :: min_temp_binding=-6.00 !      	(C)
-    real :: max_temp_binding=0.00 !       	(C)
-    real :: precip_rule_binding=0.10 !       	(mm/hr)
-    real :: RH_rule_binding=50.00 !      	(!)
-    real :: g_binding_rule=0.25 !       	(mm)
-    real :: binding_mass=3.00 !       	(g/m2)
-    real :: binding_dilution=0.20 !       	(g_water/(g_water+g_salt))
-    real :: start_month_binding=2.00 !       	(MM_num)
-    real :: end_month_binding=3.00 !       	(MM_num)
+    real :: cleaning_hour_ref(2)
+    data cleaning_hour_ref /5.0,20.0/
+    real :: delay_cleaning_hour_ref=72.00 !      	(hr)
+    real :: delay_cleaning_day_ref=3.00 !      	(day)
+    real :: min_temp_cleaning_ref=0.00 !       	(C)
+    integer :: clean_with_salting_ref=0 !       	                                                                
+    real :: start_month_cleaning_ref=2.00 !       	(MM_num)
+    real :: end_month_cleaning_ref=3.00 !       	(MM_num)
+    real :: wetting_with_cleaning_ref=0.10 !       	(mm)
+    real :: efficiency_of_cleaning_ref=1.0
 
+    real :: binding_hour_ref(2)
+    data binding_hour_ref /5.0,20.0/
+    real :: delay_binding_day_ref=0.20 !        	(day)
+    real :: check_binding_day_ref=0.50 !       	(day)
+    real :: min_temp_binding_ref=-6.00 !      	(C)
+    real :: max_temp_binding_ref=0.00 !       	(C)
+    real :: precip_rule_binding_ref=0.10 !       	(mm/hr)
+    real :: RH_rule_binding_ref=50.00 !      	(!)
+    real :: g_binding_rule_ref=0.25 !       	(mm)
+    real :: binding_mass_ref=3.00 !       	(g/m2)
+    real :: binding_dilution_ref=0.20 !       	(g_water/(g_water+g_salt))
+    real :: start_month_binding_ref=2.00 !       	(MM_num)
+    real :: end_month_binding_ref=3.00 !       	(MM_num)
+
+    real, allocatable :: salting_hour(:,:)
+    real, allocatable :: delay_salting_day(:)
+    real, allocatable :: check_salting_day(:)
+    real, allocatable :: min_temp_salt(:) 
+    real, allocatable :: max_temp_salt(:)
+    real, allocatable :: precip_rule_salt(:)
+    real, allocatable :: RH_rule_salt(:) 
+    real, allocatable :: g_salting_rule(:)
+    real, allocatable :: salt_mass(:) 
+    real, allocatable :: salt_dilution(:) 
+    real, allocatable :: salt_type_distribution(:) 
+    
+    real, allocatable :: sanding_hour(:,:)
+    real, allocatable :: delay_sanding_day(:) 
+    real, allocatable :: check_sanding_day(:)
+    real, allocatable :: min_temp_sand(:) 
+    real, allocatable :: max_temp_sand(:)
+    real, allocatable :: precip_rule_sand(:)
+    real, allocatable :: RH_rule_sand(:) 
+    real, allocatable :: g_sanding_rule(:) 
+    real, allocatable :: sand_mass(:) 
+    real, allocatable :: sand_dilution(:)
+    
+    real, allocatable :: delay_ploughing_hour(:)
+    real, allocatable :: ploughing_thresh_2(:) 
+ 
+    real, allocatable :: cleaning_hour(:,:)
+    real, allocatable :: delay_cleaning_day(:)
+    real, allocatable :: min_temp_cleaning(:)
+    integer, allocatable :: clean_with_salting(:)
+    real, allocatable :: start_month_cleaning(:)
+    real, allocatable :: end_month_cleaning(:)
+    real, allocatable :: wetting_with_cleaning(:)
+    real, allocatable :: efficiency_of_cleaning(:)
+
+    real, allocatable :: binding_hour(:,:)
+    real, allocatable :: delay_binding_day(:)
+    real, allocatable :: check_binding_day(:)
+    real, allocatable :: min_temp_binding(:)
+    real, allocatable :: max_temp_binding(:)
+    real, allocatable :: precip_rule_binding(:)
+    real, allocatable :: RH_rule_binding(:)
+    real, allocatable :: g_binding_rule(:)
+    real, allocatable :: binding_mass(:)
+    real, allocatable :: binding_dilution(:)
+    real, allocatable :: start_month_binding(:)
+    real, allocatable :: end_month_binding(:)
+    
+    logical :: read_auto_activity_data=.false.
+    
 !Road metadata variables
     
     
