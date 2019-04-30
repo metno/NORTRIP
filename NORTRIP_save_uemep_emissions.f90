@@ -266,21 +266,21 @@
 
     if (index(calculation_type,'uEMEP_sand_salt').gt.0) then
         !With sand and salt
-        n_x_save=8
-        save_size(5)=pm_10;save_size(6)=pm_25;save_size(7)=pm_10;save_size(8)=pm_25
-        save_str(5)='PM10_sand';save_str(6)='PM25_sand';save_str(7)='PM10_salt';save_str(8)='PM25_salt'
-        save_source(5)=sand_index;save_source(6)=sand_index;save_source(7)=salt_index(na);save_source(8)=salt_index(na)
+        n_x_save=6
+        save_size(5)=pm_10;save_size(6)=pm_10;save_size(7)=pm_25;save_size(8)=pm_25
+        save_str(5)='PM10_sand';save_str(6)='PM10_salt';save_str(7)='PM25_sand';save_str(8)='PM25_salt'
+        save_source(5)=sand_index;save_source(6)=salt_index(na);save_source(7)=sand_index;save_source(8)=salt_index(na)
         file_str='all_sand_salt'
     elseif (index(calculation_type,'uEMEP_sand').gt.0) then
         !With sand
-        n_x_save=6
+        n_x_save=5
         save_size(5)=pm_10;save_size(6)=pm_25;
         save_str(5)='PM10_sand';save_str(6)='PM25_sand';
         save_source(5)=sand_index;save_source(6)=sand_index;
         file_str='all_sand'
     elseif (index(calculation_type,'uEMEP_salt').gt.0) then
         !With salt
-        n_x_save=6
+        n_x_save=5
         save_size(5)=pm_10;save_size(6)=pm_25;
         save_str(5)='PM10_salt';save_str(6)='PM25_salt'
         save_source(5)=salt_index(na);save_source(6)=salt_index(na)
