@@ -433,6 +433,7 @@
     integer :: plot_type_flag=2   
     integer :: save_type_flag=1   
     integer :: use_ospm_flag=0   
+    integer :: activity_in_tunnels_flag=0
     
     !Also used for scaling so set to real
     real use_salting_data_flag(2)

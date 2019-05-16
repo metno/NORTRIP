@@ -231,6 +231,12 @@
             g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)        
         endif
 
+        !if (efficiency_of_cleaning(ro).gt.0) then
+        !    write(*,'(3i,4f12.2,2f12.2)') ti,ro_tot,road_ID(ro),efficiency_of_cleaning(ro),time_since_last_cleaning(ro),delay_cleaning_day(ro),traffic_data(N_total_index,ti,ro),start_month_cleaning(ro),end_month_cleaning(ro)
+        !    time_since_last_cleaning(ro)=100
+            !delay_cleaning_day(ro)=2.5
+        !endif
+
         if (clean_with_salting(ro).gt.0) then
             if (sum(activity_data(M_salting_index(1:num_salt),ti,ro)).gt.0) then
                 cleaning_allowed=1
@@ -265,6 +271,9 @@
             if (show_events) then
                 write(unit_logfile,'(a24,a24,f8.4,a12)') 'Auto cleaning:',trim(date_str(3,ti)),efficiency_of_cleaning(ro),' efficiency'
             endif
+            
+            !write(*,'(a,i,2f12.2)') 'Cleaned: ',date_data(hour_index,ti),cleaning_hour(1,ro),cleaning_hour(2,ro)
+        
         else
             activity_data(t_cleaning_index,ti,ro)=t_cleaning_0
             time_since_last_cleaning(ro)=time_since_last_cleaning(ro)+dt/24. !In days
@@ -284,9 +293,16 @@
             g_road_wetting_0=0
         elseif (auto_binding_flag.eq.2) then
             M_salting_0(2)=activity_data(M_salting_index(2),ti,ro)
-            g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)        
+            g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)
         endif
     
+        !if (binding_mass(ro).gt.0) then
+        !    write(*,'(3i,4f12.2,2f12.2)') ti,ro_tot,road_ID(ro),binding_mass(ro),time_since_last_binding(ro),delay_binding_day(ro),traffic_data(N_total_index,ti,ro),start_month_binding(ro),end_month_binding(ro)
+            !time_since_last_binding(ro)=2.5
+        !    delay_binding_day(ro)=2.5
+        !endif
+        
+            
         !Start with no binding allowed
         binding_allowed=0
     
@@ -341,9 +357,11 @@
             .and.time_since_last_binding(ro).ge.delay_binding_day(ro) &
             .and.binding_RH_flag.and.binding_allowed) then
        
-            activity_data(M_salting_index(2),ti,ro)=M_salting_0(2)+binding_mass(ro)      
+            activity_data(M_salting_index(2),ti,ro)=M_salting_0(2)+binding_mass(ro)
             time_since_last_binding(ro)=0.0
-       
+            
+            !write(*,'(a,i,6f12.2)') 'Bound: ',date_data(hour_index,ti),binding_hour(1,ro),binding_hour(2,ro),meteo_data(RH_index,i,ro),RH_rule_binding(ro),sum(g_road_0_data(1:num_moisture)),g_binding_rule(ro)
+      
             if (binding_dilution(ro).ne.0) then
                 activity_data(g_road_wetting_index,ti,ro)=g_road_wetting_0+binding_mass(ro)*(1-binding_dilution(ro))/binding_dilution(ro)*1e-3
             else
@@ -364,6 +382,30 @@
         endif
 
     endif
+    
+    
+    if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
+        !Turn off all activities in tunnels
+        if (activity_in_tunnels_flag.eq.0) then
+            !write(*,*) 'Not allowing activities in tunnels 0:',t,ro_tot
+            activity_data(M_salting_index(1),ti,ro)=0.
+            activity_data(M_salting_index(2),ti,ro)=0.
+            activity_data(t_cleaning_index,ti,ro)=0.
+            activity_data(M_sanding_index,ti,ro)=0.
+            activity_data(t_ploughing_index,ti,ro)=0.
+        endif
+        !Turn of all activities except cleaning in tunnels
+        if (activity_in_tunnels_flag.eq.1) then
+            !write(*,*) 'Not allowing activities in tunnels 1:',t,ro_tot
+            activity_data(M_salting_index(1),ti,ro)=0.
+            activity_data(M_salting_index(2),ti,ro)=0.
+            !activity_data(t_cleaning_index,ti,ro)=0.
+            activity_data(M_sanding_index,ti,ro)=0.
+            activity_data(t_ploughing_index,ti,ro)=0.
+        endif
+        
+    endif
+    
 !--------------------------------------------------------------------------
 
     end subroutine NORTRIP_set_activity_data
