@@ -638,6 +638,7 @@
     character(256) temp_name
     integer unit_in,unit_logfile_temp
     logical exists
+    logical :: activity_data_already_allocated=.false.
     
     !Functions
     integer match_string_int
@@ -738,10 +739,115 @@
     !    close(unit_logfile,status='keep')
     !endif
     
-10	close(unit_in,status='keep')
+10  close(unit_in,status='keep')
+
+    !Allocate the auto_activity parameters for all roads if they have not already been allocated in the transfer routine (coupling to multiroad code)
+    !Set the flag if these have not been allocated. Onlt necessary fo rthe first case since they are either allocated for all or none in the multiroad code
+    if (.not.allocated(salting_hour)) then
+        allocate (salting_hour(2,0:n_roads))
+        activity_data_already_allocated=.false.
+    else
+        activity_data_already_allocated=.true.
+    endif    
+    if (.not.allocated(delay_salting_day)) allocate (delay_salting_day(0:n_roads))
+    if (.not.allocated(check_salting_day)) allocate (check_salting_day(0:n_roads))
+    if (.not.allocated(min_temp_salt)) allocate (min_temp_salt(0:n_roads))
+    if (.not.allocated(max_temp_salt)) allocate (max_temp_salt(0:n_roads))
+    if (.not.allocated(precip_rule_salt)) allocate (precip_rule_salt(0:n_roads))
+    if (.not.allocated(RH_rule_salt)) allocate (RH_rule_salt(0:n_roads))
+    if (.not.allocated(g_salting_rule)) allocate (g_salting_rule(0:n_roads))
+    if (.not.allocated(salt_mass)) allocate (salt_mass(0:n_roads)) 
+    if (.not.allocated(salt_dilution)) allocate (salt_dilution(0:n_roads)) 
+    if (.not.allocated(salt_type_distribution)) allocate (salt_type_distribution(0:n_roads)) 
+    
+    if (.not.allocated(sanding_hour)) allocate (sanding_hour(2,0:n_roads))
+    if (.not.allocated(delay_sanding_day)) allocate (delay_sanding_day(0:n_roads)) 
+    if (.not.allocated(check_sanding_day)) allocate (check_sanding_day(0:n_roads))
+    if (.not.allocated(min_temp_sand)) allocate (min_temp_sand(0:n_roads)) 
+    if (.not.allocated(max_temp_sand)) allocate (max_temp_sand(0:n_roads))
+    if (.not.allocated(precip_rule_sand)) allocate (precip_rule_sand(0:n_roads))
+    if (.not.allocated(RH_rule_sand)) allocate (RH_rule_sand(0:n_roads)) 
+    if (.not.allocated(g_sanding_rule)) allocate (g_sanding_rule(0:n_roads)) 
+    if (.not.allocated(sand_mass)) allocate (sand_mass(0:n_roads)) 
+    if (.not.allocated(sand_dilution)) allocate (sand_dilution(0:n_roads))
+    
+    if (.not.allocated(delay_ploughing_hour)) allocate (delay_ploughing_hour(0:n_roads))
+    if (.not.allocated(ploughing_thresh_2)) allocate (ploughing_thresh_2(0:n_roads)) 
+    if (.not.allocated(cleaning_hour)) allocate (cleaning_hour(2,0:n_roads))
+    if (.not.allocated(delay_cleaning_day)) allocate (delay_cleaning_day(0:n_roads))
+    if (.not.allocated(min_temp_cleaning)) allocate (min_temp_cleaning(0:n_roads))
+    if (.not.allocated(clean_with_salting)) allocate (clean_with_salting(0:n_roads))
+    if (.not.allocated(start_month_cleaning)) allocate (start_month_cleaning(0:n_roads))
+    if (.not.allocated(end_month_cleaning)) allocate (end_month_cleaning(0:n_roads))
+    if (.not.allocated(wetting_with_cleaning)) allocate (wetting_with_cleaning(0:n_roads))
+    if (.not.allocated(efficiency_of_cleaning)) allocate (efficiency_of_cleaning(0:n_roads))
+
+    if (.not.allocated(binding_hour)) allocate (binding_hour(2,0:n_roads))
+    if (.not.allocated(delay_binding_day)) allocate (delay_binding_day(0:n_roads))
+    if (.not.allocated(check_binding_day)) allocate (check_binding_day(0:n_roads))
+    if (.not.allocated(min_temp_binding)) allocate (min_temp_binding(0:n_roads))
+    if (.not.allocated(max_temp_binding)) allocate (max_temp_binding(0:n_roads))
+    if (.not.allocated(precip_rule_binding)) allocate (precip_rule_binding(0:n_roads))
+    if (.not.allocated(RH_rule_binding)) allocate (RH_rule_binding(0:n_roads))
+    if (.not.allocated(g_binding_rule)) allocate (g_binding_rule(0:n_roads))
+    if (.not.allocated(binding_mass)) allocate (binding_mass(0:n_roads))
+    if (.not.allocated(binding_dilution)) allocate (binding_dilution(0:n_roads))
+    if (.not.allocated(start_month_binding)) allocate (start_month_binding(0:n_roads))
+    if (.not.allocated(end_month_binding)) allocate (end_month_binding(0:n_roads))
+    
+    !If these were not previously allocated and given values then fill them all with no data
+    if (.not.activity_data_already_allocated) then
+        salting_hour=nodata_activity
+        delay_salting_day=nodata_activity
+        check_salting_day=nodata_activity
+        min_temp_salt=nodata_activity
+        max_temp_salt=nodata_activity
+        precip_rule_salt=nodata_activity
+        RH_rule_salt=nodata_activity
+        g_salting_rule=nodata_activity
+        salt_mass=nodata_activity 
+        salt_dilution=nodata_activity 
+        salt_type_distribution=nodata_activity 
+    
+        sanding_hour=nodata_activity
+        delay_sanding_day=nodata_activity 
+        check_sanding_day=nodata_activity
+        min_temp_sand=nodata_activity 
+        max_temp_sand=nodata_activity
+        precip_rule_sand=nodata_activity
+        RH_rule_sand=nodata_activity 
+        g_sanding_rule=nodata_activity 
+        sand_mass=nodata_activity 
+        sand_dilution=nodata_activity
+    
+        delay_ploughing_hour=nodata_activity
+        ploughing_thresh_2=nodata_activity 
+
+        cleaning_hour=nodata_activity
+        delay_cleaning_day=nodata_activity
+        min_temp_cleaning=nodata_activity
+        clean_with_salting=nodata_activity
+        start_month_cleaning=nodata_activity
+        end_month_cleaning=nodata_activity
+        wetting_with_cleaning=nodata_activity
+        efficiency_of_cleaning=nodata_activity
+
+        binding_hour=nodata_activity
+        delay_binding_day=nodata_activity
+        check_binding_day=nodata_activity
+        min_temp_binding=nodata_activity
+        max_temp_binding=nodata_activity
+        precip_rule_binding=nodata_activity
+        RH_rule_binding=nodata_activity
+        g_binding_rule=nodata_activity
+        binding_mass=nodata_activity
+        binding_dilution=nodata_activity
+        start_month_binding=nodata_activity
+        end_month_binding=nodata_activity        
+    endif
     
     !Transfer the ref values to the read-in multiple road values if the multiple road values are 'nodata_activity'
-    !Only checks the first road value
+    !Only checks the first road value for no data.
     if (salting_hour(1,1).eq.nodata_activity) salting_hour(1,:)=salting_hour_ref(1)
     if (salting_hour(2,1).eq.nodata_activity) salting_hour(2,:)=salting_hour_ref(2)
     if (delay_salting_day(1).eq.nodata_activity) delay_salting_day(:)=delay_salting_day_ref
