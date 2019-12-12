@@ -365,7 +365,12 @@
             !Open the outputfile for date
             !temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//'all'//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
             temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(file_str)//'_'//trim(uemep_start_date_str)//'.txt'
-        
+            
+            !Set the finished file name if it is to be used
+            if (trim(finished_file_append).ne.'') then
+            finished_filename=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(file_str)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
+            endif
+            
             !Put in date in path and filename if required
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
 

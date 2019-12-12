@@ -129,6 +129,13 @@
     !Close log file that was opened in read_NORTRIP_pathnames
     call close_logfile    
 
+    !Save finished file
+    if (trim(finished_filename).ne.'') then
+	    write(*,'(A)') 'Writing finished file for uEMEP emission output'
+        open(unit_save_emissions,file=finished_filename,status='replace')
+        close(unit_save_emissions)
+    endif
+
     end subroutine NORTRIP_fortran_control_v2
     
     

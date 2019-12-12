@@ -748,6 +748,9 @@
     character(256) :: delete_file_command='del /f'
     character(1024) :: command_line_zip=''
     
+    character(256) :: finished_file_append=''
+    character(256) :: finished_filename=''
+    
     end module NORTRIP_definitions
 
 !==========================================================================
