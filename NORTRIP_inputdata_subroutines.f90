@@ -777,7 +777,7 @@ subroutine read_NORTRIP_inputdata
     endif
 
     !Save summary road meteo and summary emission and mass data for Bedre Byluft calculation type
-    if (trim(calculation_type).eq.'Road weather') then
+    if (trim(calculation_type).eq.'road weather') then
         if (unit_logfile.gt.0) write(*,'(A)') 'Saving road weather data'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_road_meteo_data_flag=.true.
@@ -785,6 +785,7 @@ subroutine read_NORTRIP_inputdata
         !NORTRIP_save_episode_emissions_flag=.true.
         !NORTRIP_save_episode_grid_emissions_flag=.true.
         NORTRIP_save_road_emission_and_mass_data_stats_flag=.true.
+        NORTRIP_save_road_summary_data_flag=.true.
     endif
 
     if (trim(calculation_type).eq.'SLB') then
