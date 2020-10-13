@@ -179,9 +179,9 @@
     endif
     return
     
-10	write(unit_output,'(A)') 'WARNING: No match found to "'//trim(match_str)//'" in input files. Setting to 0'
+10	write(unit_output,'(A,i)') 'WARNING: No match found to "'//trim(match_str)//'" in input files. Setting to ',match_string_int
     return
-15	write(unit_output,'(A)') 'WARNING: No value found for "'//trim(match_str)//'" in input files. Setting to 0'
+15	write(unit_output,'(A,i)') 'WARNING: No value found for "'//trim(match_str)//'" in input files. Setting to ',match_string_int
 
     end function match_string_int
 !----------------------------------------------------------------------

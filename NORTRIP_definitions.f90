@@ -276,9 +276,9 @@
     integer :: forecast_type=1
     
     !Type of calculation indicator, controls some processes and outputs
-    !Normal, Bedre Byluft, Forecast
-    character(256) :: calculation_type='Normal'
-
+    !Normal, Bedre Byluft, Forecast, Road weather, uEMEP
+    character(256) :: calculation_type='normal'
+    
 !Declare string search arrays for input data
 !-----------------------------------------------------------------------
     character(64) :: date_match_str(num_date_index)=''
