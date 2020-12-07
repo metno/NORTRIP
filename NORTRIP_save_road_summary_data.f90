@@ -56,7 +56,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
+        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -96,11 +96,16 @@
             'Rain',achar(9), &
             'Snow',achar(9), &
             'T_surf_mod',achar(9), &
+            'T_sub_mod',achar(9), &
+            'T_freeze_mod',achar(9), &
+            'T_surf_meteo',achar(9), &
             'SW_rad_cls',achar(9), &
             'SW_rad_net',achar(9), &
             'LW_rad_net',achar(9), &
             'H_in',achar(9), &
             'L_in',achar(9), &
+            'G_sub',achar(9), &
+            'G_net',achar(9), &
             'W_surf_mod',achar(9), &
             'I_surf_mod',achar(9), &
             'S_surf_mod'
@@ -131,7 +136,7 @@
                     
                    ! write(*,*) 'saving',ro_num,unit_out
                     
-                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
+                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,ti)),achar(9), &
@@ -171,11 +176,16 @@
                         meteo_data(Rain_precip_index,ti,ro),achar(9), &
                         meteo_data(Snow_precip_index,ti,ro),achar(9), &
                         road_meteo_data(T_s_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(T_sub_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(T_melt_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(road_temperature_obs_index,ti,tr,ro),achar(9), &
                         meteo_data(short_rad_in_clearsky_index,ti,ro),achar(9), &
                         road_meteo_data(short_rad_net_index,ti,tr,ro),achar(9), &
                         road_meteo_data(long_rad_net_index,ti,tr,ro),achar(9), &
                         -road_meteo_data(H_index,ti,tr,ro),achar(9), &
                         -road_meteo_data(L_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(G_sub_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(G_index,ti,tr,ro),achar(9), &
                         g_road_data(water_index,ti,tr,ro),achar(9), &
                         g_road_data(ice_index,ti,tr,ro),achar(9), &
                         g_road_data(snow_index,ti,tr,ro)
@@ -184,6 +194,7 @@
             endif
         enddo
 
+        !Note that road_meteo_data(road_temperature_obs_index,ti,tr,ro) is actually not obs but the meterological input 0 m temperature. It was used as a spare variable.
     if (ro_tot.eq.n_roads_total) close (unit_out)
     
     end subroutine NORTRIP_save_road_summary_data
