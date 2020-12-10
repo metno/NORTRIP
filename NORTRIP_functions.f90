@@ -47,7 +47,8 @@
             !Treat this differently in a tunnel
             if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
                 !Not certain what to do here as not enough information is available about a tunnels temperature. Set at ambient temperature
-                road_meteo_data(T_sub_index,:,tr,ro)=meteo_data(T_a_index,:,ro)
+                !Do nothing for the time being
+                !road_meteo_data(T_sub_index,:,tr,ro)=meteo_data(T_a_index,:,ro)
             endif
          
             !Treat this differently on a bridge. Set sublayer temperature to atmospheric layer

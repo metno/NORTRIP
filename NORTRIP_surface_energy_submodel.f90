@@ -1,7 +1,7 @@
 
     subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
         ,P,dzs_in,dt_h_in,g_surf_in,s_surf_in,g_min,M2_road_salt_0,salt_type,sub_surf_param &
-        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag &
+        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag &
         ,TCs_out,melt_temperature,RH_salt_final,RHs,M_road_dissolved_ratio_temp &
         ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub)
 
@@ -15,7 +15,7 @@
     !Input variables
     real short_net,long_in,H_traffic,r_aero,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
     real g_surf_in,s_surf_in,g_min,M2_road_salt_0(num_salt),sub_surf_param(3)
-    integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,salt_type(num_salt)
+    integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag,salt_type(num_salt)
     !Output variables
     real TCs_out,melt_temperature,RH_salt_final,RHs,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub
     real M_road_dissolved_ratio_temp(num_salt)
@@ -156,8 +156,13 @@
                 melt_temperature=minval(melt_temperature_salt_temp)
              
                 !Set the energy used for freezing or melting
-                G_freeze=freeze*lambda_melt/dt_sec
-                G_melt=melt*lambda_melt/dt_sec
+                if (use_melt_freeze_energy_flag.eq.1) then
+                    G_freeze=freeze*lambda_melt/dt_sec
+                    G_melt=melt*lambda_melt/dt_sec
+                else
+                    G_freeze=0.
+                    G_melt=0.
+                endif
     
                 !Set the surface salt humidity to be the lowest for the two salts
                 RH_salt_final=minval(RH_salt_temp)
@@ -334,6 +339,12 @@
                     G_freeze=freeze*lambda_melt/dt_sec!/dt_h
                 endif
             !endif
+                
+                !Set the energy used for freezing or melting
+                if (use_melt_freeze_energy_flag.eq.0) then
+                    G_freeze=0.
+                    G_melt=0.
+                endif
  
             !Diagnose surface flux with melt and freeze fluxes
             G=rad_net-H-L+H_traffic-G_melt+G_freeze

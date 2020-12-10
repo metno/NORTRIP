@@ -109,10 +109,19 @@
                 read(unit_out,'(<num_source_all*num_size>e12.4)',ERR=10) ((M_road_data(s,x,ti,tr,ro),s=1,num_source_all),x=1,num_size)
             enddo
             !write(*,*) M_road_data(1,1,ti,1,ro),M_road_data(1,2,ti,1,ro),M_road_data(2,1,ti,1,ro)
-            
+
+            !if (ro_tot.eq.425266.or.ro_tot.eq.2) then
+            !write(*,*) 'Prior: ',ti,road_meteo_data(T_sub_index,ti,num_track,ro),num_track
+            !endif
+
             do tr=1,num_track
                  read(unit_out,'(<num_road_meteo>e12.4)',ERR=10) (road_meteo_data(i,ti,tr,ro),i=1,num_road_meteo)
             enddo
+            
+            !if (ro_tot.eq.425266.or.ro_tot.eq.2) then
+            !    write(*,*) 'Read: ',ti,ro,ro_tot,road_meteo_data(T_sub_index,ti,num_track,ro)
+            !     write(*,'(<num_road_meteo>e12.4)',ERR=10) (road_meteo_data(i,ti,num_track,ro),i=1,num_road_meteo)
+            !endif
 
             do tr=1,num_track
                 read(unit_out,'(<num_moisture>e12.4)',ERR=10) (g_road_data(m,ti,tr,ro),m=1,num_moisture)

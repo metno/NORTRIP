@@ -77,7 +77,7 @@
     retain_water_by_snow=1      !Decides if water is allowed to drain off normally when snow is present
     dz_snow_albedo=3            !Depth of snow required before implementing snow albedo mm.w.e.
     Z_CLOUD=100                 !Only used when no global radiation is available
-    z0t=z0/10                   !Sets temperature and humidity roughness length
+    z0t=z0/10.                  !Sets temperature and humidity roughness length
     length_veh(li)=5            !Vehicle lengths used to calculate the vehicle heat flux
     length_veh(he)=15
     
@@ -86,13 +86,19 @@
     !Sub surface temperature given as weighted sum of surface temperatures
     !when use_subsurface_flag=2
     !More realistic than using the air temperature
+    !If the road is a bridge then the atmospheric temperature is used as subsurface and this is not adjusted here
     !--------------------------------------------------------------------------
-    if (ti.gt.min_time.and.use_subsurface_flag.eq.2) then
+    if (ti.gt.min_time.and.use_subsurface_flag.eq.2.and.roadtype_index(ro).ne.bridge_roadtype) then
         road_meteo_data(T_sub_index,ti,tr,ro)= &
         road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/sub_surf_average_time) &
         +road_meteo_data(T_s_index,max(1,ti-1),tr,ro)*dt/sub_surf_average_time
     endif
 
+    !if (ro_tot.eq.425266.or.ro_tot.eq.2) then
+    !    write(*,*) ti,road_meteo_data(T_sub_index,ti,tr,ro),road_meteo_data(T_s_index,max(1,ti-1),tr,ro),meteo_data(T_a_index,ti,ro)
+    !endif
+    
+        
     !Set initial values for the time step
     !--------------------------------------------------------------------------
     g_road_0_data(1:num_moisture)=g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)+surface_moisture_min*0.5
@@ -182,6 +188,7 @@
 	        ,surface_humidity_flag &
 	        ,use_subsurface_flag &
             ,use_salt_humidity_flag &
+            ,use_melt_freeze_energy_flag &
             !Outputs start here
             ,road_meteo_data(T_s_index,ti,tr,ro) &  
             ,road_meteo_data(T_melt_index,ti,tr,ro) &
