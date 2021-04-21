@@ -47,8 +47,8 @@
 !--------------------------------------------------------------------------
 !Automatically add salt
 !--------------------------------------------------------------------------
-    if (auto_salting_flag.gt.0.and.road_type_activity_flag(road_type_salt_index(1),ro).gt.0) then
-        if (auto_salting_flag.eq.1) then
+    if (auto_salting_flag.ne.0.and.auto_salting_flag.ne.3.and.road_type_activity_flag(road_type_salt_index(1),ro).gt.0) then
+        if (auto_salting_flag.eq.1.or.auto_salting_flag.eq.4) then
             M_salting_0(1:num_salt)=0.0
             g_road_wetting_0=0.0
         elseif (auto_salting_flag.eq.2) then
@@ -120,8 +120,8 @@
 !--------------------------------------------------------------------------
 !Automatically add sand
 !--------------------------------------------------------------------------
-    if (auto_sanding_flag.gt.0.and.road_type_activity_flag(road_type_sanding_index,ro).gt.0) then
-        if (auto_sanding_flag.eq.1) then
+    if (auto_sanding_flag.ne.0.and.auto_sanding_flag.ne.3.and.road_type_activity_flag(road_type_sanding_index,ro).gt.0) then
+        if (auto_sanding_flag.eq.1.or.auto_sanding_flag.eq.4) then
             M_sanding_0=0
             g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)
         elseif (auto_sanding_flag.eq.2) then
@@ -187,8 +187,8 @@
 !Automatically carry out ploughing based on previous hours
 !--------------------------------------------------------------------------
     plough_temp(1:num_moisture)=0.0
-    if (auto_ploughing_flag.gt.0.and.use_ploughing_data_flag.gt.0.and.road_type_activity_flag(road_type_ploughing_index,ro).gt.0) then
-        if (auto_ploughing_flag.eq.1) then
+    if (auto_ploughing_flag.ne.0.and.auto_ploughing_flag.ne.3.and.use_ploughing_data_flag.gt.0.and.road_type_activity_flag(road_type_ploughing_index,ro).gt.0) then
+        if (auto_ploughing_flag.eq.1.or.auto_ploughing_flag.eq.4) then
             t_ploughing_0=0
         elseif (auto_ploughing_flag.eq.2) then
             t_ploughing_0=activity_data(t_ploughing_index,ti,ro)
@@ -221,9 +221,9 @@
 !--------------------------------------------------------------------------
 !Automatically carry out cleaning
 !--------------------------------------------------------------------------
-    if (auto_cleaning_flag.gt.0.and.use_cleaning_data_flag.gt.0.and.road_type_activity_flag(road_type_cleaning_index,ro).gt.0) then
+    if (auto_cleaning_flag.ne.0.and.auto_cleaning_flag.ne.3.and.use_cleaning_data_flag.gt.0.and.road_type_activity_flag(road_type_cleaning_index,ro).gt.0) then
     
-        if (auto_cleaning_flag.eq.1) then
+        if (auto_cleaning_flag.eq.1.or.auto_cleaning_flag.eq.4) then
             t_cleaning_0=0
             g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)
         elseif (auto_cleaning_flag.eq.2) then
@@ -287,8 +287,8 @@
 !--------------------------------------------------------------------------
 !Automatically add second salt for binding
 !--------------------------------------------------------------------------
-    if (auto_binding_flag.gt.0.and.road_type_activity_flag(road_type_salt_index(2),ro).gt.0) then
-        if (auto_binding_flag.eq.1) then
+    if (auto_binding_flag.ne.0.and.auto_binding_flag.ne.3.and.road_type_activity_flag(road_type_salt_index(2),ro).gt.0) then
+        if (auto_binding_flag.eq.1.or.auto_binding_flag.eq.4) then
             M_salting_0(2)=0
             g_road_wetting_0=0
         elseif (auto_binding_flag.eq.2) then
@@ -382,7 +382,63 @@
         endif
 
     endif
-    
+ 
+    !Over ride the existing activity data with the input activity values if they are not no data values
+    !If flag is 4 then override auto calculations, if 3 then do not do auto calculations
+        if (auto_salting_flag.ge.3.and.activity_input_data(M_salting_index(1),ti,ro).ne.nodata_activity.and.available_activity_data(M_salting_index(1))) then
+            activity_data(M_salting_index(1),ti,ro)=activity_input_data(M_salting_index(1),ti,ro)
+            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+                activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            endif
+            !Reset last time to avoid additional automatic activities
+            if (activity_data(M_salting_index(1),ti,ro).gt.0) then
+                time_since_last_salting(ro)=0
+            endif            
+            !write(*,*) 'Salting'
+        endif
+        if (auto_binding_flag.ge.3.and.activity_input_data(M_salting_index(2),ti,ro).ne.nodata_activity.and.available_activity_data(M_salting_index(2))) then
+            activity_data(M_salting_index(2),ti,ro)=activity_input_data(M_salting_index(2),ti,ro)
+            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+                activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            endif
+            if (activity_data(M_salting_index(2),ti,ro).gt.0) then
+                time_since_last_binding(ro)=0
+            endif            
+            !write(*,*) 'Binding'
+        endif
+        if (auto_sanding_flag.ge.3.and.activity_input_data(M_sanding_index,ti,ro).ne.nodata_activity.and.available_activity_data(M_sanding_index)) then
+            activity_data(M_sanding_index,ti,ro)=activity_input_data(M_sanding_index,ti,ro)
+            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+                activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            endif
+            if (activity_data(M_sanding_index,ti,ro).gt.0) then
+                time_since_last_sanding(ro)=0
+            endif            
+            !write(*,*) 'Sanding'
+        endif
+        if (auto_cleaning_flag.ge.3.and.activity_input_data(t_cleaning_index,ti,ro).ne.nodata_activity.and.available_activity_data(t_cleaning_index)) then
+            activity_data(t_cleaning_index,ti,ro)=activity_input_data(t_cleaning_index,ti,ro)
+            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+                activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            endif
+            if (activity_data(t_cleaning_index,ti,ro).gt.0) then
+                time_since_last_cleaning(ro)=0
+            endif            
+            !write(*,*) 'Cleaning'
+        endif
+            !write(*,*) ti,ro_tot,auto_ploughing_flag,activity_input_data(t_ploughing_index,ti,ro)
+
+        if (auto_ploughing_flag.ge.3.and.activity_input_data(t_ploughing_index,ti,ro).ne.nodata_activity.and.available_activity_data(t_ploughing_index)) then
+            activity_data(t_ploughing_index,ti,ro)=activity_input_data(t_ploughing_index,ti,ro)
+            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+                activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            endif
+            if (activity_data(t_ploughing_index,ti,ro).gt.0) then
+                time_since_last_ploughing(ro)=0
+            endif            
+            !write(*,*) 'Ploughing'
+        endif
+        
     
     if (roadtype_index(ro).eq.tunnel_roadtype.or.roadtype_index(ro).eq.tunnelportal_roadtype) then
         !Turn off all activities in tunnels

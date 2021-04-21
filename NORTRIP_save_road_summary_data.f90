@@ -56,7 +56,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
+        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -108,7 +108,13 @@
             'G_net',achar(9), &
             'W_surf_mod',achar(9), &
             'I_surf_mod',achar(9), &
-            'S_surf_mod'
+            'S_surf_mod',achar(9), &
+            'Salt1_a(g/m^2)',achar(9), &
+            'Salt2_a(g/m^2)',achar(9), &
+            'Sand_a(g/m^2)',achar(9), &
+            'Wetting_a(mm)',achar(9), &
+            'Plough_a(eff)',achar(9), &
+            'Clean_a(eff)'
         
     endif
     
@@ -136,7 +142,7 @@
                     
                    ! write(*,*) 'saving',ro_num,unit_out
                     
-                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
+                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,ti)),achar(9), &
@@ -188,12 +194,19 @@
                         road_meteo_data(G_index,ti,tr,ro),achar(9), &
                         g_road_data(water_index,ti,tr,ro),achar(9), &
                         g_road_data(ice_index,ti,tr,ro),achar(9), &
-                        g_road_data(snow_index,ti,tr,ro)
+                        g_road_data(snow_index,ti,tr,ro),achar(9), &
+                        activity_data(M_salting_index(1),ti,ro),achar(9), &
+                        activity_data(M_salting_index(2),ti,ro),achar(9), &
+                        activity_data(M_sanding_index,ti,ro)*f_PM_bin(sand_index,pm_all,1),achar(9), &
+                        activity_data(g_road_wetting_index,ti,ro)/1000.,achar(9), &
+                        activity_data(t_ploughing_index,ti,ro)*h_ploughing_moisture(snow_index),achar(9), &
+                        activity_data(t_cleaning_index,ti,ro)*efficiency_of_cleaning(ro)
 
                 enddo
             endif
         enddo
 
+                            
         !Note that road_meteo_data(road_temperature_obs_index,ti,tr,ro) is actually not obs but the meterological input 0 m temperature. It was used as a spare variable.
     if (ro_tot.eq.n_roads_total) close (unit_out)
     

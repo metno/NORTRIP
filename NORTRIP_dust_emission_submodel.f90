@@ -309,15 +309,15 @@
     !--------------------------------------------------------------------------
 
     !--------------------------------------------------------------------------
-    !Calculate road production due to fugitive deposition (P_fugitive g/km)
-    !Adds the constant value given in metadata to the time seires activity data
+    !Calculate road production due to fugitive deposition (P_fugitive g/m^2)
+    !Adds the constant value given in metadata to the time series activity data
     !--------------------------------------------------------------------------
     if (available_activity_data(M_fugitive_index)) then
     M_road_bin_balance_data(fugitive_index,1:num_size,P_depo_index,ti_bin,tr,ro_bin)= &
-        (P_fugitive+activity_data(M_fugitive_index,ti,ro))/dt*f_PM_bin(fugitive_index,1:num_size,1)*f_track(tr)
+        (P_fugitive+activity_data(M_fugitive_index,ti,ro))/dt*f_PM_bin(fugitive_index,1:num_size,1)*f_track(tr)*1000.*b_road_lanes(ro)
     else
     M_road_bin_balance_data(fugitive_index,1:num_size,P_depo_index,ti_bin,tr,ro_bin)= &
-        P_fugitive/dt*f_PM_bin(fugitive_index,1:num_size,1)*f_track(tr)      
+        P_fugitive/dt*f_PM_bin(fugitive_index,1:num_size,1)*f_track(tr)*1000.*b_road_lanes(ro)
     endif
     !--------------------------------------------------------------------------
 

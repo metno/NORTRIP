@@ -190,9 +190,11 @@
     
     !Set extra date indexes for the activity file since this is not necessarilly in chronological order 
     integer activity_year_index,activity_month_index,activity_day_index,activity_hour_index,activity_minute_index
+    integer activity_roadID_index
     integer num_activity_input_index
     parameter (activity_year_index=8,activity_month_index=9,activity_day_index=10,activity_hour_index=11,activity_minute_index=12)
-    parameter (num_activity_input_index=12)
+    parameter (activity_roadID_index=13)
+    parameter (num_activity_input_index=13)
     
     !Set air quality input file indexes
     integer PM10_obs_index,PM10_bg_index,PM10_net_index
@@ -932,6 +934,7 @@
     activity_match_str(activity_day_index)='Day'
     activity_match_str(activity_hour_index)='Hour'
     activity_match_str(activity_minute_index)='Minute'
+    activity_match_str(activity_roadID_index)='Road_ID'
 
     salt_match_str(na)='(na)'
     salt_match_str(mg)='(mg)'

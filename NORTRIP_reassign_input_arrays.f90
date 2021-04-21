@@ -17,6 +17,7 @@
         meteo_data(:,:,0)=meteo_data(:,:,ro_tot)
         airquality_data(:,:,0)=airquality_data(:,:,ro_tot)
         activity_data(:,:,0)=activity_data(:,:,ro_tot)
+        activity_input_data(:,:,0)=activity_input_data(:,:,ro_tot)
         
         d_index(0)=d_index(ro_tot)
         p_index(0)=p_index(ro_tot)

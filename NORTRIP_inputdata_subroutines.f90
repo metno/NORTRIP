@@ -468,6 +468,7 @@ subroutine read_NORTRIP_inputdata
   
     !Find out how long the file is, reading a dummy variable
     !Does this only for the date file and assumes the rest are the same, as they should be
+    !Except for the activity data. This will not work with non-chronological activity data
     if (input_file_type.eq.date_file_type) then
         index_val=0
         do while(.not.eof(unit_in))
@@ -546,6 +547,7 @@ subroutine read_NORTRIP_inputdata
     endif
     if (input_file_type.eq.activity_file_type) then
         !Allocate the activity array. different to the others because it is not chronological
+        !This allocation assumes it is using the same dimensions as the other inputs
         if (.not.allocated(activity_input_data)) allocate(activity_input_data(num_activity_input_index,n_date,0:n_roads))
         activity_input_data=nodata
         !Note that this array size is set to n_time based on the size of the date_data array
@@ -857,13 +859,27 @@ subroutine read_NORTRIP_inputdata
 
    !Check activity data. Only check availability
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input activity data available (%)'
+ 	write(unit_logfile,'(A)') 'Activity data available (%)'
     do i=1,num_activity_index
-        call check_available_data_sub(activity_data(i,:,ro),available_activity_data(i),nodata_input,percent_available)
+        call check_available_data_sub(activity_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
  	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_data(i,:,ro)),maxval(activity_data(i,:,ro))
         !Special case, must be set to 0 if not available
         if (.not.available_activity_data(i)) then
             activity_data(i,:,ro)=0.
+        endif
+        
+    enddo
+
+    !Check input activity data. Only check availability
+    !Do not check as it sets the availability to false
+ 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
+ 	write(unit_logfile,'(A)') 'Input activity data available (%)'
+    do i=1,num_activity_index
+        !call check_available_data_sub(activity_input_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
+ 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
+        !Special case, must be set to 0 if not available
+        if (.not.available_activity_data(i)) then
+            activity_input_data(i,:,ro)=0.
         endif
         
     enddo
@@ -928,11 +944,14 @@ subroutine read_NORTRIP_inputdata
                 !write(*,*) int(date_data(year_index:minute_index,i))
                 !write(*,*) '    ',int(activity_input_data(activity_year_index:activity_minute_index,j,i_road))
                 i_road=ro
-                if (date_data(year_index,i).eq.activity_input_data(activity_year_index,j,i_road).and. &
-                    date_data(month_index,i).eq.activity_input_data(activity_month_index,j,i_road).and. &
-                    date_data(day_index,i).eq.activity_input_data(activity_day_index,j,i_road).and. &
-                    date_data(hour_index,i).eq.activity_input_data(activity_hour_index,j,i_road).and. &
-                    date_data(minute_index,i).eq.activity_input_data(activity_minute_index,j,i_road)) then
+                !Matches date and road ID. If no road ID has been read (nodata) then apply to all roads for that date
+                if (date_data(year_index,i).eq.int(activity_input_data(activity_year_index,j,i_road)).and. &
+                    date_data(month_index,i).eq.int(activity_input_data(activity_month_index,j,i_road)).and. &
+                    date_data(day_index,i).eq.int(activity_input_data(activity_day_index,j,i_road)).and. &
+                    date_data(hour_index,i).eq.int(activity_input_data(activity_hour_index,j,i_road)).and. &
+                    date_data(minute_index,i).eq.int(activity_input_data(activity_minute_index,j,i_road)).and. &
+                    (road_ID(ro).eq.int(activity_input_data(activity_roadID_index,j,i_road)).or. &
+                    activity_input_data(activity_roadID_index,j,i_road).eq.nodata)) then
                 
                     activity_data(:,i,i_road)=activity_data(:,i,i_road)+activity_input_data(:,j,i_road)
                     match_count=match_count+1
