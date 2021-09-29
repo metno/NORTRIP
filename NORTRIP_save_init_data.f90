@@ -37,9 +37,11 @@
 	write(unit_logfile,'(A)') 'Saving data to init file (NORTRIP_save_init_data)'
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
  
-    !Check that path exists after filling in date stamp
+    !Check that path exists after filling in date stamp. 3 times in case there are more than one date
     a=date_data(:,min_time_save)
     call date_to_datestr_bracket(a,path_init,temp_name)
+    call date_to_datestr_bracket(a,temp_name,temp_name)
+    call date_to_datestr_bracket(a,temp_name,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -63,6 +65,10 @@
             !Open the outputfile for date
             filename_asc=trim(path_init)//trim(filename_outputdata)//'_init.txt'
             filename_bin=trim(path_init)//trim(filename_outputdata)//'_init.dat'
+            call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
+            call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
+            call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
+            call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
             call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
             call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
         

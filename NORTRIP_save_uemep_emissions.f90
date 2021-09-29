@@ -53,6 +53,8 @@
 
     !Check that path exists after filling in date stamp
     call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
+    call date_to_datestr_bracket(a_start,temp_name,temp_name)
+    call date_to_datestr_bracket(a_start,temp_name,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -106,6 +108,8 @@
             temp_name=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
         
             !Put in date in path and filename if required
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
             write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
@@ -315,6 +319,8 @@
 
     !Check that path exists after filling in date stamp
     call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
+    call date_to_datestr_bracket(a_start,temp_name,temp_name)
+    call date_to_datestr_bracket(a_start,temp_name,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -372,6 +378,8 @@
             endif
             
             !Put in date in path and filename if required
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
             write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
@@ -538,6 +546,8 @@
 
         !Check that path exists after filling in date stamp
         call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
+        call date_to_datestr_bracket(a_start,temp_name,temp_name)
+        call date_to_datestr_bracket(a_start,temp_name,temp_name)
     
         inquire(directory=trim(temp_name),exist=exists)
         if (.not.exists) then
@@ -657,6 +667,8 @@
             temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
         
             !Put in date in path and filename if required
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
+            call date_to_datestr_bracket(a_start,temp_name,temp_name)
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
             write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
