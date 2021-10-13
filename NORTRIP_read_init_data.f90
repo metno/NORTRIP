@@ -20,6 +20,8 @@
     logical exists
     integer ro_init
     logical :: input_is_nan=.false.
+    character(256) temp_name
+    integer a(num_date_index)    
     
     !Do not read init. Hardcode for testing
     !hours_between_init=0
@@ -47,8 +49,13 @@
         !Set the path and file name
         filename_temp=filename_init
     
+        a=date_data(:,min_time)
+        call date_to_datestr_bracket(a,path_init,temp_name)
+        call date_to_datestr_bracket(a,temp_name,temp_name)
+        call date_to_datestr_bracket(a,temp_name,temp_name)
+
         !Open the outputfile for date
-        filename_asc=trim(path_init)//trim(filename_temp)
+        filename_asc=trim(temp_name)//trim(filename_temp)
         !filename_bin=trim(path_init)//trim(filename_temp)
         
         !Check file for reading
