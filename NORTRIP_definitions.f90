@@ -135,12 +135,14 @@
     integer S_evap_index,S_drainage_index,S_spray_index,R_spray_index,P_spray_index
     integer S_total_index,P_total_index,P_precip_index,P_roadwetting_index,S_drainage_tau_index
     integer R_drainage_index
+    integer S_ploughing_index,R_ploughing_index
     integer num_moistbalance
     parameter (S_melt_index=1,P_melt_index=2,P_freeze_index=3,S_freeze_index=4,P_evap_index=5)
     parameter (S_evap_index=6,S_drainage_index=7,S_spray_index=8,R_spray_index=9,P_spray_index=10)
     parameter (S_total_index=11,P_total_index=12,P_precip_index=13,P_roadwetting_index=14,S_drainage_tau_index=15)
     parameter (R_drainage_index=16)
-    parameter (num_moistbalance=16)
+    parameter (S_ploughing_index=17,R_ploughing_index=18)
+    parameter (num_moistbalance=18)
 
     !Date input parameter indexes
     integer year_index,month_index,day_index,hour_index,minute_index,datenum_index
@@ -382,7 +384,7 @@
     real V_ref_spray(num_moisture),g_road_sprayable_min(num_moisture)
     real a_spray(num_moisture),V_thresh_spray(num_moisture)
     real g_road_drainable_min,snow_dust_drainage_retainment_limit,tau_road_drainage,g_road_drainable_thresh
-    real h_ploughing_moisture(num_moisture),ploughing_thresh(num_moisture)    
+    real h_ploughing_moisture(num_moisture),ploughing_thresh(num_moisture),ploughing_min_thresh(num_moisture)
     real g_road_evaporation_thresh
     real z0
     real albedo_snow
@@ -470,6 +472,7 @@
     
     real :: delay_ploughing_hour_ref=3.00 !       	(hr)
     real :: ploughing_thresh_2_ref=3.00 !       	(mm.w.e.)
+    real :: ploughing_min_thresh_2_ref=0.6 !       	(mm.w.e.)
 
     real :: cleaning_hour_ref(2)
     data cleaning_hour_ref /5.0,20.0/
@@ -964,6 +967,8 @@
         delete_file_command='rm -f'
     endif
     
+    !Preset this here
+    ploughing_min_thresh=ploughing_min_thresh_2_ref
     
     end subroutine set_constant_string_values
 

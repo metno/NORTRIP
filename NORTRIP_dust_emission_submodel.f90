@@ -69,6 +69,7 @@
     real :: h_eff_cleaning_temp(num_source,num_size)
     real :: f_cleaning=500. !Hard coded parameter for the new cleaning
     logical :: use_new_cleaning=.true.
+    real :: surface_moisture_min=1e-12 !Mimimum allowable total surface wetness to avoid 0 division
     
     !Allows salt that is dissolved to be suspended and sprayed
     integer :: use_dissolved_ratio
@@ -457,8 +458,16 @@
         R_cleaning(s,1:num_size)=-log(1-min(0.99999,h_eff_cleaning_temp(s,1:num_size) &
             *activity_data(t_cleaning_index,ti,ro)))/dt*use_cleaning_data_flag &
             *road_type_activity_flag(road_type_cleaning_index,ro)
+        !This line is not correct since R is for the log for instantaneous changes in the mass balance equation
+	    !M_road_bin_balance_data(s,1:num_size,S_cleaning_index,ti_bin,tr,ro_bin)= &
+        !    R_cleaning(s,1:num_size)*M_road_bin_0_data(s,1:num_size)      
+            !This line now used
 	    M_road_bin_balance_data(s,1:num_size,S_cleaning_index,ti_bin,tr,ro_bin)= &
-            R_cleaning(s,1:num_size)*M_road_bin_0_data(s,1:num_size)      
+            h_eff_cleaning_temp(s,1:num_size) &
+            *activity_data(t_cleaning_index,ti,ro)/dt*use_cleaning_data_flag &
+            *road_type_activity_flag(road_type_cleaning_index,ro) &
+            *M_road_bin_0_data(s,1:num_size)      
+
         !write(*,'(3i,6f)') ro_tot,ti,s,M_road_0_data(s,pm_200)/1000./b_road(ro),h_eff(cleaning_eff_index,s,pm_200),h_eff_cleaning_temp(s,pm_200),h_eff_cleaning_temp(s,pm_all),activity_data(t_cleaning_index,ti,ro),R_cleaning(s,pm_200)
     enddo
     endif
@@ -472,10 +481,28 @@
         do s=1,num_source
             R_ploughing(s,1:num_size)=-log(1-min(0.99999,h_eff(ploughing_eff_index,s,1:num_size) &
                 *activity_data(t_ploughing_index,ti,ro)))/dt*use_ploughing_data_flag*dust_ploughing_flag &
-                *road_type_activity_flag(road_type_ploughing_index,ro)
+                *road_type_activity_flag(road_type_ploughing_index,ro) &
+                *sum(g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro),1)/(sum(g_road_data(1:num_moisture,ti,tr,ro)+g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro))+surface_moisture_min)
+                !This last line adjusts the efficiency of removal by the ratio of removed to previously existing surface moisture, assuming well mixed dust/salt in the moisture
+	        
+            !This line is not correct since R is for the log for instantaneous changes in the mass balance equation
+            !M_road_bin_balance_data(s,1:num_size,S_dustploughing_index,ti_bin,tr,ro_bin)= &
+            !    R_ploughing(s,1:num_size)*M_road_bin_0_data(s,1:num_size)
+            !This line now used
+            M_road_bin_balance_data(s,1:num_size,S_dustploughing_index,ti_bin,tr,ro_bin)= &
+                h_eff(ploughing_eff_index,s,1:num_size) &
+                *activity_data(t_ploughing_index,ti,ro)/dt*use_ploughing_data_flag*dust_ploughing_flag &
+                *road_type_activity_flag(road_type_ploughing_index,ro) &
+                *sum(g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro),1)/(sum(g_road_data(1:num_moisture,ti,tr,ro)+g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro))+surface_moisture_min) &
+                *M_road_bin_0_data(s,1:num_size)
+            
+            !This line is now used
+                if (activity_data(t_ploughing_index,ti,ro).gt.0.and.1.eq.2) then
+                    write(*,*) ro,s
+                    write(*,*) M_road_bin_balance_data(s,1:num_size,S_dustploughing_index,ti_bin,tr,ro_bin)
+                    write(*,*) R_ploughing(s,1:num_size)
+                endif
 
-	        M_road_bin_balance_data(s,1:num_size,S_dustploughing_index,ti_bin,tr,ro_bin)= &
-                R_ploughing(s,1:num_size)*M_road_bin_0_data(s,1:num_size)
         enddo
     endif
     !--------------------------------------------------------------------------

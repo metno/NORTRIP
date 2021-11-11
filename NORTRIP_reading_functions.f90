@@ -131,9 +131,9 @@
     endif
     return
     
-10  write(unit_output,'(A)') 'WARNING: No match found to "'//trim(match_str)//'" in input files. Returning default value.'
+10  write(unit_output,'(A,f12.3)') 'WARNING: No match found to "'//trim(match_str)//'" in input files. Returning default value: ',match_string_val
     return
-15	write(unit_output,'(A)') 'WARNING: No value found for "'//trim(match_str)//'" in input files. Setting to default'
+15	write(unit_output,'(A,f12.3)') 'WARNING: No value found for "'//trim(match_str)//'" in input files. Setting to default: ',match_string_val
 
     end function match_string_val
 !----------------------------------------------------------------------

@@ -114,11 +114,28 @@
     g_road_balance_data(ice_index,P_precip_index,ti,tr,ro)=0
 
     !Ploughing road sinks rate
+    !Need to put in a threshold value so that there is a minimum amount that can be removed, e.g. cannot remove more than 0.6 mm ploughing_min_thresh_2_ref
+    !Will need to change the way this is calculated then, not as a rate but as an instantaneous removal
     !--------------------------------------------------------------------------
-    R_ploughing(1:num_moisture)=-log(1-h_ploughing_moisture(1:num_moisture)+.0001)/dt*activity_data(t_ploughing_index,ti,ro) &
+    !R_ploughing(1:num_moisture)=-log(1-h_ploughing_moisture(1:num_moisture)+.0001)/dt*activity_data(t_ploughing_index,ti,ro) &
+    !    *use_ploughing_data_flag*road_type_activity_flag(road_type_ploughing_index,ro)
+    !--------------------------------------------------------------------------
+    !Remove moisture through ploughing before all other processes. It is based on the previous hours snow and ice when using auto
+    !A minimum is set that will always be on the road, set in ploughing_min_thresh_2_ref in the activities file, but default is 0.6
+    if (activity_data(t_ploughing_index,ti,ro).gt.0.and.1.eq.2) then
+        write(*,*) ro,g_road_0_data(1:num_moisture)
+    endif
+    R_ploughing(1:num_moisture)=h_ploughing_moisture(1:num_moisture)/dt*activity_data(t_ploughing_index,ti,ro) &
         *use_ploughing_data_flag*road_type_activity_flag(road_type_ploughing_index,ro)
-    !--------------------------------------------------------------------------
-
+    g_road_balance_data(1:num_moisture,R_ploughing_index,ti,tr,ro)= R_ploughing(1:num_moisture)
+    g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro)= max(g_road_0_data(1:num_moisture)-ploughing_min_thresh(1:num_moisture),0.)*R_ploughing(1:num_moisture)
+    g_road_0_data(1:num_moisture)=g_road_0_data(1:num_moisture)-g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro)*dt
+    R_ploughing(1:num_moisture)=0.0 !Set this to 0 so it will not be included in the mass balance later
+    if (activity_data(t_ploughing_index,ti,ro).gt.0.and.1.eq.2) then
+        write(*,*) ro,g_road_balance_data(1:num_moisture,S_ploughing_index,ti,tr,ro)
+        write(*,*) ro,g_road_0_data(1:num_moisture)
+    endif
+    
     !Wetting production
     !--------------------------------------------------------------------------
     g_road_balance_data(water_index,P_roadwetting_index,ti,tr,ro)=activity_data(g_road_wetting_index,ti,ro)/dt*use_wetting_data_flag

@@ -422,6 +422,17 @@
 	read(unit_in,*,ERR=10) temp_str !skip line
     call read_line_val3(unit_in,unit_logfile,h_ploughing_moisture(water_index),h_ploughing_moisture(snow_index),h_ploughing_moisture(ice_index))
     call read_line_val3(unit_in,unit_logfile,ploughing_thresh(water_index),ploughing_thresh(snow_index),ploughing_thresh(ice_index))
+    
+    !temp_str=''
+    !temp_str1='Ploughing minimum parameters'
+    !rewind(unit_in)
+    !do while (index(temp_str,trim(temp_str1)).eq.0)
+    !    read(unit_in,'(a)',ERR=10) temp_str
+	!end do
+	!write(unit_logfile,'(A)') '----------------------------------------------------------------'
+	!write(unit_logfile,'(A)') trim(temp_str)
+	!write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    !call read_line_val3(unit_in,unit_logfile,ploughing_min_thresh(water_index),ploughing_min_thresh(snow_index),ploughing_min_thresh(ice_index))
 
     !Energy balance parameters
     temp_str=''
@@ -703,6 +714,12 @@
     if (ploughing_thresh_2_ref.gt.0) then
         ploughing_thresh(snow_index)=ploughing_thresh_2_ref
         ploughing_thresh(ice_index)=ploughing_thresh_2_ref
+    endif
+    ploughing_min_thresh_2_ref=match_string_val('ploughing_min_thresh',unit_in,unit_logfile_temp,ploughing_min_thresh_2_ref)
+    if (ploughing_min_thresh_2_ref.gt.0) then
+        ploughing_min_thresh(snow_index)=ploughing_min_thresh_2_ref
+        ploughing_min_thresh(ice_index)=ploughing_min_thresh_2_ref
+        ploughing_min_thresh(water_index)=ploughing_min_thresh_2_ref
     endif
  	write(unit_logfile_temp,'(A)') '----------------------------------------------------------------'
 	write(unit_logfile_temp,'(A)') 'Cleaning'

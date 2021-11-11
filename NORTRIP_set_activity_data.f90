@@ -383,6 +383,9 @@
 
     endif
  
+!--------------------------------------------------------------------------
+!Use input activity data
+!--------------------------------------------------------------------------
     !Over ride the existing activity data with the input activity values if they are not no data values
     !If flag is 4 then override auto calculations, if 3 then do not do auto calculations
         if (auto_salting_flag.ge.3.and.activity_input_data(M_salting_index(1),ti,ro).ne.nodata_activity.and.available_activity_data(M_salting_index(1))) then

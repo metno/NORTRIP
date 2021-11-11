@@ -85,12 +85,13 @@
             sum_P(12)=sum(-M_road_balance_data(total_dust_index,x_load,S_dustspray_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(12)='Spray'
             sum_P(13)=sum(-M_road_balance_data(total_dust_index,x_load,S_cleaning_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(13)='Cleaning'
             sum_P(14)=sum(-M_road_balance_data(total_dust_index,x_load,S_windblown_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(14)='Wind'
+            sum_P(15)=sum(-M_road_balance_data(total_dust_index,x_load,S_dustploughing_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(15)='Plough'
         
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
             write(unit_output,'(A,I6,A,I2)') 'Sum road dust PM200 mass balance production and sink (g/m^2): Road=',ro,' Track=',tr
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
-            write(unit_output,'(14a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,14)
-            write(unit_output,'(14F10.3)') (sum_P(i),i=1,14) 
+            write(unit_output,'(15a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,15)
+            write(unit_output,'(15es10.2)') (sum_P(i),i=1,15) 
         
             !Show the energy budget
             mean_factor=1./(max_time_save-min_time_save+1)
@@ -124,6 +125,8 @@
             i=i+1;mean_g_road(i)=-sum(g_road_balance_data(m,S_freeze_index,min_time_save:max_time_save,tr,ro))*mean_factor;mean_g_road_text(i)='Freeze'
             i=i+1;mean_g_road(i)=-sum(g_road_balance_data(m,S_spray_index,min_time_save:max_time_save,tr,ro))*mean_factor;mean_g_road_text(i)='Spray'
             i=i+1;mean_g_road(i)=sum(g_road_balance_data(m,P_roadwetting_index,min_time_save:max_time_save,tr,ro))*mean_factor;mean_g_road_text(i)='Wetting'
+            i=i+1;mean_g_road(i)=-sum(g_road_balance_data(m,S_ploughing_index,min_time_save:max_time_save,tr,ro))*mean_factor;mean_g_road_text(i)='Plough_w'
+            i=i+1;mean_g_road(i)=-sum(g_road_balance_data(snow_index,S_ploughing_index,min_time_save:max_time_save,tr,ro))*mean_factor;mean_g_road_text(i)='Plough_s'
  
             write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
             write(unit_output,'(A,I6,A,I2)') 'Road moisture balance (mm/day): Road =',ro,' Track =',tr
