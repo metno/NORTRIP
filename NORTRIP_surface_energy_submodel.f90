@@ -144,7 +144,7 @@
             endif   
                 
                 !Calculate the salt solution and change in water and ice/snow
-                call salt_solution_sub(M2_road_salt_0*no_salt_factor,g_surf_in,s_surf_in,TCs_out,salt_type,dt_h,disolution_flag &
+                call salt_solution_sub(M2_road_salt_0*no_salt_factor,g_surf_in,s_surf_in,TCs_out,salt_type,dt_h,disolution_flag,use_salt_humidity_flag &
                     ,melt_temperature_salt_temp,RH_salt_temp,M_road_dissolved_ratio_temp &
                     ,g_road_temp,s_road_temp,g_road_equil_at_T_s,s_road_equil_at_T_s)
     
@@ -367,7 +367,7 @@
 !salt_solution_sub
 !--------------------------------------------------------------------------
         
-    subroutine salt_solution_sub(M2_road_salt,g_road,s_road,T_s,salt_type,dt_h,disolution_flag &
+    subroutine salt_solution_sub(M2_road_salt,g_road,s_road,T_s,salt_type,dt_h,disolution_flag,use_salt_humidity_flag &
         ,melt_temperature_salt,RH_salt,M_road_dissolved_ratio,g_road_out,s_road_out,g_road_at_T_s_out,s_road_at_T_s_out)
 !==========================================================================
 !NORTRIP model
@@ -390,6 +390,7 @@
     integer salt_type(num_salt)
     real  dt_h
     integer disolution_flag
+    integer use_salt_humidity_flag
     !Output variables
     real melt_temperature_salt(num_salt)
     real RH_salt(num_salt)
@@ -436,6 +437,8 @@
 
     call set_salt_parameters
     
+    if (use_salt_humidity_flag.eq.2) RH_over_saturated_fraction(na)=0.99
+
     !Convert surface moisture to moles per m^2
     N_moles_water=1000*g_road/M_atomic_water
 

@@ -793,6 +793,8 @@
     
     subroutine set_salt_parameters
     
+    implicit none
+        
     M_atomic_water=18.015
     
     M_atomic(na)=58.4
@@ -878,7 +880,7 @@
     RH_over_saturated_fraction(mg)=0.99
     RH_over_saturated_fraction(cma)=0.99
     RH_over_saturated_fraction(ca)=0.99
-    
+        
     end subroutine set_salt_parameters
 
     
