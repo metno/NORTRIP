@@ -477,14 +477,15 @@
                 activity_data(t_ploughing_index,ti,ro)=activity_data(t_ploughing_index,ti,ro)+activity_input_data(t_ploughing_index,ti,ro)
             else
                 activity_data(t_ploughing_index,ti,ro)=activity_input_data(t_ploughing_index,ti,ro)
-            endif          
-            if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
-                if (auto_ploughing_flag.eq.5) then
-                    activity_data(g_road_wetting_index,ti,ro)=activity_data(g_road_wetting_index,ti,ro)+activity_input_data(g_road_wetting_index,ti,ro)
-                else
-                    activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
-                endif              
-            endif
+            endif      
+            !No wetting in ploughing
+            !if (activity_input_data(g_road_wetting_index,ti,ro).ne.nodata_activity) then
+            !    if (auto_ploughing_flag.eq.5) then
+            !        activity_data(g_road_wetting_index,ti,ro)=activity_data(g_road_wetting_index,ti,ro)+activity_input_data(g_road_wetting_index,ti,ro)
+            !    else
+            !        activity_data(g_road_wetting_index,ti,ro)=activity_input_data(g_road_wetting_index,ti,ro)
+            !    endif              
+            !endif
             
             if (activity_data(t_ploughing_index,ti,ro).gt.0) then
                 time_since_last_ploughing(ro)=0
