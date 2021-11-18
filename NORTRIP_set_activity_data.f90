@@ -48,7 +48,7 @@
 !Automatically add salt
 !--------------------------------------------------------------------------
     if (auto_salting_flag.ne.0.and.auto_salting_flag.ne.3.and.road_type_activity_flag(road_type_salt_index(1),ro).gt.0) then
-        if (auto_salting_flag.eq.1.or.auto_salting_flag.eq.4) then
+        if (auto_salting_flag.eq.1.or.auto_salting_flag.ge.4) then
             M_salting_0(1:num_salt)=0.0
             g_road_wetting_0=0.0
         elseif (auto_salting_flag.eq.2) then
@@ -121,7 +121,7 @@
 !Automatically add sand
 !--------------------------------------------------------------------------
     if (auto_sanding_flag.ne.0.and.auto_sanding_flag.ne.3.and.road_type_activity_flag(road_type_sanding_index,ro).gt.0) then
-        if (auto_sanding_flag.eq.1.or.auto_sanding_flag.eq.4) then
+        if (auto_sanding_flag.eq.1.or.auto_sanding_flag.ge.4) then
             M_sanding_0=0
             g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)
         elseif (auto_sanding_flag.eq.2) then
@@ -188,7 +188,7 @@
 !--------------------------------------------------------------------------
     plough_temp(1:num_moisture)=0.0
     if (auto_ploughing_flag.ne.0.and.auto_ploughing_flag.ne.3.and.use_ploughing_data_flag.gt.0.and.road_type_activity_flag(road_type_ploughing_index,ro).gt.0) then
-        if (auto_ploughing_flag.eq.1.or.auto_ploughing_flag.eq.4) then
+        if (auto_ploughing_flag.eq.1.or.auto_ploughing_flag.ge.4) then
             t_ploughing_0=0
         elseif (auto_ploughing_flag.eq.2) then
             t_ploughing_0=activity_data(t_ploughing_index,ti,ro)
@@ -223,7 +223,7 @@
 !--------------------------------------------------------------------------
     if (auto_cleaning_flag.ne.0.and.auto_cleaning_flag.ne.3.and.use_cleaning_data_flag.gt.0.and.road_type_activity_flag(road_type_cleaning_index,ro).gt.0) then
     
-        if (auto_cleaning_flag.eq.1.or.auto_cleaning_flag.eq.4) then
+        if (auto_cleaning_flag.eq.1.or.auto_cleaning_flag.ge.4) then
             t_cleaning_0=0
             g_road_wetting_0=activity_data(g_road_wetting_index,ti,ro)
         elseif (auto_cleaning_flag.eq.2) then
@@ -288,7 +288,7 @@
 !Automatically add second salt for binding
 !--------------------------------------------------------------------------
     if (auto_binding_flag.ne.0.and.auto_binding_flag.ne.3.and.road_type_activity_flag(road_type_salt_index(2),ro).gt.0) then
-        if (auto_binding_flag.eq.1.or.auto_binding_flag.eq.4) then
+        if (auto_binding_flag.eq.1.or.auto_binding_flag.ge.4) then
             M_salting_0(2)=0
             g_road_wetting_0=0
         elseif (auto_binding_flag.eq.2) then
