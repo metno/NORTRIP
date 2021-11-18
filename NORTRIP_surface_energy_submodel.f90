@@ -518,8 +518,11 @@
             !afactor(i)=(1.-antoine_scaling)*(((1-(1-T_0/(T_0+melt_temperature_saturated(salt_type(i))))*log(1-solution_salt(i))/log(1-saturated(salt_type(i))))**-1.)-1.)+antoine_scaling
         endif
         
-        RH_salt(i)=min(100.,100.*afactor(i)*vp_s/vp_ice)
-        RH_salt_saturated=min(100.,100.*vp_s/vp_ice)
+        !RH_salt(i)=min(100.,100.*afactor(i)*vp_s/vp_ice)
+        !RH_salt_saturated=min(100.,100.*vp_s/vp_ice)
+        !Recalculate the vapour pressure as a weight of the salt solution and the ice (no salt). Set in 17.11.2021
+        RH_salt(i)=min(100.,100.*afactor(i)*(vp_s*(g_road_out+surface_moisture_min)+vp_ice*s_road_out)/(g_road_out+s_road_out+surface_moisture_min)/vp_ice)
+        RH_salt_saturated=min(100.,100.*(vp_s*(g_road_out+surface_moisture_min)+vp_ice*s_road_out)/(g_road_out+s_road_out+surface_moisture_min)/vp_ice)
         RH_salt(i)=max(RH_salt_saturated,RH_salt(i))
         melt_temperature_salt(i)=max(melt_temperature_saturated(salt_type(i)),((solution_salt(i)/saturated(salt_type(i)))**salt_power)*melt_temperature_saturated(salt_type(i)))
         !melt_temperature_salt(i)=max(melt_temperature_saturated(salt_type(i)), &
