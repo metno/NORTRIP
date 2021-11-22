@@ -200,7 +200,7 @@
                         activity_data(M_salting_index(1),ti,ro),achar(9), &
                         activity_data(M_salting_index(2),ti,ro),achar(9), &
                         activity_data(M_sanding_index,ti,ro)*f_PM_bin(sand_index,pm_all,1),achar(9), &
-                        activity_data(g_road_wetting_index,ti,ro)/1000.,achar(9), &
+                        activity_data(g_road_wetting_index,ti,ro),achar(9), &
                         activity_data(t_ploughing_index,ti,ro)*h_ploughing_moisture(snow_index),achar(9), &
                         activity_data(t_cleaning_index,ti,ro)*efficiency_of_cleaning(ro)
 
