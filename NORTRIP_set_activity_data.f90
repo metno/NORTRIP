@@ -452,7 +452,7 @@
         if (auto_cleaning_flag.ge.3.and.activity_input_data(t_cleaning_index,ti,ro).ne.nodata_activity.and.available_activity_data(t_cleaning_index)) then
 
             if (auto_cleaning_flag.eq.5) then
-                activity_data(t_cleaning_index,ti,ro)=max(1.,activity_data(t_cleaning_index,ti,ro)+activity_input_data(t_cleaning_index,ti,ro))
+                activity_data(t_cleaning_index,ti,ro)=min(1.,activity_data(t_cleaning_index,ti,ro)+activity_input_data(t_cleaning_index,ti,ro))
             else
                 activity_data(t_cleaning_index,ti,ro)=activity_input_data(t_cleaning_index,ti,ro)
             endif          
@@ -474,7 +474,7 @@
         if (auto_ploughing_flag.ge.3.and.activity_input_data(t_ploughing_index,ti,ro).ne.nodata_activity.and.available_activity_data(t_ploughing_index)) then
 
             if (auto_ploughing_flag.eq.5) then
-                activity_data(t_ploughing_index,ti,ro)=max(1.,activity_data(t_ploughing_index,ti,ro)+activity_input_data(t_ploughing_index,ti,ro))
+                activity_data(t_ploughing_index,ti,ro)=min(1.,activity_data(t_ploughing_index,ti,ro)+activity_input_data(t_ploughing_index,ti,ro))
             else
                 activity_data(t_ploughing_index,ti,ro)=activity_input_data(t_ploughing_index,ti,ro)
             endif      
