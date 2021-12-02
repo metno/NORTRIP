@@ -446,8 +446,22 @@
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
 	read(unit_in,*,ERR=10) temp_str !skip
     call read_line_val1(unit_in,unit_logfile,g_road_evaporation_thresh)
-    call read_line_val1(unit_in,unit_logfile,z0)
-    z0=z0/1000 !Convert from mm to m
+    !call read_line_val1(unit_in,unit_logfile,z0)
+    call read_line_val1or3(unit_in,unit_logfile,z0m_in,z0t_in,z0q_in)
+    !write(*,*) z0m_in,z0t_in,z0q_in
+    !stop
+    z0=z0m_in/1000. !Convert from mm to m
+    if (z0t_in.eq.0) then
+        z0t=z0/10. !Default
+    else
+        z0t=z0t_in/1000.
+    endif
+    if (z0q_in.eq.0) then
+        z0q=z0/10. !Default
+    else
+        z0q=z0q_in/1000.
+    endif
+    
     call read_line_val1(unit_in,unit_logfile,albedo_snow)
     call read_line_val1(unit_in,unit_logfile,dzs)
     call read_line_val1(unit_in,unit_logfile,sub_surf_average_time)

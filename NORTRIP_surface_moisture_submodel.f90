@@ -15,7 +15,7 @@
     !Internal variables that need to be defined
     real :: dz_snow_albedo      !Depth of snow required before implementing snow albedo mm.w.e.
     real :: Z_CLOUD             !Only used when no global radiation is available
-    real :: z0t                 !Defines the rougness length for temperature relative to that for momentum
+    !real :: z0t                 !Defines the rougness length for temperature relative to that for momentum
     real length_veh(num_veh)    !Vehicle lengths used to calculate the vehicle heat flux    
     integer :: retain_water_by_snow=1 !Decides if water is allowed to drain off normally when snow is present
     real :: surface_moisture_min=1e-12 !Mimimum allowable total surface wetness 
@@ -77,7 +77,7 @@
     retain_water_by_snow=1      !Decides if water is allowed to drain off normally when snow is present
     dz_snow_albedo=3            !Depth of snow required before implementing snow albedo mm.w.e.
     Z_CLOUD=100                 !Only used when no global radiation is available
-    z0t=z0/10.                  !Sets temperature and humidity roughness length
+    !z0t=z0/10.                  !Sets temperature and humidity roughness length
     length_veh(li)=5            !Vehicle lengths used to calculate the vehicle heat flux
     length_veh(he)=15
     
@@ -144,12 +144,17 @@
     !Evaporation
     !--------------------------------------------------------------------------
     !Calculate aerodynamic resistance
-    road_meteo_data(r_aero_index,ti,tr,ro) &
+    road_meteo_data(r_aero_t_index,ti,tr,ro) &
         =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
-    road_meteo_data(r_aero_notraffic_index,ti,tr,ro) &
+    road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro) &
         =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+    road_meteo_data(r_aero_q_index,ti,tr,ro) &
+        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
+    road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro) &
+        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
     if (use_traffic_turb_flag.eq.0) then
-        road_meteo_data(r_aero_index,ti,tr,ro)=road_meteo_data(r_aero_notraffic_index,ti,tr,ro)
+        road_meteo_data(r_aero_t_index,ti,tr,ro)=road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro)
+        road_meteo_data(r_aero_q_index,ti,tr,ro)=road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro)
     endif
 
     !Calculate the traffic induced heat flux (W/m2).
@@ -186,7 +191,8 @@
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &
 	        ,road_meteo_data(H_traffic_index,ti,tr,ro) &
-	        ,road_meteo_data(r_aero_index,ti,tr,ro) &
+	        ,road_meteo_data(r_aero_t_index,ti,tr,ro) &
+	        ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
 	        ,meteo_data(T_a_index,ti,ro) &
 	        ,T_s_0 &
 	        ,road_meteo_data(T_sub_index,ti,tr,ro) &

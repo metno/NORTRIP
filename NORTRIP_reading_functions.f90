@@ -373,7 +373,7 @@
     read(unit_in,'(a)',end=10) temp_str
     index_val=index(temp_str,achar(9))
     header_str=temp_str(1:index_val-1)
-    val_str=temp_str(index_val+1:)
+    val_str=temp_str(index_val+1:)        
     read(val_str,*) val1,val2,val3
     if (unit_output.ge.0) then
         write(unit_output,'(A40,A3,3es10.2)') trim(header_str),' = ',val1,val2,val3
@@ -383,6 +383,52 @@
 10	write(unit_output,*) 'ERROR: End of file read during read_line_val3'
 
     end subroutine read_line_val3
+!----------------------------------------------------------------------
+
+    !----------------------------------------------------------------------
+    subroutine read_line_val1or3(unit_in,unit_output,val1,val2,val3)
+    !Reads a leading string and returns the real variable that follows it
+    !Tab delimitted between.
+    implicit none
+    
+    character(256) header_str,val_str,temp_str
+    integer unit_in,unit_output
+    integer index_val,verify_val,i
+    real val1,val2,val3
+    
+    read(unit_in,'(a)',end=10) temp_str
+    index_val=index(temp_str,achar(9))
+    header_str=temp_str(1:index_val-1)
+    val_str=temp_str(index_val+1:)
+    read(val_str,*) val1
+    !Go to next tab
+    index_val=index(val_str,achar(9))
+    if (index_val.eq.0) then
+        val2=0;val3=0
+    else
+        val_str=val_str(index_val+1:)
+        !Check for any more numbers. This is the most redickuless thing I have ever done but do not know what else to do
+        index_val=0
+        do i=48,57
+            index_val=index_val+index(val_str,achar(i))
+            !write(*,*) i,index_val,achar(i)
+        enddo
+        if (index_val.eq.0) then
+            val2=0;val3=0
+        else
+            !Assume there are two more
+            read(val_str,*) val2,val3
+        endif
+    endif
+
+    if (unit_output.ge.0) then
+        write(unit_output,'(A40,A3,3es10.2)') trim(header_str),' = ',val1,val2,val3
+    endif
+    return
+    
+10	write(unit_output,*) 'ERROR: End of file read during read_line_val3'
+
+    end subroutine read_line_val1or3
 !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------

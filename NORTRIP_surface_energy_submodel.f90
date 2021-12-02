@@ -1,5 +1,5 @@
 
-    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
+    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
         ,P,dzs_in,dt_h_in,g_surf_in,s_surf_in,g_min,M2_road_salt_0,salt_type,sub_surf_param &
         ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag &
         ,TCs_out,melt_temperature,RH_salt_final,RHs,M_road_dissolved_ratio_temp &
@@ -13,7 +13,7 @@
     implicit none
     
     !Input variables
-    real short_net,long_in,H_traffic,r_aero,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
+    real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
     real g_surf_in,s_surf_in,g_min,M2_road_salt_0(num_salt),sub_surf_param(3)
     integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag,salt_type(num_salt)
     !Output variables
@@ -119,7 +119,7 @@
     a_rad=short_net+long_in*eps_s+H_traffic
     a_RL=(1-4*TC/TK_a)*eps_s*sigma*TK_a**4
     b_RL=4.0*eps_s*sigma*TK_a**3
-    a_H=rho*Cp/r_aero
+    a_H=rho*Cp/r_aero_t
 
     !Specific humidty of the air
     qsat = q_sat_func(TC,P)
@@ -231,8 +231,8 @@
             qs_ice=qsats_ice*RHs/100.
 
             !Latent heat flux
-            L_water=-rho*lambda*(q-qs_water)/r_aero
-            L_ice=-rho*lambda_ice*(q-qs_ice)/r_aero
+            L_water=-rho*lambda*(q-qs_water)/r_aero_q
+            L_ice=-rho*lambda_ice*(q-qs_ice)/r_aero_q
             !Limit latent heat flux to reasonable values
             L_water=max(L_min,min(L_max,L_water))
             L_ice=max(L_min,min(L_max,L_ice))
@@ -293,11 +293,11 @@
             TCs=(TCs_0+TCs_out)/2
 
             !Diagnose sensible heat flux based on average surface temperature
-            H=-rho*Cp*(TC-TCs)/r_aero
+            H=-rho*Cp*(TC-TCs)/r_aero_t
 
             !Diagnose potential evaporation
-            L_pot_water=-rho*lambda*(q-qsats_water)/r_aero
-            L_pot_ice=-rho*lambda_ice*(q-qsats_ice)/r_aero
+            L_pot_water=-rho*lambda*(q-qsats_water)/r_aero_q
+            L_pot_ice=-rho*lambda_ice*(q-qsats_ice)/r_aero_q
             evap_pot_water=L_pot_water/lambda*dt_sec
             evap_pot_ice=L_pot_ice/lambda_ice*dt_sec
             evap_pot=g_surf_fraction*evap_pot_water+s_surf_fraction*evap_pot_ice

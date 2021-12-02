@@ -119,16 +119,18 @@
     parameter (num_process=4)
     
     !Road meteorological data
-    integer T_s_index,T_melt_index,r_aero_index,r_aero_notraffic_index,RH_s_index,RH_salt_final_index
+    integer T_s_index,T_melt_index,r_aero_t_index,r_aero_t_notraffic_index,RH_s_index,RH_salt_final_index
     integer L_index,H_index,G_index,G_sub_index,evap_index,evap_pot_index
     integer rad_net_index,short_rad_net_index,long_rad_net_index,long_rad_out_index,H_traffic_index
     integer road_temperature_obs_index,road_wetness_obs_index,T_sub_index,short_rad_net_clearsky_index,T_s_dewpoint_index
+    integer r_aero_q_index,r_aero_q_notraffic_index
     integer num_road_meteo
-    parameter (T_s_index=1,T_melt_index=2,r_aero_index=3,r_aero_notraffic_index=4,RH_s_index=5,RH_salt_final_index=6)
+    parameter (T_s_index=1,T_melt_index=2,r_aero_t_index=3,r_aero_t_notraffic_index=4,RH_s_index=5,RH_salt_final_index=6)
     parameter (L_index=7,H_index=8,G_index=9,G_sub_index=10,evap_index=11,evap_pot_index=12)
     parameter (rad_net_index=13,short_rad_net_index=14,long_rad_net_index=15,long_rad_out_index=16,H_traffic_index=17)
     parameter (road_temperature_obs_index=18,road_wetness_obs_index=19,T_sub_index=20,short_rad_net_clearsky_index=21,T_s_dewpoint_index=22)
-    parameter (num_road_meteo=22)
+    parameter (r_aero_q_index=23,r_aero_q_notraffic_index=24)
+    parameter (num_road_meteo=24)
 
     !Road moisture mass balance production and sink data
     integer S_melt_index,P_melt_index,P_freeze_index,S_freeze_index,P_evap_index
@@ -386,7 +388,7 @@
     real g_road_drainable_min,snow_dust_drainage_retainment_limit,tau_road_drainage,g_road_drainable_thresh
     real h_ploughing_moisture(num_moisture),ploughing_thresh(num_moisture),ploughing_min_thresh(num_moisture)
     real g_road_evaporation_thresh
-    real z0
+    real z0,z0t,z0q,z0m_in,z0t_in,z0q_in
     real albedo_snow
     real dzs
     real sub_surf_param(3)
