@@ -447,12 +447,13 @@
     if (activity_data(t_cleaning_index,ti,ro).gt.0) then
     do s=1,num_source
         !The new cleaning efficiency is based on the amount of PM_200 available. Converted to g/m2
-        if (use_new_cleaning) then
+        if (use_new_cleaning.and.s.ne.salt1_index.and.s.ne.salt2_index) then
             !For all size bins make the efficiency dependent on the pm_200 value
-            h_eff_cleaning_temp(s,1:num_size)=(1-exp(-max(M_road_0_data(s,pm_200)/1000./b_road(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,1:num_size)
+            h_eff_cleaning_temp(s,1:num_size)=(1-exp(-max(M_road_0_data(s,pm_200)/1000./b_road_lanes(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,1:num_size)
             !For the sand bin size the efficiency is specified based on the the sand mass, making it very efficient, determined by h_eff
-            h_eff_cleaning_temp(s,pm_all)=(1-exp(-max(M_road_0_data(s,pm_all)/1000./b_road(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,pm_all)
+            h_eff_cleaning_temp(s,pm_all)=(1-exp(-max(M_road_0_data(s,pm_all)/1000./b_road_lanes(ro)-10.,0.)/f_cleaning))*h_eff(cleaning_eff_index,s,pm_all)
         else
+            !For salt use the normal efficiency
             h_eff_cleaning_temp(s,1:num_size)=h_eff(cleaning_eff_index,s,1:num_size)
         endif
         R_cleaning(s,1:num_size)=-log(1-min(0.99999,h_eff_cleaning_temp(s,1:num_size) &

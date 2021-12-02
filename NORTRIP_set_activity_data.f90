@@ -390,7 +390,7 @@
     !If flag is 4 then override auto calculations if activity data exists, if 3 then auto calculations have not been done
     !If flag is 5 then will add input data to rule data
         if (auto_salting_flag.ge.3.and.activity_input_data(M_salting_index(1),ti,ro).ne.nodata_activity.and.available_activity_data(M_salting_index(1))) then
-            
+            !if (ti.eq.1) write(*,*) 'First hour salting activity data: ',activity_input_data(M_salting_index(1),ti,ro)
             if (auto_salting_flag.eq.5) then
                 activity_data(M_salting_index(1),ti,ro)=activity_data(M_salting_index(1),ti,ro)+activity_input_data(M_salting_index(1),ti,ro)
             else
