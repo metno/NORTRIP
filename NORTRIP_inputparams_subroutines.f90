@@ -606,7 +606,7 @@
     !ACTIVITY                                                        
     use_salting_data_flag(1)=match_string_val('use_salting_data_1_flag',unit_in,unit_logfile_temp,0.0)
     use_salting_data_flag(2)=match_string_val('use_salting_data_2_flag',unit_in,unit_logfile_temp,0.0)
-    use_sanding_data_flag=match_string_int('use_sanding_data_flag',unit_in,unit_logfile_temp,0)
+    use_sanding_data_flag=match_string_val('use_sanding_data_flag',unit_in,unit_logfile_temp,0)
     use_ploughing_data_flag=match_string_int('use_ploughing_data_flag',unit_in,unit_logfile_temp,0)
     use_cleaning_data_flag=match_string_int('use_cleaning_data_flag',unit_in,unit_logfile_temp,0)
     use_wetting_data_flag=match_string_int('use_wetting_data_flag',unit_in,unit_logfile_temp,0)

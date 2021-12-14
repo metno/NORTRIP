@@ -427,7 +427,6 @@
     integer :: canyon_long_rad_flag=1   
     integer :: use_subsurface_flag=1   
     integer :: use_traffic_turb_flag=1   
-    integer :: use_sanding_data_flag=1   
     integer :: use_ploughing_data_flag=1   
     integer :: use_cleaning_data_flag=1   
     integer :: use_wetting_data_flag=1   
@@ -444,6 +443,7 @@
     
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
+    real :: use_sanding_data_flag=1   
     
 
     !Auto activity data
