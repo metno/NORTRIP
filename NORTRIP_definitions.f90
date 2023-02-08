@@ -227,8 +227,8 @@
     parameter (num_track_max=5)
  
     !Road type indexes
-    integer normal_roadtype,tunnel_roadtype,bridge_roadtype,bicyclepath_roadtype,tunnelportal_roadtype
-    parameter (normal_roadtype=1,tunnel_roadtype=2,bridge_roadtype=3,bicyclepath_roadtype=4,tunnelportal_roadtype=6)
+    integer normal_roadtype,tunnel_roadtype,bridge_roadtype,bicyclepath_roadtype,runway_roadtype,tunnelportal_roadtype
+    parameter (normal_roadtype=1,tunnel_roadtype=2,bridge_roadtype=3,bicyclepath_roadtype=4,runway_roadtype=7,tunnelportal_roadtype=6)
     
     !Road type activity. Only in Fortran version since it is multiroad only
     integer road_type_salting_index,road_type_sanding_index,road_type_cleaning_index,road_type_ploughing_index,road_type_binding_index
@@ -351,6 +351,7 @@
     character(256) path_fortran_output
     character(256) filename_log
     character(256) path_init
+    character(256) path_init_out
     character(256) filename_init
     character(256) path_output_emis
     character(256) filename_output_emis

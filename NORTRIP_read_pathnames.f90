@@ -66,6 +66,8 @@
 
     !Input path to complete initialisation path
     path_init=match_string_char('Model init data path',unit_in,unit_logfile,'')
+    path_init_out=path_init
+    path_init_out=match_string_char('Model init out data path',unit_in,unit_logfile,path_init_out)
     filename_init=match_string_char('Model init data filename',unit_in,unit_logfile,'')
    
     !Output path for emission files only

@@ -79,8 +79,8 @@
             !filename_temp='test_'//filename_init
     
             !Open the outputfile for date
-            filename_asc=trim(path_init)//trim(filename_outputdata)//'_init.txt'
-            filename_bin=trim(path_init)//trim(filename_outputdata)//'_init.dat'
+            filename_asc=trim(temp_name)//trim(filename_outputdata)//'_init.txt'
+            filename_bin=trim(temp_name)//trim(filename_outputdata)//'_init.dat'
             call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
             call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
             call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
