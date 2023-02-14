@@ -266,8 +266,13 @@
             g_road_balance_data(water_index,P_evap_index,ti,tr,ro)=-road_meteo_data(evap_index,ti,tr,ro)
             g_road_balance_data(snow_index,P_evap_index,ti,tr,ro)=0
             g_road_balance_data(ice_index,P_evap_index,ti,tr,ro)=0
-        else
-            !Condensation only to ice (not snow)
+        elseif (evaporation_flag.eq.2) then
+            !Condensation to snow. Hoar frost is more like snow than ice from melting
+            g_road_balance_data(snow_index,P_evap_index,ti,tr,ro)=-road_meteo_data(evap_index,ti,tr,ro)
+            g_road_balance_data(water_index,P_evap_index,ti,tr,ro)=0
+            g_road_balance_data(ice_index,P_evap_index,ti,tr,ro)=0
+        elseif (evaporation_flag.eq.1) then
+            !Condensation only to ice
             g_road_balance_data(snow_index,P_evap_index,ti,tr,ro)=0
             g_road_balance_data(water_index,P_evap_index,ti,tr,ro)=0
             g_road_balance_data(ice_index,P_evap_index,ti,tr,ro)=-road_meteo_data(evap_index,ti,tr,ro)
