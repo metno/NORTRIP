@@ -73,7 +73,7 @@
             'Minute',achar(9), &
             'T_air',achar(9), &
             'RH_air',achar(9), &
-            'Td_mod',achar(9), &
+            'Td_air',achar(9), &
             'Wind_FF',achar(9), &
             'Wind_DD',achar(9), &
             'Rain',achar(9), &
