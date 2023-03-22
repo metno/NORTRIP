@@ -986,7 +986,7 @@
  
     implicit none
     
-    real memory_size
+    !real memory_size
     
     !Allocates all the arrays used in NORTRIP calculations except the input data
     !Input data is allocated in the input data routine 'read_NORTRIP_inputdata'
@@ -1053,31 +1053,31 @@
     !write(*,'(a,f12.2)') 'azimuth_ang ',real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.)
     !write(*,'(a,f12.2)') 'zenith_ang ',real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
        
-    memory_size=real(storage_size(M_road_data)*size(M_road_data)/8./1000000.) + &
-        real(storage_size(M_road_bin_data)*size(M_road_bin_data)/8./1000000.) + &
-        real(storage_size(M_road_bin_balance_data)*size(M_road_bin_balance_data)/8./1000000.) + &
-        real(storage_size(C_data)/8.)*real(size(C_data)/1000000.) + &
-        real(storage_size(E_road_data)/8.)*real(size(E_road_data)/1000000.) + &
-        real(storage_size(E_road_bin_data)*size(E_road_bin_data)/8./1000000.) + &
-        real(storage_size(WR_time_data)*size(WR_time_data)/8./1000000.) + &
-        real(storage_size(road_salt_data)*size(road_salt_data)/8./1000000.) + &
-        real(storage_size(road_meteo_data)*size(road_meteo_data)/8./1000000.) + &
-        real(storage_size(g_road_balance_data)*size(g_road_balance_data)/8./1000000.) + &
-        real(storage_size(f_q)*size(f_q)/8./1000000.) + &
-        real(storage_size(f_q_obs)*size(f_q_obs)/8./1000000.) + &
-        real(storage_size(traffic_data)*size(traffic_data)/8./1000000.) + &
-        real(storage_size(meteo_data)*size(meteo_data)/8./1000000.) + &
-        real(storage_size(airquality_data)*size(airquality_data)/8./1000000.) + &
-        real(storage_size(activity_data)*size(activity_data)/8./1000000.) + &
-        real(storage_size(activity_input_data)*size(activity_input_data)/8./1000000.) + &
-        real(storage_size(M_road_init)*size(M_road_init)/8./1000000.) + &
-        real(storage_size(g_road_init)*size(g_road_init)/8./1000000.) + &
-        real(storage_size(slope_road)*size(slope_road)/8./1000000.)*40. + &
-        real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.) + &
-        real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
+   ! memory_size=real(storage_size(M_road_data)*size(M_road_data)/8./1000000.) + &
+   !     real(storage_size(M_road_bin_data)*size(M_road_bin_data)/8./1000000.) + &
+   !     real(storage_size(M_road_bin_balance_data)*size(M_road_bin_balance_data)/8./1000000.) + &
+   !     real(storage_size(C_data)/8.)*real(size(C_data)/1000000.) + &
+   !     real(storage_size(E_road_data)/8.)*real(size(E_road_data)/1000000.) + &
+   !     real(storage_size(E_road_bin_data)*size(E_road_bin_data)/8./1000000.) + &
+   !     real(storage_size(WR_time_data)*size(WR_time_data)/8./1000000.) + &
+   !     real(storage_size(road_salt_data)*size(road_salt_data)/8./1000000.) + &
+   !     real(storage_size(road_meteo_data)*size(road_meteo_data)/8./1000000.) + &
+   !     real(storage_size(g_road_balance_data)*size(g_road_balance_data)/8./1000000.) + &
+   !     real(storage_size(f_q)*size(f_q)/8./1000000.) + &
+   !     real(storage_size(f_q_obs)*size(f_q_obs)/8./1000000.) + &
+   !     real(storage_size(traffic_data)*size(traffic_data)/8./1000000.) + &
+   !     real(storage_size(meteo_data)*size(meteo_data)/8./1000000.) + &
+   !     real(storage_size(airquality_data)*size(airquality_data)/8./1000000.) + &
+   !     real(storage_size(activity_data)*size(activity_data)/8./1000000.) + &
+   !     real(storage_size(activity_input_data)*size(activity_input_data)/8./1000000.) + &
+   !     real(storage_size(M_road_init)*size(M_road_init)/8./1000000.) + &
+   !     real(storage_size(g_road_init)*size(g_road_init)/8./1000000.) + &
+   !     real(storage_size(slope_road)*size(slope_road)/8./1000000.)*40. + &
+   !     real(storage_size(azimuth_ang)*size(azimuth_ang)/8./1000000.) + &
+   !     real(storage_size(zenith_ang)*size(zenith_ang)/8./1000000.)
     
     !Times 2 because RAM in 64 bit is actually double and long anyway
-    write(*,'(a,f12.3)')'Estimated total storage size of arrays in gigabytes: ',memory_size/1000.*2.
+    !write(*,'(a,f12.3)')'Estimated total storage size of arrays in gigabytes: ',memory_size/1000.*2.
 
     !Auto road maintenace
     allocate (time_since_last_salting(0:n_roads))
