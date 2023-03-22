@@ -101,8 +101,8 @@
             'T_sub_mod',achar(9), &
             'T_freeze_mod',achar(9), &
             'T_surf_meteo',achar(9), &
-            'SW_rad_in',achar(9), &
             'SW_rad_cls',achar(9), &
+            'SW_rad_in',achar(9), &
             'SW_rad_net',achar(9), &
             'LW_rad_in',achar(9), &
             'LW_rad_net',achar(9), &
