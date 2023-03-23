@@ -854,7 +854,7 @@ subroutine read_NORTRIP_inputdata
 
     !Check traffic data. Fill nodata values with last valid value
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input traffic data available (%) with min and max and average'
+ 	write(unit_logfile,'(A)') 'Input traffic data available (%) with min and max and road average total'
     do i=1,num_traffic_index
         call check_data_sub(traffic_data(i,:,ro),available_traffic_data(i),nodata_input,percent_available)
  	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(traffic_match_str(i)),percent_available,minval(traffic_data(i,:,ro)),maxval(traffic_data(i,:,ro)),sum(traffic_data(i,:,:))/n_roads   
@@ -897,10 +897,10 @@ subroutine read_NORTRIP_inputdata
     
     !Check air quality data. Only checks availability
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input air quality data available (%)'
+ 	write(unit_logfile,'(A)') 'Input air quality data available (%) with min and max and road average total'
     do i=1,num_airquality_index
         call check_available_data_sub(airquality_data(i,:,ro),available_airquality_data(i),nodata_input,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(airquality_match_str(i)),percent_available,minval(airquality_data(i,:,ro)),maxval(airquality_data(i,:,ro))
+ 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(airquality_match_str(i)),percent_available,minval(airquality_data(i,:,ro)),maxval(airquality_data(i,:,ro)),sum(airquality_data(i,:,:))/n_roads
     enddo
     
  	write(unit_logfile,'(A)') '================================================================'
