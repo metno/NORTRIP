@@ -854,10 +854,10 @@ subroutine read_NORTRIP_inputdata
 
     !Check traffic data. Fill nodata values with last valid value
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input traffic data available (%)'
+ 	write(unit_logfile,'(A)') 'Input traffic data available (%) with min and max and average'
     do i=1,num_traffic_index
         call check_data_sub(traffic_data(i,:,ro),available_traffic_data(i),nodata_input,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(traffic_match_str(i)),percent_available,minval(traffic_data(i,:,ro)),maxval(traffic_data(i,:,ro))     
+ 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(traffic_match_str(i)),percent_available,minval(traffic_data(i,:,ro)),maxval(traffic_data(i,:,ro)),sum(traffic_data(i,:,:))/n_roads   
     enddo
 
     !Check meteo data. Fill nodata values with last valid value
@@ -870,7 +870,7 @@ subroutine read_NORTRIP_inputdata
 
    !Check activity data. Only check availability
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Activity data available (%)'
+ 	write(unit_logfile,'(A)') 'Activity data available (%) with min and max'
     do i=1,num_activity_index
         call check_available_data_sub(activity_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
  	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_data(i,:,ro)),maxval(activity_data(i,:,ro))
@@ -884,7 +884,7 @@ subroutine read_NORTRIP_inputdata
     !Check input activity data. Only check availability
     !Do not check as it sets the availability to false
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input activity data available (%)'
+ 	write(unit_logfile,'(A)') 'Input activity data available (%) with min and max'
     do i=1,num_activity_index
         !call check_available_data_sub(activity_input_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
  	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
