@@ -149,13 +149,13 @@
             endif                
             i=i+1;
             if (sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro)).eq.0) then
-                mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro))*mean_factor
+                mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro))*mean_factor;mean_traffic_text(i)='V_LI'
             else
                 mean_traffic(i)=sum(traffic_data(V_veh_index(li),min_time_save:max_time_save,ro)*traffic_data(N_v_index(li),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(li),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_LI'
             endif                
             i=i+1;
             if (sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro)).eq.0) then 
-                mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro))*mean_factor
+                mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro))*mean_factor;mean_traffic_text(i)='V_HE'
             else
                 mean_traffic(i)=sum(traffic_data(V_veh_index(he),min_time_save:max_time_save,ro)*traffic_data(N_v_index(he),min_time_save:max_time_save,ro))/sum(traffic_data(N_v_index(he),min_time_save:max_time_save,ro));mean_traffic_text(i)='V_HE'
             endif           

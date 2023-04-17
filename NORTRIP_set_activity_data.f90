@@ -43,7 +43,42 @@
     do tr=1,num_track
         g_road_0_data(1:num_moisture)=g_road_0_data(1:num_moisture)+g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)/num_track
     enddo
+
+    !--------------------------------------------------------------------------
+!Automatically carry out ploughing based on previous hours
+!--------------------------------------------------------------------------
+    plough_temp(1:num_moisture)=0.0
+    if (auto_ploughing_flag.ne.0.and.auto_ploughing_flag.ne.3.and.use_ploughing_data_flag.gt.0.and.road_type_activity_flag(road_type_ploughing_index,ro).gt.0) then
+        if (auto_ploughing_flag.eq.1.or.auto_ploughing_flag.ge.4) then
+            t_ploughing_0=0
+        elseif (auto_ploughing_flag.eq.2) then
+            t_ploughing_0=activity_data(t_ploughing_index,ti,ro)
+        endif
     
+        do tr=1,num_track
+            plough_temp(1:num_moisture)=plough_temp(1:num_moisture)+g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)/num_track
+        enddo
+        plough_moisture_flag=0
+        do m=1,num_moisture
+            if (plough_temp(m).gt.ploughing_thresh(m)) then
+                plough_moisture_flag=1
+            endif
+        enddo
+    
+        if (plough_moisture_flag.gt.0.and.(time_since_last_ploughing(ro).ge.delay_ploughing_hour(ro))) then
+            activity_data(t_ploughing_index,ti,ro)=t_ploughing_0+1.
+            time_since_last_ploughing(ro)=0.
+            if (show_events) then
+                write(unit_logfile,'(a24,a24,f8.4,a12)') 'Auto ploughing:',trim(date_str(3,ti)),1.,' efficiency'
+            endif
+        else
+            activity_data(t_ploughing_index,ti,ro)=t_ploughing_0
+            time_since_last_ploughing(ro)=time_since_last_ploughing(ro)+dt !In hours
+        endif
+
+    endif
+!--------------------------------------------------------------------------
+
 !--------------------------------------------------------------------------
 !Automatically add salt
 !--------------------------------------------------------------------------
@@ -86,7 +121,8 @@
 
         if ((date_data(hour_index,ti).eq.salting_hour(1,ro).or.date_data(hour_index,ti).eq.salting_hour(2,ro)) &
             .and.salt_temperature_flag.eq.1.and.(salt_precip_flag.eq.1.or.salt_RH_flag.eq.1) &
-            .and.time_since_last_salting(ro).ge.delay_salting_day(ro)) then
+            .and.time_since_last_salting(ro).ge.delay_salting_day(ro) &
+            .or.(salt_after_ploughing_flag.and.activity_data(t_ploughing_index,ti,ro).gt.0)) then
             
             activity_data(M_salting_index(1),ti,ro)=M_salting_0(1)+salt_mass(ro)*salt_type_distribution(ro)
             activity_data(M_salting_index(2),ti,ro)=M_salting_0(2)+salt_mass(ro)*(1.-salt_type_distribution(ro))       
@@ -178,41 +214,6 @@
             activity_data(M_sanding_index,ti,ro)=0       
             activity_data(g_road_wetting_index,ti,ro)=g_road_wetting_0
             time_since_last_sanding(ro)=time_since_last_sanding(ro)+dt/24. !In days
-        endif
-
-    endif
-!--------------------------------------------------------------------------
-
-!--------------------------------------------------------------------------
-!Automatically carry out ploughing based on previous hours
-!--------------------------------------------------------------------------
-    plough_temp(1:num_moisture)=0.0
-    if (auto_ploughing_flag.ne.0.and.auto_ploughing_flag.ne.3.and.use_ploughing_data_flag.gt.0.and.road_type_activity_flag(road_type_ploughing_index,ro).gt.0) then
-        if (auto_ploughing_flag.eq.1.or.auto_ploughing_flag.ge.4) then
-            t_ploughing_0=0
-        elseif (auto_ploughing_flag.eq.2) then
-            t_ploughing_0=activity_data(t_ploughing_index,ti,ro)
-        endif
-    
-        do tr=1,num_track
-            plough_temp(1:num_moisture)=plough_temp(1:num_moisture)+g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)/num_track
-        enddo
-        plough_moisture_flag=0
-        do m=1,num_moisture
-            if (plough_temp(m).gt.ploughing_thresh(m)) then
-                plough_moisture_flag=1
-            endif
-        enddo
-    
-        if (plough_moisture_flag.gt.0.and.(time_since_last_ploughing(ro).ge.delay_ploughing_hour(ro))) then
-            activity_data(t_ploughing_index,ti,ro)=t_ploughing_0+1.
-            time_since_last_ploughing(ro)=0.
-            if (show_events) then
-                write(unit_logfile,'(a24,a24,f8.4,a12)') 'Auto ploughing:',trim(date_str(3,ti)),1.,' efficiency'
-            endif
-        else
-            activity_data(t_ploughing_index,ti,ro)=t_ploughing_0
-            time_since_last_ploughing(ro)=time_since_last_ploughing(ro)+dt !In hours
         endif
 
     endif

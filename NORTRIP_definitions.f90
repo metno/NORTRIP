@@ -441,6 +441,7 @@
     integer :: use_ospm_flag=0   
     integer :: activity_in_tunnels_flag=0
     integer :: use_melt_freeze_energy_flag=0
+    integer :: salt_after_ploughing_flag=0
     
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
@@ -475,7 +476,7 @@
     
     real :: delay_ploughing_hour_ref=3.00 !       	(hr)
     real :: ploughing_thresh_2_ref=3.00 !       	(mm.w.e.)
-    real :: ploughing_min_thresh_2_ref=0.6 !       	(mm.w.e.)
+    real :: ploughing_min_thresh_2_ref=0.1 !       	(mm.w.e.)
 
     real :: cleaning_hour_ref(2)
     data cleaning_hour_ref /5.0,20.0/
