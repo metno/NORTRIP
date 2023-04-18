@@ -596,6 +596,7 @@
     drainage_type_flag=match_string_int('drainage_type_flag',unit_in,unit_logfile_temp,0)
     surface_humidity_flag=match_string_int('surface_humidity_flag',unit_in,unit_logfile_temp,0)
     use_salt_humidity_flag=match_string_int('use_salt_humidity_flag',unit_in,unit_logfile_temp,0)
+    retain_water_by_snow_flag=match_string_val('retain_water_by_snow_flag',unit_in,unit_logfile_temp,retain_water_by_snow_flag)   
     !ENERGY BALANCE                                                  
     evaporation_flag=match_string_int('evaporation_flag',unit_in,unit_logfile_temp,0)
     canyon_shadow_flag=match_string_int('canyon_shadow_flag',unit_in,unit_logfile_temp,0)

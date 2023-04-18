@@ -74,7 +74,7 @@
 
     !Set some parameters that should actually be set outside of the programme
     !--------------------------------------------------------------------------
-    retain_water_by_snow=1      !Decides if water is allowed to drain off normally when snow is present
+    retain_water_by_snow=1      !Decides if water is allowed to drain off normally when snow is present. Replace by retain_water_by_snow_flag in input
     dz_snow_albedo=3            !Depth of snow required before implementing snow albedo mm.w.e.
     Z_CLOUD=100                 !Only used when no global radiation is available
     !z0t=z0/10.                  !Sets temperature and humidity roughness length
@@ -389,11 +389,12 @@
     enddo
 
     !Remove water through drainage for drainage_type_flag=2 nad 3
+    !retain_water_by_snow is hard coded but should be an input flag
     !--------------------------------------------------------------------------
     g_road_water_drainable=0
     if (drainage_type_flag.eq.2.or.drainage_type_flag.eq.3) then
-        if (retain_water_by_snow.eq.1) then
-            g_road_drainable_min_temp=max(g_road_drainable_min,g_road_data(snow_index,ti,tr,ro))
+        if (retain_water_by_snow_flag.gt.0) then
+            g_road_drainable_min_temp=max(g_road_drainable_min,g_road_data(snow_index,ti,tr,ro)*retain_water_by_snow_flag)
         else
             g_road_drainable_min_temp=g_road_drainable_min
         endif

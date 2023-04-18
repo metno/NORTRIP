@@ -445,7 +445,8 @@
     
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
-    real :: use_sanding_data_flag=1   
+    real :: use_sanding_data_flag=1
+    real :: retain_water_by_snow_flag=1
     
 
     !Auto activity data
