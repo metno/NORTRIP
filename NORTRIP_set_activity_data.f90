@@ -122,8 +122,9 @@
         if ((date_data(hour_index,ti).eq.salting_hour(1,ro).or.date_data(hour_index,ti).eq.salting_hour(2,ro)) &
             .and.salt_temperature_flag.eq.1.and.(salt_precip_flag.eq.1.or.salt_RH_flag.eq.1) &
             .and.time_since_last_salting(ro).ge.delay_salting_day(ro) &
-            .or.(salt_after_ploughing_flag.eq.1.and.activity_data(t_ploughing_index,ti,ro).gt.0)) then
-            
+            .or.(salt_after_ploughing_flag.eq.1.and.activity_data(t_ploughing_index,max(min_time,ti-1),ro).gt.0)) then
+            !Puts out salt the hour after the ploughing occurs if salt_after_ploughing_flag is chosen
+            !This is to simulate that salt is put out
             activity_data(M_salting_index(1),ti,ro)=M_salting_0(1)+salt_mass(ro)*salt_type_distribution(ro)
             activity_data(M_salting_index(2),ti,ro)=M_salting_0(2)+salt_mass(ro)*(1.-salt_type_distribution(ro))       
             time_since_last_salting(ro)=0.0
