@@ -58,10 +58,10 @@
     parameter(st=1,wi=2,su=3,num_tyre=3)
     
     !Salt type
-    integer na,mg,cma,ca
-    parameter(na=1,mg=2,cma=3,ca=4)
+    integer na,mg,cma,ca,pfo
+    parameter(na=1,mg=2,cma=3,ca=4,pfo=5)
     integer num_salt_max
-    parameter (num_salt_max=4)
+    parameter (num_salt_max=5)
     
     !Moisture type
     integer water_index,snow_index,ice_index,num_moisture
@@ -806,17 +806,20 @@
     M_atomic(mg)=95.2
     M_atomic(cma)=124
     M_atomic(ca)=111 !(g/mol)
+    M_atomic(pfo)=84 !(g/mol)
 
     !Saturated ratio
     saturated(na)=0.086
     saturated(mg)=0.050
     saturated(cma)=0.066
     saturated(ca)=0.065
+    saturated(pfo)=0.165
     !Not used
     RH_saturated(na)=75
     RH_saturated(mg)=33
     RH_saturated(cma)=40
     RH_saturated(ca)=31
+    RH_saturated(pfo)=60
 
     !Antoine constants
     !Two alternatives 
@@ -836,12 +839,17 @@
     a_antoine(ca)=5.8
     b_antoine(ca)=1087.00
     c_antoine(ca)=198.00
+    !Guess for Potassium Formate. slightly rescaled water to get 60% vp depression at saturation
+    a_antoine(pfo)=10.3*0.975
+    b_antoine(pfo)=2600
+    c_antoine(pfo)=270
 
     !Saturated melt/freezing temperatures
     melt_temperature_saturated(na)=-21
     melt_temperature_saturated(mg)=-33
     melt_temperature_saturated(cma)=-27.5
     melt_temperature_saturated(ca)=-51
+    melt_temperature_saturated(pfo)=-51
     !These three paramters approximate the over saturated curve. Needs updating
     !melt_temperature_oversaturated(na)=0melt_temperature_oversaturated(mg)=-15melt_temperature_oversaturated(cma)=-7
     !Have set the saturated melt temperature higher than in the paper to emable melt
@@ -850,6 +858,7 @@
     melt_temperature_oversaturated(mg)=-15
     melt_temperature_oversaturated(cma)=-12
     melt_temperature_oversaturated(ca)=-1
+    melt_temperature_oversaturated(pfo)=-25
     !melt_temperature_oversaturated(na)=melt_temperature_saturated(na)
     !melt_temperature_oversaturated(mg)=melt_temperature_saturated(mg)
     !melt_temperature_oversaturated(cma)=melt_temperature_saturated(cma)
@@ -860,10 +869,12 @@
     f_salt_sat(mg)=1.5
     f_salt_sat(cma)=1.5
     f_salt_sat(ca)=1.4
+    f_salt_sat(pfo)=1.5
     over_saturated(na)=f_salt_sat(na)*saturated(na)
     over_saturated(mg)=f_salt_sat(mg)*saturated(mg)
     over_saturated(cma)=f_salt_sat(cma)*saturated(cma)
     over_saturated(ca)=f_salt_sat(ca)*saturated(ca)
+    over_saturated(pfo)=f_salt_sat(pfo)*saturated(pfo)
     !RH_over_saturated is not used, RH_over_saturated_fraction is used instead
     !RH_over_saturated(na)=100
     !RH_over_saturated(mg)=70
@@ -875,6 +886,7 @@
     vp_correction(mg)=0.11
     vp_correction(cma)=0.17
     vp_correction(ca)=0.001
+    vp_correction(pfo)=0.012
 
     !Set the fractiona distribution of oversaturated solution
     !RH_over_saturated_fraction(na)=0.1
@@ -885,6 +897,7 @@
     RH_over_saturated_fraction(mg)=0.99
     RH_over_saturated_fraction(cma)=0.99
     RH_over_saturated_fraction(ca)=0.99
+    RH_over_saturated_fraction(pfo)=0.99
         
     end subroutine set_salt_parameters
 
