@@ -793,6 +793,7 @@
     real vp_correction(num_salt_max)
     real RH_over_saturated_fraction(num_salt_max)
     real salt_power
+    real salt_power_val(num_salt_max)
 
     contains
     
@@ -881,7 +882,16 @@
     !RH_over_saturated(cma)=85
     !RH_over_saturated(cma)=70
     !Set the interpolation power and corrections
-    salt_power=1.5
+    !salt_power=1.5
+    !salt power index changed 24.04.2023 to a value closer to measured values. Based on Avinor work
+    salt_power=1.2
+    salt_power_val(na)=1.3
+    salt_power_val(mg)=1.3
+    salt_power_val(cma)=1.2
+    salt_power_val(ca)=1.6
+    salt_power_val(pfo)=1.2
+
+
     vp_correction(na)=0.035
     vp_correction(mg)=0.11
     vp_correction(cma)=0.17

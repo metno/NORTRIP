@@ -445,7 +445,8 @@
     if (disolution_flag.eq.1) then
         !Calculate the salt equilibrium water/ice dependent on temperature
         do i=1,num_salt
-    
+            
+            salt_power=salt_power_val(salt_type(i))
             !Determine moles of salt /m^2. M2 means salt is in g/m^2
             N_moles_salt(i)=max(0.,M2_road_salt(i)/M_atomic(salt_type(i)))
 
@@ -507,6 +508,8 @@
     !Calculate vapour pressure and melt temperature of the solution (vp).
     do i=1,num_salt
     
+        salt_power=salt_power_val(salt_type(i))
+        
         solution_salt(i)=max(0.,N_moles_salt(i)/(N_moles_water+N_moles_salt(i)))
         vp_ice=antoine_func(a_antoine_ice,b_antoine_ice,c_antoine_ice,T_s)
         vp_s=max(0.,antoine_func(a_antoine(salt_type(i)),b_antoine(salt_type(i)),c_antoine(salt_type(i)),T_s)+vp_correction(salt_type(i)))
