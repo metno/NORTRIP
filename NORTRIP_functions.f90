@@ -289,7 +289,11 @@
     real f_sandpaper_0,h_pave,V_veh,s_road,V_ref,s_roadwear_thresh
     real f_V,f_snow
 
-    f_V=V_veh/V_ref
+    if (V_ref.eq.0) then
+        f_V=1.
+    else        
+        f_V=(V_veh/V_ref)
+    endif
 
     !No wear production due to snow on the surface
     f_snow=1.
@@ -311,8 +315,12 @@
     real f_crushing_0,V_veh,s_road,V_ref,s_roadwear_thresh
     real f_V,f_snow
 
-    f_V=(V_veh/V_ref)
-
+    if (V_ref.eq.0) then
+        f_V=1.
+    else        
+        f_V=(V_veh/V_ref)
+    endif
+    
     !No wear production due to snow on the surface
     f_snow=1.
     if (s_road.gt.s_roadwear_thresh) then
