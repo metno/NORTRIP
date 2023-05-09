@@ -251,12 +251,12 @@
                         M_road_bin_balance_data(s,x2,P_crushing_index,ti_bin,tr2,ro_bin) &
                             =M_road_bin_balance_data(s,x2,P_crushing_index,ti_bin,tr2,ro_bin) &
                              +M_road_bin_balance_data(s,x,S_crushing_index,ti_bin,tr,ro_bin) &
-                             *(1-f_0_dir(crushing_index)*f_q(s,ti,tr,ro))*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x2:num_size,1))
+                             *(1-f_0_dir(crushing_index)*f_q(s,ti,tr,ro))*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x+1:num_size,1))
                     enddo
                     E_road_bin_data(s,x2,E_direct_index,ti_bin,tr,ro_bin) &
                         =E_road_bin_data(s,x2,E_direct_index,ti_bin,tr,ro_bin) &
                         +M_road_bin_balance_data(s,x,S_crushing_index,ti_bin,tr,ro_bin) &
-                        *f_0_dir(crushing_index)*f_q(s,ti,tr,ro)*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x2:num_size,1))
+                        *f_0_dir(crushing_index)*f_q(s,ti,tr,ro)*f_PM_bin(crushing_index,x2,1)/sum(f_PM_bin(crushing_index,x+1:num_size,1))
                 enddo
                 enddo
             endif  

@@ -86,12 +86,13 @@
             sum_P(13)=sum(-M_road_balance_data(total_dust_index,x_load,S_cleaning_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(13)='Cleaning'
             sum_P(14)=sum(-M_road_balance_data(total_dust_index,x_load,S_windblown_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(14)='Wind'
             sum_P(15)=sum(-M_road_balance_data(total_dust_index,x_load,S_dustploughing_index,min_time_save:max_time_save,tr,ro))*b_factor;sum_P_text(15)='Plough'
+            sum_P(9)=sum(-sum(M_road_balance_data(all_source_index,x_load,S_crushing_index,min_time_save:max_time_save,tr,ro),1))*b_factor;sum_P_text(16)='Crushing'
         
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
             write(unit_output,'(A,I6,A,I2)') 'Sum road dust PM200 mass balance production and sink (g/m^2): Road=',ro,' Track=',tr
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
-            write(unit_output,'(15a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,15)
-            write(unit_output,'(15es10.2)') (sum_P(i),i=1,15) 
+            write(unit_output,'(15a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,16)
+            write(unit_output,'(15es10.2)') (sum_P(i),i=1,16) 
         
             !Show the energy budget
             mean_factor=1./(max_time_save-min_time_save+1)
