@@ -91,8 +91,8 @@
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
             write(unit_output,'(A,I6,A,I2)') 'Sum road dust PM200 mass balance production and sink (g/m^2): Road=',ro,' Track=',tr
   	        write(unit_logfile,'(A)') '--------------------------------------------------------------------------------'
-            write(unit_output,'(15a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,16)
-            write(unit_output,'(15es10.2)') (sum_P(i),i=1,16) 
+            write(unit_output,'(16a10)') (ADJUSTR(trim(sum_P_text(i))),i=1,16)
+            write(unit_output,'(16es10.2)') (sum_P(i),i=1,16) 
         
             !Show the energy budget
             mean_factor=1./(max_time_save-min_time_save+1)

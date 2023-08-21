@@ -267,10 +267,11 @@
     !--------------------------------------------------------------------------
     !Calculate road production flux due to deposition (F_deposition g/(km.m)/hr)
     !Based on PM10 background concentrations and inferred size distribution f_PM_bin(depo_index,1:num_size,1)
+    !Note that w_dep is read in with pm_200 as index 1 so it has to be shifted
     !--------------------------------------------------------------------------
     if (airquality_data(PM_bg_index(pm_10),ti,ro).ne.nodata_input.and.dust_deposition_flag.gt.0) then
-        M_road_bin_balance_data(depo_index,1:num_size,P_depo_index,ti_bin,tr,ro_bin)=w_dep(1:num_size) &
-            *f_PM_bin(depo_index,1:num_size,1)/f_PM_bin(depo_index,pm_10,1)*max(0.,airquality_data(PM_bg_index(pm_10),ti,ro)) &
+        M_road_bin_balance_data(depo_index,2:num_size,P_depo_index,ti_bin,tr,ro_bin)=w_dep(1:num_size-1) &
+            *f_PM_bin(depo_index,2:num_size,1)/f_PM_bin(depo_index,pm_10,1)*max(0.,airquality_data(PM_bg_index(pm_10),ti,ro)) &
             *3.6*b_road_lanes(ro)*f_track(tr)
     else
         M_road_bin_balance_data(depo_index,1:num_size,P_depo_index,ti_bin,tr,ro_bin)=0.

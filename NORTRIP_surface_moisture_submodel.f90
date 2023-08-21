@@ -36,6 +36,8 @@
     !real :: RH_salt_temp
     !real :: M_road_dissolved_ratio_temp
     real :: T_s_0
+    real :: T_a_0
+    real :: FF_0
     real :: RH_s_0,RH_s_final
     real :: short_rad_net_temp
     real :: g_road_water_drainable
@@ -56,9 +58,13 @@
     
     !Functions
     real r_aero_func
+    real r_aero_func_with_stability
     real f_spray_func
     real mass_balance_func
     real dewpoint_from_RH_func
+    
+    !Flag
+    logical :: use_stability=.true.
     
     !Initialise
     g_road_0_data=nodata
@@ -83,15 +89,20 @@
     
     b_factor=1./(1000*b_road_lanes(ro)*f_track(tr)) !Coverts g/km to g/m^2
 
-    !Sub surface temperature given as weighted sum of surface temperatures
-    !when use_subsurface_flag=2
-    !More realistic than using the air temperature
+    !Sub surface temperature given as weighted sum of surface temperatures when use_subsurface_flag=2
+    !Sub surface temperature given as weighted sum of air temperatures when use_subsurface_flag=3
+    !More realistic than using the running mean air temperature and must be used when using init files
     !If the road is a bridge then the atmospheric temperature is used as subsurface and this is not adjusted here
     !--------------------------------------------------------------------------
     if (ti.gt.min_time.and.use_subsurface_flag.eq.2.and.roadtype_index(ro).ne.bridge_roadtype) then
         road_meteo_data(T_sub_index,ti,tr,ro)= &
         road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/sub_surf_average_time) &
         +road_meteo_data(T_s_index,max(1,ti-1),tr,ro)*dt/sub_surf_average_time
+    endif
+    if (ti.gt.min_time.and.use_subsurface_flag.eq.3.and.roadtype_index(ro).ne.bridge_roadtype) then
+        road_meteo_data(T_sub_index,ti,tr,ro)= &
+        road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/sub_surf_average_time) &
+        +meteo_data(T_a_index,max(1,ti-1),ro)*dt/sub_surf_average_time
     endif
 
     !if (ro_tot.eq.425266.or.ro_tot.eq.2) then
@@ -103,6 +114,8 @@
     !--------------------------------------------------------------------------
     g_road_0_data(1:num_moisture)=g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)+surface_moisture_min*0.5
     T_s_0=road_meteo_data(T_s_index,max(min_time,ti-1),tr,ro)
+    T_a_0=meteo_data(T_s_index,max(min_time,ti-1),ro)
+    FF_0=meteo_data(FF_index,max(min_time,ti-1),ro)
     RH_s_0=road_meteo_data(RH_s_index,max(min_time,ti-1),tr,ro)
     M2_road_salt_0(1:num_salt)=M_road_data(salt_index,pm_all,max(min_time,ti-1),tr,ro)*b_factor
     
@@ -144,14 +157,25 @@
     !Evaporation
     !--------------------------------------------------------------------------
     !Calculate aerodynamic resistance
-    road_meteo_data(r_aero_t_index,ti,tr,ro) &
-        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
-    road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro) &
-        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
-    road_meteo_data(r_aero_q_index,ti,tr,ro) &
-        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
-    road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro) &
-        =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+    if (use_stability) then
+        road_meteo_data(r_aero_t_index,ti,tr,ro) &
+            =r_aero_func_with_stability(FF_0,T_a_0,T_s_0,z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
+        road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro) &
+            =r_aero_func_with_stability(FF_0,T_a_0,T_s_0,z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+        road_meteo_data(r_aero_q_index,ti,tr,ro) &
+            =r_aero_func_with_stability(FF_0,T_a_0,T_s_0,z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
+        road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro) &
+            =r_aero_func_with_stability(FF_0,T_a_0,T_s_0,z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+    else        
+        road_meteo_data(r_aero_t_index,ti,tr,ro) &
+            =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
+        road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro) &
+            =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+        road_meteo_data(r_aero_q_index,ti,tr,ro) &
+            =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)
+        road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro) &
+            =r_aero_func(meteo_data(FF_index,ti,ro),z_FF(ro),z_T(ro),z0,z0q,traffic_data(V_veh_index,ti,ro)*0.,traffic_data(N_v_index,ti,ro)/n_lanes(ro)*0,num_veh,a_traffic)
+    endif
     if (use_traffic_turb_flag.eq.0) then
         road_meteo_data(r_aero_t_index,ti,tr,ro)=road_meteo_data(r_aero_t_notraffic_index,ti,tr,ro)
         road_meteo_data(r_aero_q_index,ti,tr,ro)=road_meteo_data(r_aero_q_notraffic_index,ti,tr,ro)

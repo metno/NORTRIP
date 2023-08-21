@@ -174,7 +174,7 @@
     end function dewpoint_from_RH_func
 !----------------------------------------------------------------------
 
-    !----------------------------------------------------------------------
+!----------------------------------------------------------------------
     function r_aero_func(FF,z_FF,z_T,z0,z0t,V_veh,N_v,num_veh,a_traffic)
 
     implicit none
@@ -199,6 +199,62 @@
     r_aero_func=1./inv_r_aero
 
     end function r_aero_func
+ !----------------------------------------------------------------------
+
+!----------------------------------------------------------------------
+    function r_aero_func_with_stability(FF,Tc,Ts,z_FF,z_T,z0,z0t,V_veh,N_v,num_veh,a_traffic)
+
+    implicit none
+    real r_aero_func_with_stability
+    real FF,Tc,Ts,z_FF,z_T,z0,z0t
+    real V_veh(num_veh),N_v(num_veh),a_traffic(num_veh)
+    integer num_veh
+    real inv_r_wind,inv_r_traffic,inv_r_aero
+    real phim,phih,phi_m,phi_h,FF_temp,Rib,eps
+    integer v,iterations,i
+    real kappa,g,T0K,a,b,p,q,pi
+    parameter (kappa=0.4,g=9.8,T0K=273.15,a=16.,b=5.,p=-0.25,q=-0.5,pi=3.1415926)
+    
+    iterations=2
+    phi_m=0.0
+    phi_h=0.0
+     
+    do i=1,iterations
+    
+        !Calculate wind at temperature height
+        FF_temp=max(0.2,FF*(log(z_T/z0)-phi_m)/(log(z_FF/z0)-phi_m))
+        !Set bilk Richardsons number
+        Rib=g/(Tc+T0K)*z_T*(Tc-Ts)/FF_temp/FF_temp
+        !Calculate z/L
+        eps=Rib*(log(z_T/z0)-phi_m)*(log(z_T/z0)-phi_m)/((log(z_T/z0t)-phi_h))
+ 
+        if (eps.ge.0) then
+            phim=1+b*eps
+            phih=1+b*eps
+            phi_m=-b*eps
+            phi_h=-b*eps
+        else
+            phim=exp(p*log((1.-a*eps)))
+            phih=exp(q*log((1.-a*eps)))
+            phi_m=2.*log((1.+1./phim)/2.)+log((1.+1./(phim*phim))/2.)-2.*atan(1./phim)+pi/2.
+            phi_h=2.*log((1.+1./phih)/2.)
+        endif
+
+    enddo
+
+    !Calculate bulk exchange coefficient including wind (inverse of aerodynamic resistance)
+    inv_r_wind=FF_temp*kappa*kappa/((log(z_T/z0)-phi_m)*(log(z_T/z0t)-phi_h));
+    
+    inv_r_traffic=0
+    do v=1,num_veh
+        inv_r_traffic=inv_r_traffic+N_v(v)*V_veh(v)*a_traffic(v)
+    enddo
+    
+    inv_r_traffic=max(1e-6,inv_r_traffic/3600./3.6)
+    inv_r_aero=inv_r_traffic+inv_r_wind
+    r_aero_func_with_stability=1./inv_r_aero
+
+    end function r_aero_func_with_stability
  !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
