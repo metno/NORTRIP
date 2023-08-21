@@ -442,6 +442,7 @@
     integer :: activity_in_tunnels_flag=0
     integer :: use_melt_freeze_energy_flag=0
     integer :: salt_after_ploughing_flag=0
+    integer :: use_stability_flag=1
     
     !Also used for scaling so set to real
     real use_salting_data_flag(2)

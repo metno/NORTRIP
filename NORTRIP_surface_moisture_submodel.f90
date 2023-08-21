@@ -64,7 +64,7 @@
     real dewpoint_from_RH_func
     
     !Flag
-    logical :: use_stability=.true.
+    logical :: use_stability=.false.
     
     !Initialise
     g_road_0_data=nodata
@@ -157,6 +157,7 @@
     !Evaporation
     !--------------------------------------------------------------------------
     !Calculate aerodynamic resistance
+    if (use_stability_flag.gt.0) use_stability=.true.
     if (use_stability) then
         road_meteo_data(r_aero_t_index,ti,tr,ro) &
             =r_aero_func_with_stability(FF_0,T_a_0,T_s_0,z_FF(ro),z_T(ro),z0,z0t,traffic_data(V_veh_index,ti,ro),traffic_data(N_v_index,ti,ro)/n_lanes(ro),num_veh,a_traffic)

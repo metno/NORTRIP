@@ -604,6 +604,7 @@
     use_subsurface_flag=match_string_int('use_subsurface_flag',unit_in,unit_logfile_temp,0)
     use_traffic_turb_flag=match_string_int('use_traffic_turb_flag',unit_in,unit_logfile_temp,0)
     use_melt_freeze_energy_flag=match_string_int('use_melt_freeze_energy_flag',unit_in,unit_logfile_temp,0)
+    use_stability_flag=match_string_int('use_stability_flag',unit_in,unit_logfile_temp,use_stability_flag)
     !ACTIVITY                                                        
     use_salting_data_flag(1)=match_string_val('use_salting_data_1_flag',unit_in,unit_logfile_temp,0.0)
     use_salting_data_flag(2)=match_string_val('use_salting_data_2_flag',unit_in,unit_logfile_temp,0.0)
