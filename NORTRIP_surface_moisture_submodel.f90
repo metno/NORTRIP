@@ -114,7 +114,7 @@
     !--------------------------------------------------------------------------
     g_road_0_data(1:num_moisture)=g_road_data(1:num_moisture,max(min_time,ti-1),tr,ro)+surface_moisture_min*0.5
     T_s_0=road_meteo_data(T_s_index,max(min_time,ti-1),tr,ro)
-    T_a_0=meteo_data(T_s_index,max(min_time,ti-1),ro)
+    T_a_0=meteo_data(T_a_index,max(min_time,ti-1),ro)
     FF_0=meteo_data(FF_index,max(min_time,ti-1),ro)
     RH_s_0=road_meteo_data(RH_s_index,max(min_time,ti-1),tr,ro)
     M2_road_salt_0(1:num_salt)=M_road_data(salt_index,pm_all,max(min_time,ti-1),tr,ro)*b_factor
