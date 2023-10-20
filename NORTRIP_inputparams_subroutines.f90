@@ -530,6 +530,8 @@
         endif
     enddo
         
+    close(unit_in,status='keep')
+    
     return
 
     
