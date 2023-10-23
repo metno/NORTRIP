@@ -144,7 +144,7 @@
             if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using OSPM'
             endif
-            call ospm_nortrip_control
+            !call ospm_nortrip_control
         elseif (available_airquality_data(f_conc_index)) then
             if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using input dispersion factor'
