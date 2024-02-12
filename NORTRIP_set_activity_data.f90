@@ -111,7 +111,7 @@
         enddo
 
         check_day_min=ti
-        check_day_max=min(max_time,int(ti+dt*check_salting_day(ro)*24+.5))
+        check_day_max=min(max_time,int(ti+check_salting_day(ro)*24/dt+.5))
         salt_RH_flag=0
         do i=check_day_min,check_day_max
             if (meteo_data(RH_index,i,ro).ge.RH_rule_salt(ro)) then
@@ -122,9 +122,10 @@
         if ((date_data(hour_index,ti).eq.salting_hour(1,ro).or.date_data(hour_index,ti).eq.salting_hour(2,ro)) &
             .and.salt_temperature_flag.eq.1.and.(salt_precip_flag.eq.1.or.salt_RH_flag.eq.1) &
             .and.time_since_last_salting(ro).ge.delay_salting_day(ro) &
-            .or.(salt_after_ploughing_flag.eq.1.and.activity_data(t_ploughing_index,max(min_time,ti-1),ro).gt.0)) then
-            !Puts out salt the hour after the ploughing occurs if salt_after_ploughing_flag is chosen
-            !This is to simulate that salt is put out
+            !.or.(salt_after_ploughing_flag.eq.1.and.activity_data(t_ploughing_index,max(min_time,ti-1),ro).gt.0)) then
+            .or.(salt_after_ploughing_flag.eq.1.and.time_since_last_ploughing(ro).eq.dt)) then
+            !Puts out salt the hour (time step) after the ploughing occurs if salt_after_ploughing_flag is chosen
+            !This is to simulate that salt is put out after ploughing
             activity_data(M_salting_index(1),ti,ro)=M_salting_0(1)+salt_mass(ro)*salt_type_distribution(ro)
             activity_data(M_salting_index(2),ti,ro)=M_salting_0(2)+salt_mass(ro)*(1.-salt_type_distribution(ro))       
             time_since_last_salting(ro)=0.0
@@ -167,7 +168,7 @@
         endif
         
         !Check temperature within range within the given delay time
-        check_day=min(max_time,int(ti+dt*check_sanding_day(ro)*24+.5))
+        check_day=min(max_time,int(ti+check_sanding_day(ro)*24/dt+.5))
         sand_temperature_flag=0
         do i=ti,check_day
             if (meteo_data(T_a_index,i,ro).gt.min_temp_sand(ro).and.meteo_data(T_a_index,i,ro).lt.max_temp_sand(ro)) then
@@ -176,8 +177,8 @@
         enddo
     
         !Check precipitation within range within +/- the given delay time
-        check_day_min=max(min_time,int(ti-dt*check_sanding_day(ro)*24+.5))
-        check_day_max=min(max_time,int(ti+dt*check_sanding_day(ro)*24+.5))
+        check_day_min=max(min_time,int(ti-check_sanding_day(ro)*24/dt+.5))
+        check_day_max=min(max_time,int(ti+check_sanding_day(ro)*24/dt+.5))
         sand_precip_flag=0
         do i=check_day_min,check_day_max
             if (meteo_data(Rain_precip_index,i,ro)+meteo_data(Snow_precip_index,i,ro).ge.precip_rule_sand(ro)) then
@@ -186,7 +187,7 @@
         enddo
 
         check_day_min=ti
-        check_day_max=min(max_time,int(ti+dt*check_sanding_day(ro)*24+.5))
+        check_day_max=min(max_time,int(ti+check_sanding_day(ro)*24/dt+.5))
         sand_RH_flag=0
         do i=check_day_min,check_day_max
             if (meteo_data(RH_index,i,ro).ge.RH_rule_sand(ro)) then
@@ -317,8 +318,8 @@
         enddo
 
         !Check precipitation within range within +/- the given delay time
-        check_day_min=max(min_time,int(ti-dt*check_binding_day(ro)*24+.5))
-        check_day_max=min(max_time,int(ti+dt*check_binding_day(ro)*24+.5))
+        check_day_min=max(min_time,int(ti-check_binding_day(ro)*24/dt+.5))
+        check_day_max=min(max_time,int(ti+check_binding_day(ro)*24/dt+.5))
         do i=check_day_min,check_day_max
             if (meteo_data(Rain_precip_index,i,ro)+meteo_data(Snow_precip_index,i,ro).gt.precip_rule_binding(ro)) then
         	    binding_allowed=0
@@ -346,7 +347,7 @@
         endif
    
         check_day_min=ti
-        check_day_max=min(max_time,int(ti+dt*check_binding_day(ro)*24+.5))
+        check_day_max=min(max_time,int(ti+check_binding_day(ro)*24/dt+.5))
         binding_RH_flag=0
         do i=check_day_min,check_day_max
             if (meteo_data(RH_index,i,ro).gt.RH_rule_binding(ro)) then
