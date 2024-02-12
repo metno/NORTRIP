@@ -23,9 +23,9 @@
     
     if (ro_tot.eq.1) then
 
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
-	    write(unit_logfile,'(A)') 'Saving selected road summary data to file'
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
+        write(unit_logfile,'(A)') 'Saving selected road summary data to file'
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)
@@ -247,9 +247,9 @@
     
     if (ro_tot.eq.1) then
 
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
-	    write(unit_logfile,'(A)') 'Saving summed emission and activity data to file'
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(A)') 'Saving summed emission and activity data to file'
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)

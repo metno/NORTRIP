@@ -26,7 +26,7 @@
 !****************************************************************************
 
     subroutine NORTRIP_main_run_forecast
-  
+
     use NORTRIP_definitions
     
     implicit none
@@ -49,7 +49,7 @@
     write(unit_logfile,'(A)') ''
     write(unit_logfile,'(A)') '================================================================'
     write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run_forecast)' 
-  	write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') '================================================================'
     
     if (.not.allocated(forecast_T_s)) allocate(forecast_T_s(n_time,num_track))   
     
@@ -94,9 +94,9 @@
             write(unit_logfile,'(A)')'Starting time loop (NORTRIP_main_run_forecast)'
         endif
 
-       forecast_T_s=nodata
-       
-       do tf=min_time,max_time 
+        forecast_T_s=nodata
+        
+        do tf=min_time,max_time 
 
             !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
             !Do not do this if bias correction is used for the forecast
@@ -104,8 +104,8 @@
             if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
                 tr=1       
                 if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   road_meteo_data(T_s_index,max(min_time,tf-1),:,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),:,ro)
-                   !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
+                    road_meteo_data(T_s_index,max(min_time,tf-1),:,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),:,ro)
+                    !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
                 endif
             endif
             !Bias correction
@@ -113,33 +113,33 @@
             if (forecast_hour.gt.0.and.forecast_type.eq.4) then
                 tr=1       
                 if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   bias_correction=-(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
-                   !write(*,*) ro,tf,bias_correction
+                    bias_correction=-(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
+                    !write(*,*) ro,tf,bias_correction
                 endif
             endif
             !Flux correction. Estimate for now
             if (forecast_hour.gt.0.and.forecast_type.eq.5) then
                 tr=1       
                 if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   bias_correction=(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
-                   if (bias_correction.gt.0.) flux_correction=-bias_correction*60./dt !76.9
-                   if (bias_correction.lt.0.) flux_correction=-bias_correction*60./dt !14.9
-                   !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
-                   meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)=meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)+flux_correction !min(1000.,max(-1000.,flux_correction))
-                   !write(*,*) ro,tf,min(500.,max(-500.,flux_correction)),bias_correction
+                    bias_correction=(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
+                    if (bias_correction.gt.0.) flux_correction=-bias_correction*60./dt !76.9
+                    if (bias_correction.lt.0.) flux_correction=-bias_correction*60./dt !14.9
+                    !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
+                    meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)=meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)+flux_correction !min(1000.,max(-1000.,flux_correction))
+                    !write(*,*) ro,tf,min(500.,max(-500.,flux_correction)),bias_correction
                 endif
             endif
 
 
             do ti=tf,tf+forecast_index
-      
+                
                 if (ti.le.max_time) then
                 
                     !Print the day date. Not active
                     if (date_data(hour_index,ti).eq.1) then
                         !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
                     endif
-              
+
             
                     !Use activity rules to determine salting, sanding and cleaning activities
                     call NORTRIP_set_activity_data
@@ -147,7 +147,7 @@
                     !Main track loop
                     !----------------------------------------------------------------------
                     do tr=1,num_track
-         
+
                         !Calculate road surface conditions
                         call NORTRIP_surface_moisture_submodel
                 
@@ -164,9 +164,9 @@
                     end do
                     !End main track loop
                     !----------------------------------------------------------------------
-      
+
                     !Redistribute mass and moisture between tracks. Not yet implemented
-      
+
                     !Put the binned variables in the unbinned ones 
                     call NORTRIP_unbin_variables
             
@@ -271,7 +271,7 @@
     write(unit_logfile,'(A)') ''
     write(unit_logfile,'(A)') '================================================================'
     write(unit_logfile,'(A)') 'Finished calculations (NORTRIP_main_run)' 
-  	write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') '================================================================'
 
     !Close the log file
     !if (unit_logfile.gt.0) then

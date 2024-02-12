@@ -26,7 +26,7 @@
 !****************************************************************************
 
     subroutine NORTRIP_main_run
-  
+    
     use NORTRIP_definitions
     
     implicit none
@@ -44,7 +44,7 @@
     write(unit_logfile,'(A)') ''
     write(unit_logfile,'(A)') '================================================================'
     write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run)' 
-  	write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') '================================================================'
     endif
     
     !Precalculate radiation for all roads
@@ -71,7 +71,7 @@
         
         !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
         call NORTRIP_running_mean_temperature(sub_surf_average_time)
-        
+
         !Print road to screen to see progress
         if ((mod(ro,10000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,10000).eq.0.and.use_single_road_loop_flag)) then
         if (unit_logfile.gt.0) then
@@ -88,19 +88,19 @@
         endif
         
         do ti=min_time,max_time
-      
+
             !Print the day date. Not active
             if (date_data(hour_index,ti).eq.1) then
                 !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
             endif
-              
+
             !Use activity rules to determine salting, sanding and cleaning activities
             call NORTRIP_set_activity_data
         
             !Main track loop
             !----------------------------------------------------------------------
             do tr=1,num_track
-         
+
                 !Calculate road surface conditions
                 call NORTRIP_surface_moisture_submodel
                 
@@ -123,7 +123,7 @@
             !----------------------------------------------------------------------
 
             !Redistribute mass and moisture between tracks. Not yet implemented
-      
+
             !Put the binned variables in the unbinned ones 
             call NORTRIP_unbin_variables
             
@@ -163,7 +163,6 @@
         endif
         call NORTRIP_concentrations
         
-        
     enddo
     !End road loop
     !--------------------------------------------------------------------------
@@ -182,7 +181,7 @@
     write(unit_logfile,'(A)') ''
     write(unit_logfile,'(A)') '================================================================'
     write(unit_logfile,'(A)') 'Finished calculations (NORTRIP_main_run)' 
-  	write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') '================================================================'
     endif
     
     !Close the log file

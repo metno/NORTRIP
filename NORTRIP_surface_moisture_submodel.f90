@@ -211,30 +211,30 @@
         !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
         !    
         !    endif
-               
+
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &
-	        ,road_meteo_data(H_traffic_index,ti,tr,ro) &
-	        ,road_meteo_data(r_aero_t_index,ti,tr,ro) &
-	        ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
-	        ,meteo_data(T_a_index,ti,ro) &
-	        ,T_s_0 &
-	        ,road_meteo_data(T_sub_index,ti,tr,ro) &
-	        ,meteo_data(RH_index,ti,ro) &
-	        ,road_meteo_data(RH_s_index,ti,tr,ro) &
-	        ,RH_s_0 &
-	        ,meteo_data(pressure_index,ti,ro) &
-	        ,dzs &
-	        ,dt &
-	        ,g_road_0_data(water_index) &
-	        ,g_road_0_data(ice_index)+g_road_0_data(snow_index) &
-	        ,g_road_evaporation_thresh &
+            ,road_meteo_data(H_traffic_index,ti,tr,ro) &
+            ,road_meteo_data(r_aero_t_index,ti,tr,ro) &
+            ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
+            ,meteo_data(T_a_index,ti,ro) &
+            ,T_s_0 &
+            ,road_meteo_data(T_sub_index,ti,tr,ro) &
+            ,meteo_data(RH_index,ti,ro) &
+            ,road_meteo_data(RH_s_index,ti,tr,ro) &
+            ,RH_s_0 &
+            ,meteo_data(pressure_index,ti,ro) &
+            ,dzs &
+            ,dt &
+            ,g_road_0_data(water_index) &
+            ,g_road_0_data(ice_index)+g_road_0_data(snow_index) &
+            ,g_road_evaporation_thresh &
             ,M2_road_salt_0 &
             ,salt_type &
-	        ,sub_surf_param &
-	        ,surface_humidity_flag &
-	        ,use_subsurface_flag &
+            ,sub_surf_param &
+            ,surface_humidity_flag &
+            ,use_subsurface_flag &
             ,use_salt_humidity_flag &
             ,use_melt_freeze_energy_flag &
             !Outputs start here
@@ -255,7 +255,7 @@
             ,road_meteo_data(rad_net_index,ti,tr,ro) &
             ,road_meteo_data(G_sub_index,ti,tr,ro))
             
-         !Taken out of the call to avoid overlapping in and outputs to the subroutine
+        !Taken out of the call to avoid overlapping in and outputs to the subroutine
         road_meteo_data(RH_s_index,ti,tr,ro)=RH_s_final
                 
         !Because does not differentiate between snow and ice resdistribute the

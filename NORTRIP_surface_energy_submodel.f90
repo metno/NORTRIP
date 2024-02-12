@@ -315,27 +315,27 @@
             !Calculate additional melt, in addition to salting, due to energy
             !if (i.eq.1) then
                 if (s_surf.gt.0.and.G.ge.0.and.TCs_out.ge.melt_temperature) then
-	                melt=melt+G/lambda_melt*dt_sec
-	                !Limit the melting so it does not melt more water than is available
+                    melt=melt+G/lambda_melt*dt_sec
+                    !Limit the melting so it does not melt more water than is available
                     melt=min(melt,s_surf)
                     !Limit the melting so it does not go past the equilibrium salt level
                     melt=min(melt,max(g_road_equil_at_T_s-g_surf,0.))
                     G_melt=melt*lambda_melt/dt_sec
                 else
-	                melt=melt+0
+                    melt=melt+0
                     G_melt=melt*lambda_melt/dt_sec
                 endif
 
                 !Calculate additional freezing in first loop only
                 if (g_surf.gt.0.and.G.lt.0.and.TCs_out.lt.melt_temperature) then
-	                freeze=freeze-G/lambda_melt*dt_sec!/dt_h
-	                !Limit the freezing so it does not freeze more water than is available
+                    freeze=freeze-G/lambda_melt*dt_sec!/dt_h
+                    !Limit the freezing so it does not freeze more water than is available
                     freeze=min(freeze,g_surf)
                     !Limit the freezing so it does not go past the equilibrium salt level
                     freeze=min(freeze,max(s_road_equil_at_T_s-s_surf,0.))
                     G_freeze=freeze*lambda_melt/dt_sec!/dt_h
                 else
-	                freeze=freeze+0
+                    freeze=freeze+0
                     G_freeze=freeze*lambda_melt/dt_sec!/dt_h
                 endif
             !endif
@@ -345,7 +345,7 @@
                     G_freeze=0.
                     G_melt=0.
                 endif
- 
+
             !Diagnose surface flux with melt and freeze fluxes
             G=rad_net-H-L+H_traffic-G_melt+G_freeze
 
@@ -540,10 +540,10 @@
                 RH_over_saturated(i)=(100*(1-RH_over_saturated_fraction(salt_type(i))) &
                     +RH_salt_saturated*RH_over_saturated_fraction(salt_type(i)))!Large number chosen to make the impact clear. Not known
                 RH_salt(i)=min(100.,RH_salt_saturated+(RH_over_saturated(i)-RH_salt_saturated)/ &
-                     (f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
+                    (f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
                 melt_temperature_salt(i)=min(0.,melt_temperature_saturated(salt_type(i)) &
-                     +(melt_temperature_oversaturated(salt_type(i))-melt_temperature_saturated(salt_type(i))) &
-                     /(f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
+                    +(melt_temperature_oversaturated(salt_type(i))-melt_temperature_saturated(salt_type(i))) &
+                    /(f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
             endif
         endif
     
@@ -570,7 +570,7 @@
 
 !--------------------------------------------------------------------------
     function antoine_func(a,b,c,TC)
- 
+
     implicit none
     
     !TC: Degrees C
