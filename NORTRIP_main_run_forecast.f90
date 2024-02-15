@@ -187,7 +187,7 @@
                     forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,max(tf-1,min_time),:,ro);
                 endif
                 !linear extrapolation
-                if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,tf-2,tr,ro).ne.nodata) then
+                if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro).ne.nodata) then
                     forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,tf-1,:,ro) &
                         +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
                         /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &
