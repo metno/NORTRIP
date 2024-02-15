@@ -424,4 +424,20 @@
     end function R_0_wind_func
 !----------------------------------------------------------------------
 
+!----------------------------------------------------------------------
+    function Energy_correction_func(dE1,dE2)
+        !Energy_correction_func: Used for correcting energy balance based on observed road temperature
+        implicit none
+
+        !Input
+        real, intent(in) :: dE1 !Energy difference in last time step
+        real, intent(in) :: dE2 !Energy difference in second to last timestep
+        !Output
+        real :: Energy_correction_func
+        !Local
+        real f !Determines weighting between dE1 and dE2
+
+        Energy_correction_func = f*dE1 + (1-f)*dE2
     
+    end function Energy_correction_func
+    !----------------------------------------------------------------------    
