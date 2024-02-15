@@ -30,11 +30,6 @@ subroutine NORTRIP_main_run_forecast_prepare(tf,bias_correction,forecast_index) 
     real,intent(out) :: bias_correction
     integer,intent(out) :: forecast_index
 
-    write(unit_logfile,'(A)') ''
-    write(unit_logfile,'(A)') '================================================================'
-    write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run_forecast_prepare)' 
-    write(unit_logfile,'(A)') '================================================================'
-    
     forecast_index=max(0,forecast_hour-1);
 
     !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
@@ -70,17 +65,8 @@ subroutine NORTRIP_main_run_forecast_calculate(tf,bias_correction,forecast_index
     integer, intent(in) :: forecast_index
     
     !Output:
-    real,allocatable,intent(out) :: forecast_T_s(:,:)
+    real,allocatable,intent(inout) :: forecast_T_s(:,:)
 
-    write(unit_logfile,'(A)') ''
-    write(unit_logfile,'(A)') '================================================================'
-    write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run_forecast_calculate)' 
-    write(unit_logfile,'(A)') '================================================================'
-
-    if (allocated(forecast_T_s)) deallocate(forecast_T_s)
-    allocate(forecast_T_s(n_time,num_track))     
-    forecast_T_s=nodata
-    
     !Save the forecast surface temperature into the +forecast index if the starting surface temperature was valid
     tr=1
     if (forecast_hour.gt.0.and.tf+forecast_index.le.max_time.and.road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
@@ -94,7 +80,7 @@ subroutine NORTRIP_main_run_forecast_calculate(tf,bias_correction,forecast_index
             forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,max(tf-1,min_time),:,ro);
         endif
         !linear extrapolation
-        if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,tf-2,tr,ro).ne.nodata) then
+        if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro).ne.nodata) then
             forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,tf-1,:,ro) &
             +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
             /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &
@@ -123,14 +109,6 @@ end subroutine NORTRIP_main_run_forecast_calculate
 
         !Local
         integer :: tf
-
-    
-        write(unit_logfile,'(A)') ''
-        write(unit_logfile,'(A)') '================================================================'
-        write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run_forecast_save)' 
-        write(unit_logfile,'(A)') '================================================================'
-        
-    
 
         !Put forecast surface temperature into the normal road temperature
         if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then

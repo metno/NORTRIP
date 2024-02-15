@@ -25,7 +25,7 @@
 !
 !****************************************************************************
 
-    subroutine NORTRIP_main_run
+subroutine NORTRIP_main_run
     
     use NORTRIP_definitions
     use NORTRIP_main_run_forecast
@@ -53,6 +53,11 @@
     write(unit_logfile,'(A)') '================================================================'
     endif
     
+    if ( forecast_hour .gt. 0 ) then
+        if (.not.allocated(forecast_T_s)) allocate(forecast_T_s(n_time,num_track))   
+        forecast_T_s=nodata
+    end if
+
     !Precalculate radiation for all roads
     call NORTRIP_calc_radiation
         
@@ -140,15 +145,15 @@
                     !Put the binned variables in the unbinned ones 
                     call NORTRIP_unbin_variables
                     
-                    !If the single road loop is used then save the init files here
-                    if (use_single_road_loop_flag) then
-                        call NORTRIP_save_init_data_single
-                    endif
                 endif
             enddo !extra time loop
 
             call NORTRIP_main_run_forecast_calculate(tf,bias_correction, forecast_index,forecast_T_s)
-
+            
+            !If the single road loop is used then save the init files here
+            if (use_single_road_loop_flag) then
+                call NORTRIP_save_init_data_single
+            endif
         end do
         !End main time loop
         !----------------------------------------------------------------------
@@ -207,5 +212,5 @@
     !if (unit_logfile.gt.0) then
     !    close(unit_logfile,status='keep')
     !endif
-
-    end subroutine NORTRIP_main_run
+    if (allocated(forecast_T_s)) deallocate (forecast_T_s)
+end subroutine NORTRIP_main_run
