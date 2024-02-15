@@ -28,12 +28,18 @@
     subroutine NORTRIP_main_run
     
     use NORTRIP_definitions
-    
+    use NORTRIP_main_run_forecast
     implicit none
     
     !Declare internal logical variables for showing results
     logical :: show_time_moisture=.false.
     logical :: show_time_dust=.false.
+
+
+    integer :: tf
+    integer :: forecast_index
+    real,allocatable :: forecast_T_s(:,:)
+    real    :: bias_correction
 
     !Open log file for main run. Already established in NORTRIP_read_pathnames
     !if (unit_logfile.gt.0) then
@@ -87,54 +93,67 @@
             write(unit_logfile,'(A)')'Starting time loop (NORTRIP_main_run)'
         endif
         
-        do ti=min_time,max_time
-
-            !Print the day date. Not active
-            if (date_data(hour_index,ti).eq.1) then
-                !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
-            endif
-
-            !Use activity rules to determine salting, sanding and cleaning activities
-            call NORTRIP_set_activity_data
-        
-            !Main track loop
-            !----------------------------------------------------------------------
-            do tr=1,num_track
-
-                !Calculate road surface conditions
-                call NORTRIP_surface_moisture_submodel
-                
-                !For debugging purposes only
-                if (show_time_moisture) then
-                    write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
-                    ,meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(T_sub_index,ti,tr,ro),road_meteo_data(T_s_dewpoint_index,ti,tr,ro) &
-                    ,g_road_data(water_index,ti,tr,ro),g_road_data(snow_index,ti,tr,ro),g_road_data(ice_index,ti,tr,ro)
-                endif
-                
-                !Calculate road emissions and dust loading
-                call NORTRIP_dust_emission_submodel
-                if (show_time_dust) then
-                    write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
-                    ,road_meteo_data(H_index,ti,tr,ro),road_meteo_data(L_index,ti,tr,ro),road_meteo_data(G_index,ti,tr,ro),road_meteo_data(G_sub_index,ti,tr,ro),road_meteo_data(evap_index,ti,tr,ro) &
-                    ,road_meteo_data(RH_s_index,ti,tr,ro),M_road_bin_data(road_index,pm_200,ti_bin,tr,ro_bin),M_road_bin_data(salt_index(1),pm_all,ti_bin,tr,ro_bin)
-                endif
-            end do
-            !End main track loop
-            !----------------------------------------------------------------------
-
-            !Redistribute mass and moisture between tracks. Not yet implemented
-
-            !Put the binned variables in the unbinned ones 
-            call NORTRIP_unbin_variables
+        do tf=min_time,max_time
             
-            !If the single road loop is used then save the init files here
-            if (use_single_road_loop_flag) then
-                call NORTRIP_save_init_data_single
-            endif
-            
+            call NORTRIP_main_run_forecast_prepare(tf, bias_correction,forecast_index) !Calculate correction when in forecast mode
+
+            do ti=tf,tf+forecast_index !%Forecast loop. This is not a loop if forecast_hour=0 or 1
+                
+                if (ti.le.max_time) then
+
+
+                    !Print the day date. Not active
+                    if (date_data(hour_index,ti).eq.1) then
+                        !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
+                    endif
+
+                    !Use activity rules to determine salting, sanding and cleaning activities
+                    call NORTRIP_set_activity_data
+                
+                    !Main track loop
+                    !----------------------------------------------------------------------
+                    do tr=1,num_track
+
+                        !Calculate road surface conditions
+                        call NORTRIP_surface_moisture_submodel
+                        
+                        !For debugging purposes only
+                        if (show_time_moisture) then
+                            write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
+                            ,meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(T_sub_index,ti,tr,ro),road_meteo_data(T_s_dewpoint_index,ti,tr,ro) &
+                            ,g_road_data(water_index,ti,tr,ro),g_road_data(snow_index,ti,tr,ro),g_road_data(ice_index,ti,tr,ro)
+                        endif
+                        
+                        !Calculate road emissions and dust loading
+                        call NORTRIP_dust_emission_submodel
+                        if (show_time_dust) then
+                            write(unit_logfile,'(a24,a2,2i8,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ',ro,ti &
+                            ,road_meteo_data(H_index,ti,tr,ro),road_meteo_data(L_index,ti,tr,ro),road_meteo_data(G_index,ti,tr,ro),road_meteo_data(G_sub_index,ti,tr,ro),road_meteo_data(evap_index,ti,tr,ro) &
+                            ,road_meteo_data(RH_s_index,ti,tr,ro),M_road_bin_data(road_index,pm_200,ti_bin,tr,ro_bin),M_road_bin_data(salt_index(1),pm_all,ti_bin,tr,ro_bin)
+                        endif
+                    end do
+                    !End main track loop
+                    !----------------------------------------------------------------------
+
+                    !Redistribute mass and moisture between tracks. Not yet implemented
+
+                    !Put the binned variables in the unbinned ones 
+                    call NORTRIP_unbin_variables
+                    
+                    !If the single road loop is used then save the init files here
+                    if (use_single_road_loop_flag) then
+                        call NORTRIP_save_init_data_single
+                    endif
+                endif
+            enddo !extra time loop
+
+            call NORTRIP_main_run_forecast_calculate(tf,bias_correction, forecast_index,forecast_T_s)
+
         end do
         !End main time loop
         !----------------------------------------------------------------------
+
+        call NORTRIP_main_run_forecast_save(forecast_T_s,forecast_index)
     
         !Only calculate concentrations for the special road links if required. NOT IMPLEMENTED YET
         if (save_road_data_flag(ro).ne.0) then

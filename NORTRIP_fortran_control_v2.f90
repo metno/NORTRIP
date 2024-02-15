@@ -99,8 +99,7 @@
         !Set start and stop times
         call NORTRIP_initialise_time
     
-        if (forecast_hour.eq.0) call NORTRIP_main_run
-        if (forecast_hour.gt.0) call NORTRIP_main_run_forecast
+        call NORTRIP_main_run
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'   
         if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag) call NORTRIP_save_init_data
