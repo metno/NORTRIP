@@ -1,7 +1,7 @@
 
     subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
         ,P,dzs_in,dt_h_in,g_surf_in,s_surf_in,g_min,M2_road_salt_0,salt_type,sub_surf_param &
-        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag &
+        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag, E_correction &
         ,TCs_out,melt_temperature,RH_salt_final,RHs,M_road_dissolved_ratio_temp &
         ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub)
 
@@ -16,6 +16,7 @@
     real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
     real g_surf_in,s_surf_in,g_min,M2_road_salt_0(num_salt),sub_surf_param(3)
     integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag,salt_type(num_salt)
+    real :: E_correction
     !Output variables
     real TCs_out,melt_temperature,RH_salt_final,RHs,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub
     real M_road_dissolved_ratio_temp(num_salt)
@@ -286,7 +287,7 @@
             endif
     
             !Calculate surface temperature implicitly
-            TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+            TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
             
 
             !Set the midpoint temperature for diagnostics

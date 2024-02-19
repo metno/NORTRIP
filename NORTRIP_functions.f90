@@ -440,4 +440,25 @@
         Energy_correction_func = f*dE1 + (1-f)*dE2
     
     end function Energy_correction_func
-    !----------------------------------------------------------------------    
+!----------------------------------------------------------------------    
+
+!----------------------------------------------------------------------    
+    function relaxation_func(forecast_step)
+        !Used to relax the energy correction during the course of the forecast
+        !TODO: Consider making the lin_array a function of forecast steps, so that there will be a decrease at every timestep for 10 min runs.
+
+        !Input
+        integer, intent(in) :: forecast_step
+
+        !Local
+        real, dimension(3),parameter :: lin_array=(/3.0, 1.5, 0.0/)
+
+        real :: relaxation_func
+
+        if (forecast_step > 3) then
+            relaxation_func = 0.0
+        else
+            relaxation_func = lin_array(forecast_step)
+
+        end if
+    end function relaxation_func

@@ -35,8 +35,6 @@ subroutine NORTRIP_main_run
     logical :: show_time_moisture=.false.
     logical :: show_time_dust=.false.
 
-
-    integer :: tf
     integer :: forecast_index
     real,allocatable :: forecast_T_s(:,:)
     real    :: bias_correction
@@ -100,7 +98,7 @@ subroutine NORTRIP_main_run
         
         do tf=min_time,max_time
             
-            call NORTRIP_main_run_forecast_prepare(tf, bias_correction,forecast_index) !Calculate correction when in forecast mode
+            call NORTRIP_main_run_forecast_prepare( bias_correction,forecast_index) !Calculate correction when in forecast mode
 
             do ti=tf,tf+forecast_index !%Forecast loop. This is not a loop if forecast_hour=0 or 1
                 
@@ -148,7 +146,7 @@ subroutine NORTRIP_main_run
                 endif
             enddo !extra time loop
 
-            call NORTRIP_main_run_forecast_calculate(tf,bias_correction, forecast_index,forecast_T_s)
+            call NORTRIP_main_run_forecast_calculate(bias_correction, forecast_index,forecast_T_s)
             
             !If the single road loop is used then save the init files here
             if (use_single_road_loop_flag) then

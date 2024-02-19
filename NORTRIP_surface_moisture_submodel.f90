@@ -55,14 +55,15 @@
     real observed_moisture_cutoff_value_temp
     real f_q_temp,f_q_binder_temp,f_q_brake_temp
     real :: f_q_limit=1.0e-8
-    
+    real :: Energy_correction
     !Functions
     real r_aero_func
     real r_aero_func_with_stability
     real f_spray_func
     real mass_balance_func
     real dewpoint_from_RH_func
-    
+    real energy_correction_func
+    real relaxation_func
     !Flag
     logical :: use_stability=.false.
     
@@ -212,6 +213,12 @@
         !    
         !    endif
 
+        if (use_energy_correction_flag .gt. 0) then
+            Energy_correction = road_meteo_data(E_corr_index,tf,tr,ro)*relaxation_func(ti-tf+1)
+        else 
+            Energy_correction = 0.
+        end if
+
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &
@@ -237,6 +244,7 @@
             ,use_subsurface_flag &
             ,use_salt_humidity_flag &
             ,use_melt_freeze_energy_flag &
+            ,Energy_correction &
             !Outputs start here
             ,road_meteo_data(T_s_index,ti,tr,ro) &  
             ,road_meteo_data(T_melt_index,ti,tr,ro) &
