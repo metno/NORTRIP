@@ -28,11 +28,11 @@
 subroutine NORTRIP_main_run
     
     use NORTRIP_definitions
-    use NORTRIP_main_run_forecast
+    !use NORTRIP_main_run_forecast
     implicit none
     
     !Declare internal logical variables for showing results
-    logical :: show_time_moisture=.false.
+    logical :: show_time_moisture=.true.
     logical :: show_time_dust=.false.
 
     integer :: forecast_index
@@ -97,22 +97,21 @@ subroutine NORTRIP_main_run
         endif
         
         do tf=min_time,max_time
-            
-            call NORTRIP_main_run_forecast_prepare( bias_correction,forecast_index) !Calculate correction when in forecast mode
-
+            !if ( forecast_hour .gt. 0 ) then
+                call NORTRIP_main_run_forecast_prepare( bias_correction,forecast_index) !Calculate correction when in forecast mode
+            !end if
             do ti=tf,tf+forecast_index !%Forecast loop. This is not a loop if forecast_hour=0 or 1
-                
                 if (ti.le.max_time) then
-
-
+                    
+                    
                     !Print the day date. Not active
                     if (date_data(hour_index,ti).eq.1) then
                         !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
                     endif
-
+                    
                     !Use activity rules to determine salting, sanding and cleaning activities
                     call NORTRIP_set_activity_data
-                
+                    
                     !Main track loop
                     !----------------------------------------------------------------------
                     do tr=1,num_track
@@ -137,16 +136,18 @@ subroutine NORTRIP_main_run
                     end do
                     !End main track loop
                     !----------------------------------------------------------------------
-
+                    
                     !Redistribute mass and moisture between tracks. Not yet implemented
-
+                    
                     !Put the binned variables in the unbinned ones 
                     call NORTRIP_unbin_variables
                     
                 endif
             enddo !extra time loop
-
-            call NORTRIP_main_run_forecast_calculate(bias_correction, forecast_index,forecast_T_s)
+            
+            if ( forecast_hour .gt. 0 ) then
+                call NORTRIP_main_run_forecast_calculate(bias_correction, forecast_index,forecast_T_s)
+            end if
             
             !If the single road loop is used then save the init files here
             if (use_single_road_loop_flag) then
@@ -155,8 +156,9 @@ subroutine NORTRIP_main_run
         end do
         !End main time loop
         !----------------------------------------------------------------------
-
-        call NORTRIP_main_run_forecast_save(forecast_T_s,forecast_index)
+        if ( forecast_hour .gt. 0 ) then
+            call NORTRIP_main_run_forecast_save(forecast_T_s,forecast_index)
+        end if
     
         !Only calculate concentrations for the special road links if required. NOT IMPLEMENTED YET
         if (save_road_data_flag(ro).ne.0) then

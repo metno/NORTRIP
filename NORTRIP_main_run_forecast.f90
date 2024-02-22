@@ -14,9 +14,9 @@
 !                   Norwegian Meteorological Institute (www.met.no)
 !
 !****************************************************************************
-module NORTRIP_main_run_forecast
-    implicit none
-contains
+! module NORTRIP_main_run_forecast
+!     implicit none
+! contains
 
     subroutine NORTRIP_main_run_forecast_prepare(bias_correction,forecast_index) !Prepare for forecast; Set previous temperature (in tf-1) to Tobs, or calculate bias_correction. forecast_T_s is allocated here
 
@@ -103,7 +103,6 @@ contains
         if (forecast_hour.gt.0.and.tf+forecast_index.le.max_time.and.road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
             !modelled
             if (forecast_type.eq.1) then
-
                 forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)
             endif
             !persistence
@@ -266,4 +265,4 @@ contains
         T_new = (TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu));
 
     end subroutine E_diff_func
-end module 
+!end module 
