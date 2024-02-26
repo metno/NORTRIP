@@ -28,7 +28,7 @@
 subroutine NORTRIP_main_run
     
     use NORTRIP_definitions
-    !use NORTRIP_main_run_forecast
+    use NORTRIP_main_run_forecast
     implicit none
     
     !Declare internal logical variables for showing results

@@ -14,9 +14,9 @@
 !                   Norwegian Meteorological Institute (www.met.no)
 !
 !****************************************************************************
-! module NORTRIP_main_run_forecast
-!     implicit none
-! contains
+ module NORTRIP_main_run_forecast
+     implicit none
+ contains
 
     subroutine NORTRIP_main_run_forecast_prepare(bias_correction,forecast_index) !Prepare for forecast; Set previous temperature (in tf-1) to Tobs, or calculate bias_correction. forecast_T_s is allocated here
 
@@ -265,4 +265,4 @@
         T_new = (TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu));
 
     end subroutine E_diff_func
-!end module 
+end module 
