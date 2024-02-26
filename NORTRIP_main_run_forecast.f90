@@ -33,7 +33,7 @@
     
     !Declare internal logical variables for showing results
     logical :: show_time_moisture=.false.
-    logical :: show_time_dust=.true. !Not implemented
+    logical :: show_time_dust=.false. !Not implemented
     
     !Local forecast variables
     real, allocatable :: forecast_T_s(:,:)
@@ -80,7 +80,7 @@
         call NORTRIP_running_mean_temperature(sub_surf_average_time)
 
         !Print road to screen to see progress
-        if (mod(ro,10000).eq.0) then
+        if ((mod(ro,10000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,10000).eq.0.and.use_single_road_loop_flag)) then
         if (unit_logfile.gt.0) then
             write(*,'(A6,I5)') 'ROAD: ',ro
         else
@@ -90,7 +90,7 @@
         
         !Main time loop
         !----------------------------------------------------------------------
-        if (ro.eq.1.or.ro.eq.n_roads) then
+        if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
             write(unit_logfile,'(A)')'Starting time loop (NORTRIP_main_run_forecast)'
         endif
 
@@ -210,6 +210,11 @@
                 forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
             endif
 
+            !If the single road loop is used then save the init files here
+            if (use_single_road_loop_flag) then
+                call NORTRIP_save_init_data_single
+            endif
+
             !write(*,*) tf+forecast_index,forecast_T_s(min(max_time,tf+forecast_index),:)
         enddo
         !End main time loop
@@ -232,24 +237,24 @@
 
 
         if (use_ospm_flag.eq.1) then
-            if (ro.eq.1.or.ro.eq.n_roads) then
+            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using OSPM'
             endif
             !call ospm_nortrip_control
         elseif (available_airquality_data(f_conc_index)) then
-            if (ro.eq.1.or.ro.eq.n_roads) then
+            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using input dispersion factor'
             endif
             !call NORTRIP_dispersion
         else
-            if (ro.eq.1.or.ro.eq.n_roads) then
+            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
                 write(unit_logfile,'(A)') 'Calculating dispersion using NOX'
             endif
             call NORTRIP_dispersion
         endif
 
         !Calculate concentrations
-        if (ro.eq.1.or.ro.eq.n_roads) then
+        if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
             write(unit_logfile,'(A)')'Calculating concentrations'
         endif
         call NORTRIP_concentrations
