@@ -435,9 +435,9 @@
         !Output
         real :: Energy_correction_func
         !Local
-        real f !Determines weighting between dE1 and dE2
+        real,parameter :: f = 1. !Determines weighting between dE1 and dE2. TODO: Consider to move to param file
 
-        Energy_correction_func = f*dE1 + (1-f)*dE2
+        Energy_correction_func = f*dE1 + (1.-f)*dE2
     
     end function Energy_correction_func
 !----------------------------------------------------------------------    

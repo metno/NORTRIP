@@ -110,8 +110,8 @@
             'L_in',achar(9), &
             'G_sub',achar(9), &
             'G_net',achar(9), &
-            'Energy_difference',achar(9), &
-            'Energy_correction',achar(9), &
+            'Energy_corr',achar(9), &
+            'Energy_diff',achar(9), &
             'W_surf_mod',achar(9), &
             'I_surf_mod',achar(9), &
             'S_surf_mod',achar(9), &

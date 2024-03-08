@@ -32,7 +32,7 @@ subroutine NORTRIP_main_run
     implicit none
     
     !Declare internal logical variables for showing results
-    logical :: show_time_moisture=.true.
+    logical :: show_time_moisture=.false.
     logical :: show_time_dust=.false.
 
     integer :: forecast_index
@@ -67,12 +67,10 @@ subroutine NORTRIP_main_run
     if (.not.use_single_road_loop_flag) then
         call NORTRIP_read_init_data
     endif
-    
-    
+
     !Main road loop
     !----------------------------------------------------------------------
     do ro=n_roads_start,n_roads_end
-    
         !Read in init file and reinitialise. If not available then nothing happens
         if (use_single_road_loop_flag) then
             call NORTRIP_read_init_data_single
@@ -97,9 +95,13 @@ subroutine NORTRIP_main_run
         endif
         
         do tf=min_time,max_time
-            !if ( forecast_hour .gt. 0 ) then
+
+            if ( forecast_hour .gt. 0 ) then
                 call NORTRIP_main_run_forecast_prepare( bias_correction,forecast_index) !Calculate correction when in forecast mode
-            !end if
+            else 
+                forecast_index=0
+            end if
+
             do ti=tf,tf+forecast_index !%Forecast loop. This is not a loop if forecast_hour=0 or 1
                 if (ti.le.max_time) then
                     
@@ -144,7 +146,10 @@ subroutine NORTRIP_main_run
                     
                 endif
             enddo !extra time loop
-            
+            if ( forecast_hour .gt. 0 ) then
+                call NORTRIP_save_forecast(tf,road_meteo_data(T_s_index,tf:tf+forecast_index,1,ro))
+            end if
+
             if ( forecast_hour .gt. 0 ) then
                 call NORTRIP_main_run_forecast_calculate(bias_correction, forecast_index,forecast_T_s)
             end if
