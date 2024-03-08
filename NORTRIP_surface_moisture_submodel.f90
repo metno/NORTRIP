@@ -212,8 +212,7 @@
         !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
         !    
         !    endif
-
-        if (use_energy_correction_flag .gt. 0) then
+        if (use_energy_correction_flag .gt. 0 .and. forecast_type .eq. 5) then
             Energy_correction = road_meteo_data(E_corr_index,tf,tr,ro)*relaxation_func(ti-tf+1)
         else 
             Energy_correction = 0.

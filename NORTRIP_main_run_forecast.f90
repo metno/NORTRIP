@@ -24,11 +24,8 @@
         
         implicit none
         
-        !Input
-        !integer, intent(in) :: tf
-
         !Output:
-        real,intent(out) :: bias_correction
+        real,intent(out)    :: bias_correction 
         integer,intent(out) :: forecast_index
 
         forecast_index=max(0,forecast_hour-1);
@@ -56,7 +53,7 @@
         !Energy correction
         if ( forecast_hour .gt. 0 .and. forecast_type .eq. 5 ) then
             tr=1
-            if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
+            if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata .and. tf .gt. 2) then
                 call E_diff_func &
                     (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro) &
                     ,road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro) &
@@ -102,7 +99,7 @@
         tr=1
         if (forecast_hour.gt.0.and.tf+forecast_index.le.max_time.and.road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
             !modelled
-            if (forecast_type.eq.1) then
+            if (forecast_type.eq.1 .or. forecast_type .eq. 5) then
                 forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)
             endif
             !persistence
@@ -115,15 +112,15 @@
                 +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
                 /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &
                 *(date_data(datenum_index,tf+forecast_index)-date_data(datenum_index,tf-1))
-                elseif (forecast_type.eq.3) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
-                endif
-                !bias correction
-                if (forecast_type.eq.4) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)+bias_correction
-                endif
-            else 
+            elseif (forecast_type.eq.3) then
                 forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
+            endif
+            !bias correction
+            if (forecast_type.eq.4) then
+                forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)+bias_correction
+            endif
+        else 
+            forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
         endif
 
     end subroutine NORTRIP_main_run_forecast_calculate
