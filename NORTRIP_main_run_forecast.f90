@@ -37,7 +37,7 @@
     
     !Local forecast variables
     real, allocatable :: forecast_T_s(:,:)
-    integer tf,forecast_index
+    integer ::forecast_index
     real :: flux_correction=0.
     real :: bias_correction=0.
 

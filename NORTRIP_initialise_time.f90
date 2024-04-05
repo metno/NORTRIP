@@ -37,6 +37,7 @@ subroutine NORTRIP_initialise_time
         call date_to_datestr(a,trim('yyyy.mm.dd HH'),date_str(1,ti))
         call date_to_datestr(a,trim('HH:MM dd mm '),date_str(2,ti))
         call date_to_datestr(a,date_format_str,date_str(3,ti))
+        call date_to_datestr(a,trim('yyyy-mm-dd HH:MM:SS'),date_str(4,ti))
     enddo
     
     a(1:5)=date_data(1:5,1)

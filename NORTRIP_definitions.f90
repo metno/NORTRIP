@@ -311,6 +311,7 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_road_summary_data_flag=.false.
+    logical :: NORTRIP_save_road_summary_data_as_netcdf_flag=.false.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -353,6 +354,7 @@
     character(256) path_init
     character(256) path_init_out
     character(256) filename_init
+    character(256) filename_init_netcdf
     character(256) path_output_emis
     character(256) filename_output_emis
     character(256) filename_output_grid_emis
@@ -443,7 +445,8 @@
     integer :: use_melt_freeze_energy_flag=0
     integer :: salt_after_ploughing_flag=0
     integer :: use_stability_flag=1
-    
+    integer :: use_energy_correction_flag=1
+    integer :: use_netcdf_init = 1 !Set to 1 for saving init values to netcdf
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
     real :: use_sanding_data_flag=1
@@ -721,7 +724,7 @@
 !loop variables commonly used
 !-----------------------------------------------------------------------
     integer x,s,t,v,i,j,k,m
-    integer ro,ti,tr
+    integer ro,ti,tr,tf
     integer ro_tot
 
 !bin dimmension variables to retain same structure as before but reduce memory
