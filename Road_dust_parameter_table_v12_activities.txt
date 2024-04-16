@@ -1,0 +1,59 @@
+NORTRIP model text parameter file (activities)                  
+----------------------------------------------                  
+SALT AND SAND RULES             	0           Keep this line and number here                                                                                                  	
+Salting                         	Value       Comment                                                                                                                         	
+salting_hour(1) (hour)          	5           First time of day when salting can occur                                                                                        	
+salting_hour(2) (hour)          	17          Second time of day when salting can occur                                                                                       	
+delay_salting_day (day)         	0.45         Minimum allowable time between salting events in days                                                                          	
+check_salting_day (day)         	0.5         Time window checked ahead (temperature, RH) and behind (precip)                                                                 	
+min_temp_salt (C)               	-10          Minimum temperature for salting in the forward time window                                                                      	
+max_temp_salt (C)               	-1          Maximum temperature for salting in the forward time window                                                                      	
+precip_rule_salt (mm/hr)        	0.3         Salt if precipitation occurs above this level in the forward and behind time window or RH_rule                                  	
+RH_rule_salt (%)                	95          Salt if the relative humidity is above this level in the forward time window or precip rule Changed from      	
+g_salting_rule (mm)             	0.2         Dry salt if the surface moisture is above this value at time of salting                                                         	
+salt_mass (g/m2)                	10          Mass of salt applied at each application                                                                                        	
+salt_dilution                   	0.2         Salt solution, if 0 then always dry salting                                                                                     	
+salt_type_distribution          	1.0         M(salt) = M(salt1)*salt_type + M(salt2)*(1-salt_type) ; Salt 1=NaCl                                                             	
+                                	                                                                                                                                            	
+Sanding                         	Value       Comment                                                                                                                         	
+sanding_hour(1) (hour)          	7           First time of day when sanding can occur                                                                                        	
+sanding_hour(2) (hour)          	7           Second time of day when sanding can occur                                                                                       	
+delay_sanding_day (day)         	5           Minimum allowable time between sanding events in days                                                                           	
+check_sanding_day (day)         	0.5         Time window checked ahead (temperature, RH) and behind (precip)                                                                 	
+min_temp_sand (C)               	-50         Minimum temperature for sanding in the forward time window                                                                      	
+max_temp_sand (C)               	-5          Maximum temperature for sanding in the forward time window                                                                      	
+precip_rule_sand (mm/hr)        	0.3         Sand if precipitation occurs above this level in the forward and behind time window or RH_rule                                  	
+RH_rule_sand(%)                 	0           Sand if the relative humidity is above this level in the forward time window or precip_rule                                     	
+g_sanding_rule (mm)             	0.5         Sand if the surface moisture (snow or ice) is above this value at time of sanding                                           	
+sand_mass (g/m2)                	2000        Total mass of sand applied at each application (x 10 because it is scaled down by 10 in the flags. This allows for the Trondheim activity data to be scaled down)	
+sand_dilution                   	0           Sand in solution, if 0 then always dry sanding                                                                                  	
+                                	                                                                                                                                            	
+Snow ploughing                  	Value       Comment                                                                                                                         	
+delay_ploughing_hour (hr)       	3           Minimum time between between snow ploughing events                                                                              	
+ploughing_thresh (mm)           	            Overrides existing parameter, threshold at which ploughing occurs, set in Parameter table.                                      	
+                                	                                                                                                                                            	
+Road cleaning                   	Value       Comment                                                                                                                         	
+cleaning_hour(1) (hour)          	4           First time of day when cleaning can occur                                                                                        	
+cleaning_hour(2) (hour)          	16          Second time of day when cleaning can occur                                                                                       	
+delay_cleaning_day (day)        	14          Minimum time between between cleaning events (days)                                                                            	
+min_temp_cleaning (C)           	0           Minimum temperature at which cleaning can occur                                                                                 	
+start_month_cleaning (MM_num)   	11          Month number after which cleaning can occur                                                                                     	
+end_month_cleaning (MM_num)     	4           Month number after which no cleaning can occur                                                                                  	
+clean_with_salting              	0           Sets the cleaning event to occurr during a salting event. Temperatures must be compatable                                       	
+wetting_with_cleaning (mm)      	0.6         Include wetting with the cleaning (mm or litre/m2)                                                                              	
+efficiency_of_cleaning          	1.0         Relative efficiency of the auto cleaning, compared to h_cleaning-eff                                                            	
+                                	                                                                                                                                            	
+Dust binding                    	Value       Comment (type of binder specified in the header of the activity input file sheet)                                               	
+binding_hour(1) (hour)          	5           First time of day when binding can occur                                                                                        	
+binding_hour(2) (hour)          	17          Second time of day when binding can occur                                                                                       	
+delay_binding_day (day)         	4           Minimum allowable time between binding events in days                                                                           	
+check_binding_day (day)         	0.5         Time window checked ahead (temperature, RH) and behind (precip)                                                                 	
+min_temp_binding (C)            	-50         Minimum temperature for binding in the forward time window                                                                      	
+max_temp_binding (C)            	25          Maximum temperature for binding in the forward  time window                                                                     	
+precip_rule_binding (mm/hr)     	0.2         Do not bind if precipitation occurs above this level in the forward or backward time window                                     	
+RH_rule_binding (%)             	40          Bind if the relative humidity is above this level anywhere in the forward time window                                           	
+g_binding_rule (mm)             	0.05        Bind if the surface moisture is currently below this value                                                                      	
+binding_mass (g/m2)             	2.5         Mass of binding applied at each application                                                                                     	
+binding_dilution                	0.2         Binding solution in mass, if 0 then dry                                                                                         	
+start_month_binding (MM_num)    	11          Month number after which binding can occur                                                                                      	
+end_month_binding (MM_num)      	4           Month number after which no binding can occur                                                                                   	
