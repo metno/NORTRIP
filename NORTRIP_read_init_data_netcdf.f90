@@ -46,8 +46,6 @@ end subroutine close_NETCDF_init_file
 
 !==================Read init files on netcdf format=========================
 subroutine NORTRIP_read_init_data_netcdf(ncid_init)
-    !TODO: This subroutine opens and closed the _init.nc file every time it is calles, i.e once for each road link.
-    !It is probably more efficient to open it before the road loop in NORTRIP_main_run.f90 and close it when the loop is finished
     use NORTRIP_definitions
     use netcdf
     implicit none

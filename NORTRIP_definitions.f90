@@ -311,7 +311,7 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_road_summary_data_flag=.false.
-    logical :: NORTRIP_save_road_summary_data_as_netcdf_flag=.false.
+    logical :: NORTRIP_save_road_summary_data_as_netcdf_flag=.true.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -451,6 +451,8 @@
     real use_salting_data_flag(2)
     real :: use_sanding_data_flag=1
     real :: retain_water_by_snow_flag=1
+    
+    integer :: save_road_counter =0 !NOTE: Put this here so that its not reset to 0 for every call in single_road mode
     
 
     !Auto activity data
