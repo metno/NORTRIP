@@ -272,10 +272,16 @@
     enddo
     !Create the binned size distribution
     f_PM_bin=f_PM
-    do x=1,num_size-1
-        f_PM_bin(1:num_source,x,1:num_tyre)=f_PM(1:num_source,x,1:num_tyre)-f_PM(1:num_source,x+1,1:num_tyre)
-        f_PM_bin(crushing_index,x,1:num_tyre)=f_PM(crushing_index,x,1:num_tyre)-f_PM(crushing_index,x+1,1:num_tyre)
-        f_PM_bin(abrasion_index,x,1:num_tyre)=f_PM(abrasion_index,x,1:num_tyre)-f_PM(abrasion_index,x+1,1:num_tyre)
+    do x=1,num_size
+        if (x.eq.num_size) then
+            f_PM_bin(1:num_source,x,1:num_tyre)=f_PM(1:num_source,x,1:num_tyre)
+            f_PM_bin(crushing_index,x,1:num_tyre)=f_PM(crushing_index,x,1:num_tyre)
+            f_PM_bin(abrasion_index,x,1:num_tyre)=f_PM(abrasion_index,x,1:num_tyre)
+        else          
+            f_PM_bin(1:num_source,x,1:num_tyre)=f_PM(1:num_source,x,1:num_tyre)-f_PM(1:num_source,x+1,1:num_tyre)
+            f_PM_bin(crushing_index,x,1:num_tyre)=f_PM(crushing_index,x,1:num_tyre)-f_PM(crushing_index,x+1,1:num_tyre)
+            f_PM_bin(abrasion_index,x,1:num_tyre)=f_PM(abrasion_index,x,1:num_tyre)-f_PM(abrasion_index,x+1,1:num_tyre)
+        endif
     enddo
 
     call read_line_val1(unit_in,unit_logfile,V_ref_pm_fraction)
