@@ -26,7 +26,7 @@
       
     !Determine hours, minutes and seconds
     date_array=0
-    rest_seconds=int(day_fraction*24.*3600.+.5) !Rounded off
+    rest_seconds=idint(day_fraction*24.*3600.+.5) !Rounded off for seconds
     date_array(4)=int(rest_seconds/3600.)
     date_array(5)=int((rest_seconds/60.-date_array(4)*60.))
     date_array(6)=int((rest_seconds-date_array(4)*3600.-date_array(5)*60.))
@@ -426,7 +426,60 @@
     
     end subroutine date_to_datestr_bracket
 !----------------------------------------------------------------------
+
+    !----------------------------------------------------------------------
+    subroutine num_to_numstr_squarebracket(a,in_format_str,out_a_str)
     
+    implicit none
+    
+    character(*), intent(out) ::  out_a_str
+    character(*), intent(in) :: in_format_str
+    integer, intent(in) :: a
+    character(256) format_str,a_str
+    integer pos
+    integer pos1,pos2
+    
+    !Replaces 'num' inbetween brackets with a 3 digit number. Used for NORA3 reading
+    
+    !Only changes dates when they are inside '<.....>'
+    !Removes these once changed
+    pos1=index(in_format_str,'[')
+    pos2=index(in_format_str,']')
+    
+    if (pos1.le.0.or.pos2.le.0.or.pos1+1.gt.pos2-1) then
+        out_a_str=in_format_str
+        return
+    endif
+    
+    !Reassign format_str to be just the text between <..>
+    format_str=in_format_str(pos1+1:pos2-1)
+    a_str=format_str
+    
+    
+    pos=index(format_str,'num')
+    if (pos.gt.0) then
+        if (a.gt.99) then
+            write(a_str(pos:pos+2),'(i3)') a
+        elseif (a.gt.9) then
+            write(a_str(pos:pos+2),'(a1,i2)') '0',a
+        else
+            write(a_str(pos:pos+2),'(a2,i1)') '00',a
+        endif     
+    endif
+   
+    !insert the a_str into out_a_str, removing the '<>' text
+    if (len_trim(in_format_str).gt.pos2) then
+        out_a_str=in_format_str(1:pos1-1)//trim(a_str)//in_format_str(pos2+1:)
+    else
+        out_a_str=in_format_str(1:pos1-1)//trim(a_str)
+    endif
+    
+    !write(*,*) trim(in_format_str),trim(out_a_str)
+    !stop
+    
+    end subroutine num_to_numstr_squarebracket
+!----------------------------------------------------------------------
+
 !----------------------------------------------------------------------
     function day_of_week (a)
     !Adapted from EPISODE code

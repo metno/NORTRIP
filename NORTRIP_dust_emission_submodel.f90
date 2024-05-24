@@ -206,8 +206,10 @@
                         ,sum(g_road_data(snow_ice_index,ti,tr,ro),1),V_ref_abrasion,s_roadwear_thresh)*h_0_abrasion(1:num_size)
                     abrasion_temp(1:num_size)=traffic_data(N_t_v_index(t,v),ti,ro)/n_lanes(ro)*veh_track(tr) &
                         *f_abrasion_temp(1:num_size)*M_road_bin_0_data(s,1:num_size)
+                    !P_abrasion(1:num_size)=P_abrasion(1:num_size)+abrasion_temp(1:num_size) &
+                    !    *(1-f_0_dir(abrasion_index)*f_q(road_index,ti,tr,ro))
                     P_abrasion(1:num_size)=P_abrasion(1:num_size)+abrasion_temp(1:num_size) &
-                        *(1-f_0_dir(abrasion_index)*f_q(road_index,ti,tr,ro))
+                        *(1-f_0_dir(abrasion_index))
                     E_abrasion(1:num_size)=E_abrasion(1:num_size)+abrasion_temp(1:num_size) &
                         *f_0_dir(abrasion_index)*f_q(road_index,ti,tr,ro)            
                     WR_temp=WR_temp+sum(abrasion_temp(1:num_size))
@@ -220,7 +222,8 @@
         do x=1,num_size
             do tr2=1,num_track
                 M_road_bin_balance_data(s,1:num_size,P_abrasion_index,ti_bin,tr2,ro_bin) &
-                    =P_abrasion(x)*f_PM_bin(abrasion_index,1:num_size,1)*f_track(tr2)
+                    =M_road_bin_balance_data(s,1:num_size,P_abrasion_index,ti_bin,tr2,ro_bin) &
+                    + P_abrasion(x)*f_PM_bin(abrasion_index,1:num_size,1)*f_track(tr2)
             enddo
             E_road_bin_data(s,1:num_size,E_direct_index,ti_bin,tr,ro_bin) &
                 =E_road_bin_data(s,1:num_size,E_direct_index,ti_bin,tr,ro_bin) &
