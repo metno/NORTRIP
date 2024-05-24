@@ -40,13 +40,14 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     character(len=12)   :: datetime_string
     integer             :: datetime_int
     integer :: a(num_date_index)
+
     
     call check(nf90_create(trim(filename),nf90_clobber,ncid))
     call check(nf90_def_dim(ncid,"time", nf90_unlimited, t_dimid))
     
-    call check(nf90_def_dim(ncid,"road_id",sum(save_road_data_flag(:)), f_dimid))
+    call check(nf90_def_dim(ncid,"road_id",n_roads_total, f_dimid))
 
-    call check(nf90_def_dim(ncid,"maxdatelength", 24 , date_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
+    call check(nf90_def_dim(ncid,"maxdatelength", int(24/dt) , date_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
 
     call check(nf90_def_var(ncid, "time", nf90_float, t_dimid,varid))
     call check(nf90_put_att(ncid,varid, "units", "seconds since "//trim(date_str(4,min_time)))) !Time dimension as seconds since start of simulation.
@@ -340,9 +341,9 @@ subroutine NORTRIP_save_road_summary_data_netcdf
 
         !Calculate time as seconds since base date
         do ti=min_time_save,max_time_save   
-            !Write time: 
-            timestamp = (ti-1)*nint(dt)*60*60
 
+            !Write time: 
+            timestamp = (ti-1)*dt*60*60
             call check(nf90_inq_varid(ncid, "time",varid))
             call check(nf90_put_var(ncid, varid, timestamp, start = (/ti/)))
 

@@ -58,7 +58,7 @@
     character_length = LEN_TRIM(start_date_input_str)
     if (character_length >= 10) then
         start_date_input=0
-        read(start_date_input_str, *)  start_date_input(year_index),start_date_input(month_index),start_date_input(day_index),start_date_input(hour_index)
+        read(start_date_input_str, *)  start_date_input(year_index),start_date_input(month_index),start_date_input(day_index),start_date_input(hour_index),start_date_input(minute_index)
         call date_to_datestr(start_date_input,date_format_str,start_date_save_str)
         write(unit_out,'(A,A)') ' Set start date to: ', start_date_save_str
     else
@@ -70,7 +70,7 @@
     character_length = LEN_TRIM(end_date_input_str)
     if (character_length >= 10) then
         end_date_input=0
-        read(end_date_input_str, *)  end_date_input(year_index),end_date_input(month_index),end_date_input(day_index),end_date_input(hour_index)
+        read(end_date_input_str, *)  end_date_input(year_index),end_date_input(month_index),end_date_input(day_index),end_date_input(hour_index), end_date_input(minute_index)
         call date_to_datestr(end_date_input,date_format_str,end_date_save_str)
         write(unit_out,'(A,A)') ' Set end date to:   ', end_date_save_str
     else

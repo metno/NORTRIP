@@ -89,7 +89,7 @@ subroutine NORTRIP_initialise_time
     write(unit_logfile,'(2A24,i6)') 'End date: ',trim(end_date_str),max_time
     write(unit_logfile,'(2A24,i6)') 'Start save date: ',trim(start_date_save_str),min_time_save
     write(unit_logfile,'(2A24,i6)') 'End save date: ',trim(end_date_save_str),max_time_save
-    write(unit_logfile,'(A24,f6.1)') 'Time step (hours): ',dt
+    write(unit_logfile,'(A24,f6.2)') 'Time step (hours): ',dt
   	write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
     !if (unit_logfile.gt.0) then

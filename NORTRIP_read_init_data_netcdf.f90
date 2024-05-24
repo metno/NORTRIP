@@ -160,7 +160,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
         enddo
         
         if (input_is_nan) then
-            write(unit_logfile,'(A)') 'ERROR reading init file. NaN values in data. Stopping'
+            write(unit_logfile,'(A)') 'ERROR reading init file (NORTRIP_read_init_data_netcdf). NaN values in data. Stopping'
             stop 3
         endif
         
