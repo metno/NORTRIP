@@ -1,0 +1,186 @@
+NORTRIP model text parameter file (params)                      
+-----------------------------------------                       
+Tab seperated. 48 and 24 characters                             
+Check log file to assess proper reading                         
+-----------------------------------------                       
+                                                	                        	                        	                        	                                                	
+ROAD DUST SUB-MODEL PARAMETERS                  	                        	                        	                        	                                                	
+Road wear                                       	                        	                        	                        	                                                	
+W0,roadwear (g km-1 veh-1)                      	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	14.4                    	0.48                    	0.48                    	                                                	
+Light (li)                                      	2.88                    	0.096                   	0.096                   	                                                	
+Parameters for speed dependence                 	a1                      	a2                      	a3                      	Vref,roadwear           Vmin,roadwear           	
+Equation W=W0*(a1+a2*(V/Vref)a3)                	0                       	1                       	1                       	70                      30                      	
+Tyre wear                                       	                        	                        	                        	                                                	
+W0,tirewear (g km-1 veh-1)                      	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	1.0                     	1.0                     	1.0                     	                                                	
+Light (li)                                      	0.1                     	0.1                     	0.1                     	                                                	
+Parameters for speed dependence                 	a1                      	a2                      	a3                      	Vref,tyrewear           Vmin,tyrewear           	
+Equation W=W0*(a1+a2*(V/Vref)a3)                	0                       	1                       	1                       	70                      30                      	
+Brake wear                                      	                        	                        	                        	                                                	
+W0,brakewear (g km-1 veh-1)                     	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	0.10                    	0.10                    	0.10                    	                                                	
+Light (li)                                      	0.01                    	0.01                    	0.01                    	                                                	
+Parameters for speed dependence                 	a1                      	a2                      	a3                      	Vref,brakewear          Vmin,brakewear          	
+Equation W=W0*(a1+a2*(V/Vref)a3)                	1                       	-0.75                   	1                       	120                     30                      	
+Snow depth wear threshold                       	                        	                        	                        	                                                	
+Parameter                                       	Value                   	                        	                        	                                                	
+sroadwear,thresh (mm w.e.)                      	6                       	                        	                        	                                                	
+Pavement type scaling factor                    	                        	                        	                        	                                                	
+Number of pavement types                        	4                     	                        	                        	                                                	
+Index(p)                                        	Name                    	hpave (p)               	                        	                                                	
+1                                               	NBM19_SS11              	3.6
+2                                               	NBM14_SS11              	2.9
+3                                               	NBM10_SS11              	2.32
+4                                               	NBM7_SS11               	1.9
+Driving cycle scaling factor                    	                        	                        	                        	                                                	
+Number of driving cycle types                   	4                       	                        	                        	                                                	
+Index(d)                                        	Name                    	hdrivingcycle (d)       	                        	                                                	
+1                                               	Reference               	1                       	                        	                                                	
+2                                               	Urban                   	1.5                     	                        	                                                	
+3                                               	Highway                 	0.5                     	                        	                                                	
+4                                               	Congested               	2                       	                        	                                                	
+Road suspension                                 	                        	                        	                        	                                                	
+f0,suspension(veh-1)                            	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	6.0e-05                 	6.0e-05                 	6.0e-05                 	                                                	
+Light (li)                                      	1.5e-06                 	1.5e-06                 	1.5e-06                 	                                                	
+Parameters for speed dependence                 	a1                      	a2                      	a3                      	Vref,suspension         Vmin,suspension         	
+Equation fsus=fsus0*(a1+a2*(V/Vref)a3)          	0                       	1                       	1                       	50                      30                       	
+Suspension scaling factors                      	                        	                        	                        	                                                	
+Source                                          	PMall - PM200           	PM200 - PM10            	PM10 - PM2.5            	PM2.5                                           	
+h0,roadwear                                     	1                       	1                       	1                       	1                                               	
+h0,tyrewear                                     	1                       	1                       	1                       	1                                               	
+h0,brakewear                                    	1                       	1                       	1                       	1                                               	
+h0,sand                                         	10                      	1                       	1                       	1                                               	
+h0,depo                                         	1                       	1                       	1                       	1                                               	
+h0,fugitive                                     	1                       	1                       	1                       	1                                               	
+h0,exhaust                                      	1                       	1                       	1                       	1                                               	
+h0,salt(1)                                      	1                       	1                       	1                       	1                                               	
+h0,salt(2)                                      	1                       	1                       	1                       	1                                               	
+h0,q_road                                       	0                       	1                       	1                       	1                                               	
+Abrasion factor                                 	                        	                        	                        	                                                	
+fabrasion (veh-1)                               	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	1e-05                   	1e-05                   	1e-05                   	                                                	
+Light (li)                                      	1e-06                   	1e-06                   	1e-06                   	                                                	
+Reference speed Vref,abrasion (km/hr)           	60                      	                        	                        	                                                	
+Abrasion scaling factor                         	PMall - PM200           	PM200 - PM10            	PM10 - PM2.5            	PM2.5                                           	
+h0,abrasion                                     	1                       	0                       	0                       	0                                               	
+Crushing factor                                 	                        	                        	                        	                                                	
+f0,crushing (veh-1)                             	Studded tyres (st)      	Winter tyres (wi)       	Summer tyres (su)       	                                                	
+Heavy (he)                                      	1e-05                   	1e-05                   	1e-05                   	                                                	
+Light (li)                                      	1e-06                   	1e-06                   	1e-06                   	                                                	
+Reference speed Vref,crushing (km/hr)           	60                      	                        	                        	                                                	
+Crushing scaling factor                         	PMall - PM200           	PM200 - PM10            	PM10 - PM2.5            	PM2.5                                           	
+h0,crushing                                     	1                       	0                       	0                       	0                                               	
+Sources participating in abrasion and crushing  	                        	                        	                        	                                                	
+Source                                          	Abrasion                	Crushing                	                        	                                                	
+p0,roadwear                                     	0                       	0                       	                        	                                                	
+p0,tyrewear                                     	0                       	0                       	                        	                                                	
+p0,brakewear                                    	0                       	0                       	                        	                                                	
+p0,sand                                         	1                       	1                       	                        	                                                	
+p0,depo                                         	1                       	1                       	                        	                                                	
+p0,fugitive                                     	1                       	1                       	                        	                                                	
+p0,exhaust                                      	0                       	0                       	                        	                                                	
+p0,salt(1)                                      	0                       	0                       	                        	                                                	
+p0,salt(2)                                      	0                       	0                       	                        	                                                	
+Direct emission factor                          	                        	                        	                        	                                                	
+Source parameter                                	Value                   	                        	                        	                                                	
+f0,dir-roadwear                                 	0.5                       	                        	                        	                                                	
+f0,dir-tyrewear                                 	0.5                       	                        	                        	                                                	
+f0,dir-brakewear                                	0.5                       	                        	                        	                                                	
+f0,dir-crushing                                 	0                       	                        	                        	                                                	
+f0,dir-abrasion                                 	0                       	                        	                        	                                                	
+f0,dir-exhaust                                  	0.98                    	                        	                        	                                                	
+Fractional size distribution                    	                        	                        	                        	                                                	
+Source                                          	PMall                   	PM200                   	PM10                    	PM2.5                                           	
+fPM,roadwear                                    	1                       	1                       	0.28                    	0.022                                           	
+fPM,tyrewear                                    	1                       	1                       	0.1                     	0.01                                            	
+fPM,brakewear                                   	1                       	1                       	0.8                     	0.5                                             	
+fPM,sand                                        	1                       	0.05                    	0.008                   	0.002                                          	
+fPM,depo                                        	1                       	1                       	0.28                     	0.022                                            	
+fPM,fugitive                                    	1                       	1                       	0.28                    	0.022                                           	
+fPM,exhaust                                     	1                       	1                       	1                       	1                                               	
+fPM,salt(1)                                     	1                       	1                       	0.28                    	0.022                                           	
+fPM,salt(2)                                     	1                       	1                       	0.28                    	0.022                                           	
+fPM,crushing                                    	1                       	1                       	.16                       	0.04                                             	
+fPM,abrasion                                    	1                       	1                       	1                       	0.2                                             	
+Reference speed Vref,PM-fraction (km/hr)        	50                      	                        	                        	                                                	
+cPM-fraction (km/hr)-1                          	0.0                     	                        	                        	                                                	
+Wind blown dust emission factors                	                        	                        	                        	                                                	
+Parameter                                       	Value                   	                        	                        	                                                	
+twind (hr)                                      	12                      	                        	                        	                                                	
+FFthresh (m/s)                                  	5                       	                        	                        	                                                	
+Activity efficiency factors for dust and salt   	                        	                        	                        	                                                	
+Efficiency parameter dust                       	PMall - PM200           	PM200 - PM10            	PM10 - PM2.5            	PM2.5                                           	
+hploughing-eff                                  	0.1                     	0.01                    	0.01                    	0.01                                            	
+hcleaning-eff                                   	0.001                   	0.001                   	0.001                   	0.001                                           	
+hdrainage-eff                                   	0.002                    	0.002                    	0.002                    	0.002                                            	
+hspraying-eff                                   	0.1                     	0.1                     	0.1                     	0.1                                             	
+Efficiency parameter salt                       	Salt(1)                 	Salt(2)                 	                        	                                                	
+hploughing-eff                                  	0.3                     	0.3                     	                        	                                                	
+hcleaning-eff                                   	0.2                     	0.2                     	                        	                                                	
+hdrainage-eff                                   	1                       	1                       	                        	                                                	
+hspraying-eff                                   	1                       	1                       	                        	                                                	
+Deposition velocity                             	                        	                        	                        	                                                	
+                                                	PM200 - PM10            	PM10 - PM2.5            	PM2.5                   	                                                	
+wx (m/s)                                        	0.003                   	0.001                   	0.0005                  	                                                	
+Concentration conversion limit values           	                        	                        	                        	                                                	
+Parameter                                       	Value                   	                        	                        	                                                	
+NOX,concentration-min (µg/m3)                   	5                       	                        	                        	                                                	
+NOX,emission-min (g/km/hr)                      	50                      	                        	                        	                                                	
+                                                	                        	                        	                        	                                                	
+MOISTURE SUB-MODEL PARAMETERS                   	                        	                        	                        	                                                	
+Spray and splash factors                        	                        	                        	                        	                                                	
+Parameter                                       	Water                   	Snow                    	Ice                     	                                                	
+f0,spray (veh-1) (he)                           	1.0e-04                 	1.0e-04                 	5.0e-05                 	                                                	
+f0,spray (veh-1) (li)                           	2.0e-05                 	2.0e-05                 	1.0e-05                 	                                                	
+Vref,spray  (km/hr)                             	80                      	80                      	80                      	                                                	
+groad,sprayable-min (mm)                        	0.05                    	0.05                    	0.05                    	                                                	
+Power law factor for spray aspray               	2                       	2                       	2                       	                                                	
+Vthresh,spray  (km/hr)                          	40                      	40                      	40                      	                                                	
+Drainage parameters                             	                        	                        	                        	                                                	
+Parameter                                       	Value (min all types)   	Val (thresh for type 3) 	                        	                                                	
+gdrainable (mm)                                 	0.6                     	0.20                    	                        	                                                	
+Snow retainment limit (mm)                      	2                       	                        	                        	                                                	
+Drainage time scale(hr)                         	12                       	                        	                        	                                                	
+Ploughing parameters                            	                        	                        	                        	                                                	
+Parameter                                       	Water                   	Snow                    	Ice                     	                                                	
+Ploughing efficiency for snow removal           	0.1                     	0.8                     	0.3                     	                                                	
+Ploughing threshold (mm)                        	100                     	3                       	3                       	                                                	
+Energy balance parameters                       	                        	                        	                        	                                                	
+Parameter                                       	Value                   	                        	                        	                                                	
+groad,evap-thresh  (mm)                         	0.02                    	                        	                        	                                                	
+Roughness lengths z0m,z0t,z0q (mm)              	10                      	1                       	0.1                        	                                                	
+Snow albedo                                     	0.6                     	                        	                        	                                                	
+Suburface slab depth (m)                        	0                       	                        	                        	                                                	
+Suburf temperature average time (h)             	48                      	                        	                        	                                                	
+Subsurface parameters                           	s (kg/m3)              	cs (J/kg/K)             	ks (W/m/K)              	                                                	
+Subsurface parameters                           	2400                    	800                     	3.0                      	                                                	
+Traffic turbulent exchange and heat flux        	Heavy (he)              	Light (li)              	                        	                                                	
+atraffic  (veh-1)                               	0.01                    	0.001                   	                        	                                                	
+Hveh  (W m-2 veh-1)                             	150                      	50                      	                        	                                                	
+Retention parameters                            	                        	                        	                        	                                                	
+Parameter                                       	Road                    	Brake                   	Dust binder (g/m2)      	                                                	
+gretention-thresh (mm)                          	0.06                    	0.5                     	250                     	                                                	
+gretention-min (mm)                             	0.02                    	0.3                     	50                      	                                                	
+INTER-TRACK AND SHARED SUB-MODEL PARAMETERS     	                        	                        	                        	                                                	
+Surface texture parameters                      	                        	                        	                        	                                                	
+Adjusted parameter                              	texture_scaling(i)      	Master texture scaling  	                        	                                                	
+gdrainable (mm)                                 	1                       	1                       	                        	                                                	
+f0,suspension(veh-1)                            	1                       	                        	                        	                                                	
+f0,spray (veh-1)                                	1                       	                        	                        	                                                	
+hdrainage-eff (dust)                            	1                       	                        	                        	                                                	
+hspraying-eff (dust)                            	1                       	                        	                        	                                                	
+Road track parameters                           	                        	                        	                        	                                                	
+Track type                                      	Include which tracks    	Fraction road area      	Fraction vehicles       	Migration factor (1/veh)                        	
+falltrack                                       	1                       	1                       	1                       	0.01                                            	
+fouttrack                                       	0                       	0.9                     	0.9                     	0.01                                            	
+fintrack                                        	0                       	0.1                     	0.08                    	0.01                                            	
+fshoulder                                       	0                       	0                       	0.01                    	0.01                                            	
+fkerb                                           	0                       	0                       	0.01                    	0.01                                            	
+Track type                                      	Suspension rescaling    	Spray rescaling         	None                    	None                                            	
+falltrack                                       	1                       	1                       	0                       	0                                               	
+fouttrack                                       	1                       	1                       	0                       	0                                               	
+fintrack                                        	100                     	100                     	0                       	0                                               	
+fshoulder                                       	0.1                     	1                       	0                       	0                                               	
+fkerb                                           	0.1                     	1                       	0                       	0                                               	
