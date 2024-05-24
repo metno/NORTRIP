@@ -31,6 +31,7 @@ subroutine NORTRIP_initialise_time
     a=0
     b=0
     !Set the date_num_data parameter and date strings
+    !NOTE: THis, to be of any use, should be seconds, not days and should be fixed elsewhere.
     do ti=1,n_time
         a(1:5)=date_data(1:5,ti)
         date_data(datenum_index,ti)=date_to_number(a)

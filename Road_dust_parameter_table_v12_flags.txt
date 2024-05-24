@@ -1,0 +1,63 @@
+NORTRIP model text parameter file (flags)                       
+-----------------------------------------                       
+DUST                            	0           Keep this line and number here                                                                                                  	
+road_wear_flag                  	1           Allows road wear                                                                                                                	
+tyre_wear_flag                  	1           Allows tyre wear                                                                                                                	
+brake_wear_flag                 	1           Allows brake wear                                                                                                               	
+exhaust_flag                    	1           Includes exhaust in calculations                                                                                                	
+road_suspension_flag            	1           Allow road suspension                                                                                                           	
+dust_deposition_flag            	0           Allows deposition of background PM                                                                                              	
+abrasion_flag                   	0           Allows road abrasion due to sand                                                                                                	
+crushing_flag                   	1           Allows crushing to occur, shifting down in size bins                                                                            	
+dust_drainage_flag              	2           Allows dust and salt to be drained from the road. 1 is instantaneous mixing, 2 is continuous mixing                             	
+dust_spray_flag                 	1           Allows dust and salt to be sprayed from the road                                                                                	
+dust_ploughing_flag             	1           Allows dust and salt to be ploughed from the road                                                                               	
+wind_suspension_flag            	0           Allows wind blown dust suspension                                                                                               	
+MOISTURE                        	                                                                                                                                            	
+retention_flag                  	2           Allows retention of  particles due to surface wetness. 1 is linear, 2 is exponential, 0 is none, 3 is retain all                	
+use_obs_retention_flag          	0           Uses the observed moisture to determine the surface retention, if available                                                     	
+water_spray_flag                	1           Allows spray from the road surface                                                                                              	
+drainage_type_flag              	3           Allows drainage from the road surface. 1 is with exponential decay, 2 is instantaneous, 3 combined                              	
+surface_humidity_flag           	2           Sets the method for describing the surface humidity. 1 is linear, 2 is exponential                                               	
+use_salt_humidity_flag          	2           Allows road salt concentrations to influence the surface humidity and melt temperature, 2 for keeping staurated NaCl vapour pressure in oversatured	
+retain_water_by_snow_flag       	1           If > 0 then scales the snow depth (mm w.e.) to stop the drainage of water.
+ENERGY BALANCE                  	                                                                                                                                            	
+evaporation_flag                	2           1  = energy balance with ice and sub-surface, 0 = none                                                                          	
+canyon_shadow_flag              	3           Use the street canyon dimensions to shadow the road. 1 is canyon 2 is skyview 3 is combined                                                                           	
+canyon_long_rad_flag            	1           Use the street canyon dimensions to produce long wave radiation                                                                 	
+use_subsurface_flag             	2           Use the underlaying subsurface in the energy balance calculations. Set to 1 for air temperature, 2 for surface temperature                                                              	
+use_melt_freeze_energy_flag     	0           Include the melting and freezing energy in the surface energy calculations                                                              	
+use_traffic_turb_flag           	1           Use the enhanced turbulence and heat flux for traffic                                                                           	
+use_stability_flag              	1           Use atmospheric stability in sensible heat fux calculation. Default is 1 (on)
+ACTIVITY                        	                                                                                                                                            	
+use_salting_data_1_flag         	1           Allows salting, either from the input data or by rule for salt type 1 (NaCl). Other than 1 is scaling                           	
+use_salting_data_2_flag         	0           Allows salting, either from the input data or by rule for salt type 2 (Binder). Other than 1 is scaling                         	
+use_sanding_data_flag           	1           Allows sanding, either from the input data or by rule (Is scaled here because Trondheim data is used. Auto will be increased by a factor of 10 to compensate)                                                                           	
+use_ploughing_data_flag         	1           Allows ploughing, either from the input data or by rule                                                                         	
+use_wetting_data_flag           	1           Allows wetting to occur, either from the input data or by rule                                                                  	
+use_cleaning_data_flag          	1           Allows cleaning, either from the input data or by rule                                                                          	
+auto_salting_flag               	1           Allows salting by rule (1 over rides the input data values, 2 adds to input data for both salts)                                	
+auto_binding_flag               	1           Allows binding by rule (1 over rides the input data values, 2 adds to input data for salt 2 only)                               	
+auto_sanding_flag               	1           Allows sanding by rule (1 over rides the input data values, 2 adds to input data)                                               	
+auto_ploughing_flag             	1           Allows ploughing by rule (1 over rides the input data values, 2 adds to input data, 5 is used when Trondheim data involved)                                             	
+auto_cleaning_flag              	1           Allows cleaning by rule (1 over rides the input data values, 2 adds to input data)                                              	
+binding_salt_flag               	2           Sets the salt type used for binding 1=nacl,2=MgCl, 3=CMA, 4=CaCl2
+activity_in_tunnels_flag        	1           Sets flag disabling activities in tunnels 0=no activities,1=allows only cleaning,2=allows all activities
+salt_after_ploughing_flag       	1           Will salt after all snow ploughing in addition to other salting events
+OUTPUT                          	                                                                                                                                            	
+plot_type_flag                  	2           1 = hourly, 2 = daily, 3 = daily cycle, 4 = 1/2 daily means , 5 = day of week, 7= weekly , 8= monthly                           	
+save_type_flag                  	1           1 = save data, 2 = save plots, 3 = save both, 4 = save data as text, 0 = none                                                   	
+OSPM                            	                                                                                                                                            	
+use_ospm_flag                   	0           Runs OSPM for dispersion. 1 uses NORTRIP data, 2 uses ospm data in input file sheet 'OSPM' (2 NOT ACTIVE!)                      	
+FORECAST
+forecast_hour                   	0        	Set the number of hours for the road temperature forecasts. 0 is no forecast
+forecast_type                    	1        	Forecast type 1 is modelled forecast, 2 is persitence, 3 is linear interpolation, 4 is bias correction, 5 is flux correction
+CONTROL
+use_single_road_loop_flag       	1           If set to 1 will use single road loop with continuous reading. This reduces memory usage but slows down the model
+
+#Additional factors that override the road specific values in the metadata file
+override_long_rad_in_offset 	0.0	(W/m^2)
+override_RH_offset          	0.0	(%)
+override_T_2m_offset        	0.0	(C)
+override_wind_speed_correction 	1.0	(scaling)
+override_albedo_road_offset 	0.0

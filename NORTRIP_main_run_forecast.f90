@@ -100,7 +100,7 @@
 
             !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
             !Do not do this if bias correction is used for the forecast
-            forecast_index=max(0,forecast_hour-1);
+            forecast_index=max(0,floor(forecast_hour/dt-1+0.5));
             if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
                 tr=1       
                 if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
@@ -117,7 +117,7 @@
                    !write(*,*) ro,tf,bias_correction
                 endif
             endif
-            !Flux correction. Estimate for now
+            !Flux correction. Estimate for now. To be replaced with energy correction
             if (forecast_hour.gt.0.and.forecast_type.eq.5) then
                 tr=1       
                 if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
@@ -187,7 +187,8 @@
                     forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,max(tf-1,min_time),:,ro);
                 endif
                 !linear extrapolation
-                if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro).ne.nodata) then
+                !NOTE: THTis is likely wrong: date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2) as it is an integer day
+                if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,tf-2,tr,ro).ne.nodata) then
                     forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,tf-1,:,ro) &
                         +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
                         /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &

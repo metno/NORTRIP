@@ -174,6 +174,42 @@
     end function dewpoint_from_RH_func
 !----------------------------------------------------------------------
 
+    !----------------------------------------------------------------------
+    function RH_from_dewpoint_func(TC,dewpoint)
+
+    implicit none
+    !TC: Degrees C
+    !dewpoint: Degrees C
+    !esat: hPa
+    !RH: !
+    real RH_from_dewpoint_func
+    real TC,dewpoint
+    real esat,eair
+
+    real a,b,c
+    parameter (a=6.1121,b=17.67,c=243.5)
+
+    esat=a*exp(b*TC/(c+TC))
+    
+    !The original from dewpoint_from_RH_func
+    !+.01 to avoid a NaN error in the log when RH=0
+    !eair=(RH+.01)/100.*esat
+    !dewpoint_from_RH_func=c*log(eair/a)/(b-log(eair/a))
+    
+    !process of inversion
+    !dewpoint*(b-log(eair/a))=c*log(eair/a)
+    !dewpoint*b-dewpoint*log(eair/a)=c*log(eair/a)
+    !dewpoint*b=dewpoint*log(eair/a)+c*log(eair/a)
+    !dewpoint*b=(dewpoint+c)*log(eair/a)
+    !dewpoint*b=(dewpoint+c)*log(eair/a)
+    !log(eair/a)=dewpoint*b/(dewpoint+c)
+    
+    eair=a*exp(dewpoint*b/(dewpoint+c))
+    RH_from_dewpoint_func=eair/esat*100
+    
+    end function RH_from_dewpoint_func
+!----------------------------------------------------------------------
+
 !----------------------------------------------------------------------
     function r_aero_func(FF,z_FF,z_T,z0,z0t,V_veh,N_v,num_veh,a_traffic)
 
