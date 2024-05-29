@@ -88,19 +88,9 @@ subroutine NORTRIP_save_init_data_netcdf
 
     hour_test=1
     if (hours_between_init.ne.0) hour_test=mod(ti,hours_between_init)
-    if (hour_test.eq.0.or.ti.eq.max_time) then
+    if (hour_test.eq.0.or.ti.eq.max_time.or.ti.eq.ceiling(1/dt)) then
 
-        !     !This can happen more than once so a new unit must be opened every time
-        !     !So many can be open simultaneously
-            
-        !     unit_counter=0
-        !     if (hours_between_init.ne.0.and.ti.ne.max_time) unit_counter=int(ti/hours_between_init)
-        !     unit_out=unit_save_init_data+unit_counter
-            
-        !     !If it is the first loop then open the file
-        !     if (ro_tot.eq.1) then
-
-        !         !Check that path exists after filling in date stamp
+        !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)
         call date_to_datestr_bracket(a,path_init,temp_name)
         call date_to_datestr_bracket(a,temp_name,temp_name)
@@ -132,8 +122,8 @@ subroutine NORTRIP_save_init_data_netcdf
         !NOTE: Track is always = 1. If the model code is extended to include more than one track, this must be changed.
         tr=1
 
-            !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
-            !TODO: No formating is done except defining the netcdf variables as nf90_float. Should be put on approproate format when the file is read.
+        !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
+        !TODO: No formating is done except defining the netcdf variables as nf90_float. Should be put on approproate format when the file is read.
 
         call check(nf90_inq_varid(ncid, "M_road_data",varid))
         call check(nf90_put_var(ncid, varid, M_road_data(:,:,ti,tr,0),start = (/1,1,1,ro_tot/)))
