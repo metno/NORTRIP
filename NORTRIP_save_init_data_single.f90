@@ -26,7 +26,7 @@
     
     !Leave this if it is not relevant
     if (hours_between_init.lt.0) then
-	    if (ro_tot.eq.1) then
+        if (ro_tot.eq.1) then
             write(unit_logfile,'(A)') ' WARNING: Not saving data to init file for single road loop'
         endif
         
@@ -43,7 +43,7 @@
         unit_counter=0
         if (hours_between_init.ne.0.and.tf.ne.max_time) unit_counter=int(tf/hours_between_init)
         unit_out=unit_save_init_data+unit_counter
-        
+
         !If it is the first loop then open the file
         if (ro_tot.eq.1) then
         
@@ -87,19 +87,18 @@
             call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
             call date_to_datestr_bracket(current_date,filename_asc,filename_asc)
             call date_to_datestr_bracket(current_date,filename_bin,filename_bin)
-        
             if (save_bin) then
                 
-            write(unit_logfile,'(A,A)') ' Saving to: ',filename_bin
-            open(unit_out,file=trim(filename_bin),status='replace',form='unformatted')      
-            write(unit_out) n_roads_total,num_track,num_source_all,num_road_meteo,num_moisture
+                write(unit_logfile,'(A,A)') ' Saving to: ',filename_bin
+                open(unit_out,file=trim(filename_bin),status='replace',form='unformatted')      
+                write(unit_out) n_roads_total,num_track,num_source_all,num_road_meteo,num_moisture
 
             else
                 
-            write(unit_logfile,'(A,A)') ' Saving to: ',filename_asc
-            open(unit_out,file=trim(filename_asc),status='replace')      
-            write(unit_out,'(5A16)') 'n_roads','num_track','num_source_all','num_road_meteo','num_moisture'
-            write(unit_out,'(5i16)') n_roads_total,num_track,num_source_all,num_road_meteo,num_moisture
+                write(unit_logfile,'(A,A)') ' Saving to: ',filename_asc
+                open(unit_out,file=trim(filename_asc),status='replace')      
+                write(unit_out,'(5A16)') 'n_roads','num_track','num_source_all','num_road_meteo','num_moisture'
+                write(unit_out,'(5i16)') n_roads_total,num_track,num_source_all,num_road_meteo,num_moisture
 
             endif
             
@@ -125,17 +124,17 @@
                     write(unit_out,'(<num_moisture>e12.4)') (g_road_data(m,tf,tr,ro),m=1,num_moisture)
                 enddo
 
-                !Save the automatic activity time data
-                write(unit_out,'(5e12.4)') time_since_last_salting(ro),time_since_last_binding(ro), &
-                    time_since_last_sanding(ro),time_since_last_cleaning(ro),time_since_last_ploughing(ro)
-                
-                endif
-            !enddo
+            !Save the automatic activity time data
+            write(unit_out,'(5e12.4)') time_since_last_salting(ro),time_since_last_binding(ro), &
+                time_since_last_sanding(ro),time_since_last_cleaning(ro),time_since_last_ploughing(ro)
             
+        endif
+
+
             
         
-            if (save_bin) then
-        
+        if (save_bin) then
+    
 
             !    do ro=1,n_roads
                 write(unit_out) ro_tot
@@ -147,12 +146,11 @@
             !    enddo
                 
 
-            endif
+        endif
                 
         if (ro_tot.eq.n_roads_total) then
             close(unit_out,status='keep')
         endif
-           
     endif
  
     !enddo

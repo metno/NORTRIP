@@ -315,6 +315,7 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_road_summary_data_flag=.false.
+    logical :: NORTRIP_save_road_summary_data_as_netcdf_flag=.true.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -357,6 +358,7 @@
     character(256) path_init
     character(256) path_init_out
     character(256) filename_init
+    character(256) filename_init_netcdf
     character(256) path_output_emis
     character(256) filename_output_emis
     character(256) filename_output_grid_emis
@@ -448,10 +450,13 @@
     integer :: salt_after_ploughing_flag=0
     integer :: use_stability_flag=1
     integer :: use_energy_correction_flag=1
+    integer :: use_netcdf_init = 1 !Set to 1 for saving init values to netcdf !TODO: Include in flag file
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
     real :: use_sanding_data_flag=1
     real :: retain_water_by_snow_flag=1
+    
+    integer :: save_road_counter =0 !NOTE: Put this here so that its not reset to 0 for every call in single_road mode
     
 
     !Auto activity data
