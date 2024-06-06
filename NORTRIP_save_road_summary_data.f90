@@ -282,7 +282,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
+        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -316,7 +316,12 @@
             'M_sand_PM10',achar(9), &
             'M_clean_PMall',achar(9), &
             'M_clean_PM200',achar(9), &
-            'M_clean_PM10'
+            'M_clean_PM10',achar(9), &
+            'M_drain_PM10',achar(9), &
+            'M_spray_PM10',achar(9), &
+            'M_plough_PM10',achar(9), &
+            'MD_road_PM200',achar(9), &
+            'MD_road_PM10'
         
     endif
     
@@ -348,7 +353,7 @@
                     fr_hdv=sum(traffic_data(N_he_index,min_time_save:max_time_save,ro))/sum(traffic_data(N_total_index,min_time_save:max_time_save,ro))*100.
                     if (isnan(fr_hdv)) fr_hdv=0.
                     
-                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
+                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,min_time_save)),achar(9), &
@@ -382,8 +387,13 @@
                         sum(activity_data(M_sanding_index,min_time_save:max_time_save,ro))*f_PM_bin(sand_index,pm_10,1)*conversion*length_road_km(ro),achar(9), &
                         sum(M_road_balance_data(total_dust_index,pm_all,S_cleaning_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
                         sum(M_road_balance_data(total_dust_index,pm_200,S_cleaning_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
-                        sum(M_road_balance_data(total_dust_index,pm_10,S_cleaning_index,min_time_save:max_time_save,:,ro))*length_road_km(ro)
-                        
+                        sum(M_road_balance_data(total_dust_index,pm_10,S_cleaning_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
+                        sum(M_road_balance_data(total_dust_index,pm_10,S_dustdrainage_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
+                        sum(M_road_balance_data(total_dust_index,pm_10,S_dustspray_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
+                        sum(M_road_balance_data(total_dust_index,pm_10,S_dustploughing_index,min_time_save:max_time_save,:,ro))*length_road_km(ro),achar(9), &
+                        sum(M_road_data(total_dust_index,pm_200,min_time_save:max_time_save,:,ro))/(max_time_save-min_time_save+1)*length_road_km(ro),achar(9), &
+                        sum(M_road_data(total_dust_index,pm_10,min_time_save:max_time_save,:,ro))/(max_time_save-min_time_save+1)*length_road_km(ro)
+                        !Note. M_road_data are the average (over time) total mass depot on a road segment in g
                 !enddo
 
         enddo

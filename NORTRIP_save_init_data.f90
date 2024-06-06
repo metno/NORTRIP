@@ -37,12 +37,6 @@
 	write(unit_logfile,'(A)') 'Saving data to init file (NORTRIP_save_init_data)'
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
  
-    !Check that path exists after filling in date stamp. 3 times in case there are more than one date
-    !This is not actually used before. Changes to temp_name 05.12.2022
-    a=date_data(:,min_time_save)
-    call date_to_datestr_bracket(a,path_init_out,temp_name)
-    call date_to_datestr_bracket(a,temp_name,temp_name)
-    call date_to_datestr_bracket(a,temp_name,temp_name)
     
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
@@ -52,11 +46,20 @@
 
     do ti=min_time,max_time
         
+            !Check that path exists after filling in date stamp. 3 times in case there are more than one date
+            !This is not actually used before. Changes to temp_name 05.12.2022
+            current_date=date_data(:,ti)
+            a=current_date
+            !a=date_data(:,min_time_save)
+            call date_to_datestr_bracket(a,path_init_out,temp_name)
+            call date_to_datestr_bracket(a,temp_name,temp_name)
+            call date_to_datestr_bracket(a,temp_name,temp_name)
+
             hour_test=1
             if (hours_between_init.ne.0) hour_test=mod(ti,hours_between_init)
             if (hour_test.eq.0.or.ti.eq.max_time) then
 
-            current_date=date_data(:,ti)
+            !current_date=date_data(:,ti)
             
             !Set the path and file name
             !path_init,filename_init,hours_between_init
