@@ -28,6 +28,9 @@
         real,intent(out)    :: bias_correction 
         integer,intent(out) :: forecast_index
 
+        !local
+        real :: dummy
+
         forecast_index=max(0,forecast_hour-1);
 
         !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
@@ -51,11 +54,12 @@
         endif
         
         !Energy correction
-        if ( forecast_hour .gt. 0 .and. forecast_type .eq. 5 ) then
+        if (  forecast_type .eq. 5) then !Only calculate when we have observations!
+
             tr=1
             if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata .and. tf .gt. 2) then
                 call E_diff_func &
-                    (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro) &
+                (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro) &
                     ,road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro) &
                     ,meteo_data(T_a_index,max(min_time,tf-1),ro) &
                     ,road_meteo_data(T_sub_index,max(min_time,tf-1),tr,ro) &
@@ -76,8 +80,13 @@
                     !Output starts here
                     ,road_meteo_data(E_diff_index,tf,tr,ro) &
                     ,road_meteo_data(E_corr_index,tf,tr,ro) &
-                    ,road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro))
+                    ,dummy)
+
             end if
+        end if
+
+        if ( forecast_type .eq. 5 .and. tf > 1/dt ) then
+            road_meteo_data(E_corr_index,tf,tr,ro) = road_meteo_data(E_corr_index,1/dt,tr,ro)
         end if
     end subroutine NORTRIP_main_run_forecast_prepare
 

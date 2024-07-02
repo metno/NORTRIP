@@ -212,11 +212,6 @@
         !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
         !    
         !    endif
-        if (use_energy_correction_flag .gt. 0 .and. forecast_type .eq. 5) then
-            Energy_correction = road_meteo_data(E_corr_index,tf,tr,ro)*relaxation_func(ti-tf+1)
-        else 
-            Energy_correction = 0.
-        end if
 
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
@@ -226,6 +221,7 @@
             ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
             ,meteo_data(T_a_index,ti,ro) &
             ,T_s_0 &
+            ,road_meteo_data(road_temperature_obs_index,ti,tr,ro) &
             ,road_meteo_data(T_sub_index,ti,tr,ro) &
             ,meteo_data(RH_index,ti,ro) &
             ,road_meteo_data(RH_s_index,ti,tr,ro) &
@@ -243,7 +239,9 @@
             ,use_subsurface_flag &
             ,use_salt_humidity_flag &
             ,use_melt_freeze_energy_flag &
-            ,Energy_correction &
+            ,max(0.,road_meteo_data(E_corr_index,ti-1,tr,ro)) &
+            ,ti &
+            ,use_energy_correction_flag &
             !Outputs start here
             ,road_meteo_data(T_s_index,ti,tr,ro) &  
             ,road_meteo_data(T_melt_index,ti,tr,ro) &
@@ -260,8 +258,21 @@
             ,road_meteo_data(long_rad_out_index,ti,tr,ro) &
             ,road_meteo_data(long_rad_net_index,ti,tr,ro) &
             ,road_meteo_data(rad_net_index,ti,tr,ro) &
-            ,road_meteo_data(G_sub_index,ti,tr,ro))
-            
+            ,road_meteo_data(G_sub_index,ti,tr,ro) &
+            ,road_meteo_data(E_diff_index,ti,tr,ro))
+
+
+            if (use_energy_correction_flag.eq.1) then
+                if (ti > 1/dt  ) then
+                    road_meteo_data(E_corr_index,ti,tr,ro) = Energy_correction_func(road_meteo_data(E_diff_index,6,tr,ro),road_meteo_data(E_diff_index,5,tr,ro))*relaxation_func(ti,dt)
+                else 
+                    road_meteo_data(E_corr_index,ti,tr,ro) = Energy_correction_func(road_meteo_data(E_diff_index,ti,tr,ro),max(0.,road_meteo_data(E_diff_index,ti-1,tr,ro)))!*relaxation_func(ti,dt)
+                end if
+            else
+                road_meteo_data(E_corr_index,ti,tr,ro) =0.
+            end if
+    
+
         !Taken out of the call to avoid overlapping in and outputs to the subroutine
         road_meteo_data(RH_s_index,ti,tr,ro)=RH_s_final
                 

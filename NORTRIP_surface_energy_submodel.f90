@@ -1,9 +1,9 @@
 
-    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
+    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,T_obs,TCsub,RH,RHs_nosalt,RHs_0 &
         ,P,dzs_in,dt_h_in,g_surf_in,s_surf_in,g_min,M2_road_salt_0,salt_type,sub_surf_param &
-        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag, E_correction &
+        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag, E_correction,time,Ecorr_flag &
         ,TCs_out,melt_temperature,RH_salt_final,RHs,M_road_dissolved_ratio_temp &
-        ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub)
+        ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub, E_diff)
 
     !Includes melt of snow as output and includes snow surface and melt temperature as
     !additional inputs to the original Surface_energy_model_2_func version
@@ -13,13 +13,15 @@
     implicit none
     
     !Input variables
-    real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
+    real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in,T_obs
     real g_surf_in,s_surf_in,g_min,M2_road_salt_0(num_salt),sub_surf_param(3)
     integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag,salt_type(num_salt)
     real :: E_correction
+    integer :: time
+    integer :: Ecorr_flag
     !Output variables
     real TCs_out,melt_temperature,RH_salt_final,RHs,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub
-    real M_road_dissolved_ratio_temp(num_salt)
+    real M_road_dissolved_ratio_temp(num_salt), E_diff
     
     !Parameters
     real Cp,lambda,lambda_ice,lambda_melt
@@ -285,10 +287,20 @@
                 endif
                 endif
             endif
-    
-            !Calculate surface temperature implicitly
+
+
+            !Calculate surface temperature without energy correction
             TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
-            
+            if ( Ecorr_flag.eq.1 ) then                
+                if ( time < 7 ) then   !TODO: Do not hardcode time condition!   
+                    !! Include the correction term in the calculation --> results in the observed temperature
+                    E_diff = (T_obs*(1+dt_sec*a_G*(a_H+b_RL+mu))-TCs_0)/(dt_sec*a_G)-a_rad+a_RL+L-a_H*TC-mu*TCsub + G_melt-G_freeze; !=E_diff + E_correction_old
+                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_diff))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+                else
+                    !Use the energy correction term that is a function of previous corrections and time. 
+                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+                end if
+            end if
 
             !Set the midpoint temperature for diagnostics
             TCs=(TCs_0+TCs_out)/2

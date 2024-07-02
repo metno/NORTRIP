@@ -471,7 +471,7 @@
         !Output
         real :: Energy_correction_func
         !Local
-        real,parameter :: f = 1. !Determines weighting between dE1 and dE2. TODO: Consider to move to param file
+        real,parameter :: f = 0.5 !Determines weighting between dE1 and dE2. TODO: Consider to move to param file
 
         Energy_correction_func = f*dE1 + (1.-f)*dE2
     
@@ -479,22 +479,24 @@
 !----------------------------------------------------------------------    
 
 !----------------------------------------------------------------------    
-    function relaxation_func(forecast_step)
+    function relaxation_func(forecast_step,dt)
         !Used to relax the energy correction during the course of the forecast
         !TODO: Consider making the lin_array a function of forecast steps, so that there will be a decrease at every timestep for 10 min runs.
 
         !Input
         integer, intent(in) :: forecast_step
+        real, intent(in) :: dt
 
         !Local
-        real, dimension(3),parameter :: lin_array=(/3.0, 1.5, 0.0/)
-
+        real, dimension(18),parameter :: lin_array=(/1., 0.94117647, 0.88235294, 0.82352941, 0.76470588,0.70588235, 0.64705882, 0.58823529, 0.52941176, 0.47058824,0.41176471, 0.35294118, 0.29411765, 0.23529412, 0.17647059,0.11764706, 0.05882353, 0./)
+        
         real :: relaxation_func
-
-        if (forecast_step > 3) then
+        
+        if (forecast_step >  int(1/dt)+size(lin_array)) then
             relaxation_func = 0.0
         else
-            relaxation_func = lin_array(forecast_step)
-
+            relaxation_func = lin_array(forecast_step-int(1/dt))
         end if
     end function relaxation_func
+
+    !----------------------------------------------------------------------    

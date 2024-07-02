@@ -41,6 +41,10 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     integer             :: datetime_int
     integer :: a(num_date_index)
 
+    write(unit_logfile,'(A)') '================================================================'
+	write(unit_logfile,'(A)') 'Create netcdf summary file'
+	write(unit_logfile,'(A)') '================================================================'
+
     
     call check(nf90_create(trim(filename),nf90_clobber,ncid))
     call check(nf90_def_dim(ncid,"time", nf90_unlimited, t_dimid))
@@ -139,6 +143,14 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_def_var(ncid, "G_net", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Surface energy flux"))
+
+    call check(nf90_def_var(ncid, "Energy_correction", nf90_float, (/f_dimid,t_dimid/),varid)) 
+    call check(nf90_put_att(ncid,varid, "units", "W/m2"))
+    call check(nf90_put_att(ncid,varid,"description","Energy correction term"))
+
+    call check(nf90_def_var(ncid, "Relaxed_energy_correction", nf90_float, (/f_dimid,t_dimid/),varid)) 
+    call check(nf90_put_att(ncid,varid, "units", "W/m2"))
+    call check(nf90_put_att(ncid,varid,"description","Relaxed energy correction term"))
     
     call check(nf90_def_var(ncid, "W_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
@@ -181,11 +193,11 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"description","Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency")) 
     
     call check(nf90_def_var(ncid, "Mass_salt1", nf90_float, (/f_dimid,t_dimid/),varid)) 
-    call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units
+    call check(nf90_put_att(ncid,varid, "units", "g/m2")) 
     call check(nf90_put_att(ncid,varid,"description","Mass of NaCl on road"))
     
     call check(nf90_def_var(ncid, "Mass_salt2", nf90_float, (/f_dimid,t_dimid/),varid)) 
-    call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units
+    call check(nf90_put_att(ncid,varid, "units", "g/m2")) 
     call check(nf90_put_att(ncid,varid,"description","Mass of alternative salt on road"))
 
     if ( .not. index(calculation_type,'Avinor').gt.0 ) then        
@@ -309,6 +321,10 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     integer :: a(num_date_index)
     real    :: conversion
 
+    write(unit_logfile,'(A)') '================================================================'
+	write(unit_logfile,'(A)') 'Fill netcdf summary file'
+	write(unit_logfile,'(A)') '================================================================'
+
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
 
@@ -362,7 +378,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
         call check(nf90_inq_varid(ncid, "road_id",varid))
         call check(nf90_put_var(ncid, varid, road_ID(ro_tot), start = (/save_road_counter/)))
-        
+
         call check  (nf90_inq_varid(ncid, "T_surf_mod",varid))
         call check(nf90_put_var(ncid, varid, road_meteo_data(T_s_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
         
@@ -422,6 +438,12 @@ subroutine NORTRIP_save_road_summary_data_netcdf
 
         call check(nf90_inq_varid(ncid, "G_net",varid))
         call check(nf90_put_var(ncid, varid, road_meteo_data(G_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+
+        call check(nf90_inq_varid(ncid, "Energy_correction",varid))
+        call check(nf90_put_var(ncid, varid, road_meteo_data(E_corr_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+
+        call check(nf90_inq_varid(ncid, "Relaxed_energy_correction",varid))
+        call check(nf90_put_var(ncid, varid, road_meteo_data(E_diff_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "W_surf_mod",varid))
         call check(nf90_put_var(ncid, varid, g_road_data(water_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))

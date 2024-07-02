@@ -50,11 +50,9 @@ subroutine NORTRIP_save_forecast(timestep,forecast_temperature)
 
     write (datetime_string, '(I4.4, I2.2, I2.2, I2.2, I2.2)') date_data(year_index,timestep), date_data(month_index,timestep), date_data(day_index,timestep),date_data(hour_index,timestep), date_data(minute_index,timestep)
 
-    print*, "datetime_string", datetime_string
 
     read(datetime_string,*) datetime_int
 
-    print*, "datetime_int", datetime_int
     inquire(file=trim(filename),exist=exists)
     if (.not.exists) then
         call check(nf90_create(filename,nf90_netcdf4,ncid))
@@ -95,16 +93,3 @@ subroutine NORTRIP_save_forecast(timestep,forecast_temperature)
     call check(nf90_close(ncid))
     
 end subroutine NORTRIP_save_forecast
-
-subroutine check(status)
-    use netcdf
-
-    !implicit none
-    integer, intent(in) :: status
-
-    if ( status /= nf90_noerr ) then
-        print*, nf90_strerror(status)
-
-        stop "Stopped"
-    end if
-end subroutine check

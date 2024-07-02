@@ -87,8 +87,8 @@ subroutine NORTRIP_save_init_data_netcdf
     endif
 
     hour_test=1
-    if (hours_between_init.ne.0) hour_test=mod(ti,hours_between_init)
-    if (hour_test.eq.0.or.ti.eq.max_time.or.ti.eq.ceiling(1/dt)) then
+    if (hours_between_init.ne.0) hour_test=mod(tf,hours_between_init)
+    if (hour_test.eq.0.or.tf.eq.max_time.or.tf.eq.ceiling(1/dt)) then
 
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)
@@ -102,7 +102,7 @@ subroutine NORTRIP_save_init_data_netcdf
             return
         endif
 
-        current_date=date_data(:,ti)
+        current_date=date_data(:,tf)
 
         filename =trim(temp_name)//trim(filename_outputdata)//'_init.nc'
         call date_to_datestr_bracket(current_date,filename,filename)
@@ -116,8 +116,10 @@ subroutine NORTRIP_save_init_data_netcdf
             call NORTRIP_create_init_netcdf(filename)
 
             call check(nf90_open(filename,nf90_write,ncid))
-        else
-            call check(nf90_open(filename,nf90_write,ncid))
+            write(unit_logfile,*) "Creating and opening init file to save values: ", trim(filename)
+            else
+                call check(nf90_open(filename,nf90_write,ncid))
+                write(unit_logfile,*) "Opening init file to save values: ", trim(filename)
         end if        
         !NOTE: Track is always = 1. If the model code is extended to include more than one track, this must be changed.
         tr=1
@@ -126,13 +128,13 @@ subroutine NORTRIP_save_init_data_netcdf
         !TODO: No formating is done except defining the netcdf variables as nf90_float. Should be put on approproate format when the file is read.
 
         call check(nf90_inq_varid(ncid, "M_road_data",varid))
-        call check(nf90_put_var(ncid, varid, M_road_data(:,:,ti,tr,0),start = (/1,1,1,ro_tot/)))
+        call check(nf90_put_var(ncid, varid, M_road_data(:,:,tf,tr,0),start = (/1,1,1,ro_tot/)))
         
         call check(nf90_inq_varid(ncid, "road_meteo_data",varid))
-        call check(nf90_put_var(ncid, varid, road_meteo_data(:,ti,tr,0),start=(/1,1,ro_tot/)))
-        
+        call check(nf90_put_var(ncid, varid, road_meteo_data(:,tf,tr,0),start=(/1,1,ro_tot/)))
+
         call check(nf90_inq_varid(ncid, "g_road_data",varid))
-        call check(nf90_put_var(ncid, varid, g_road_data(:,ti,tr,0),start=(/1,1,ro_tot/)))
+        call check(nf90_put_var(ncid, varid, g_road_data(:,tf,tr,0),start=(/1,1,ro_tot/)))
         
         call check(nf90_inq_varid(ncid, "time_since_last_salting",varid))
         call check(nf90_put_var(ncid, varid, time_since_last_salting(ro),start=(/ro_tot/)))
