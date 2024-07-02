@@ -99,8 +99,7 @@
         !Set start and stop times
         call NORTRIP_initialise_time
     
-        if (forecast_hour.eq.0) call NORTRIP_main_run
-        if (forecast_hour.gt.0) call NORTRIP_main_run_forecast
+        call NORTRIP_main_run
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'   
         if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag) call NORTRIP_save_init_data
@@ -109,6 +108,7 @@
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
         if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data
+        if (NORTRIP_save_road_summary_data_as_netcdf_flag) call NORTRIP_save_road_summary_data_netcdf
         if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data

@@ -39,18 +39,19 @@
     !endif
     
     !if (mod(ti,hours_between_init).eq.0) then
-            !Set the path and file name
-            filename_temp=filename_init
-    
-            a=date_data(:,min_time)
-            call date_to_datestr_bracket(a,path_init,temp_name)
-            call date_to_datestr_bracket(a,temp_name,temp_name)
-            call date_to_datestr_bracket(a,temp_name,temp_name)
 
-            !Open the outputfile for date
-            filename_asc=trim(temp_name)//trim(filename_temp)
-            !filename_bin=trim(path_init)//trim(filename_temp)
-              
+    !Set the path and file name
+    filename_temp=filename_init
+    
+    a=date_data(:,min_time)
+    call date_to_datestr_bracket(a,path_init,temp_name)
+    call date_to_datestr_bracket(a,temp_name,temp_name)
+    call date_to_datestr_bracket(a,temp_name,temp_name)
+    
+    !Open the outputfile for date
+    filename_asc=trim(temp_name)//trim(filename_temp)
+    !filename_bin=trim(path_init)//trim(filename_temp)
+    
             !Check file for reading
             inquire(file=trim(filename_asc),exist=exists)
             if (.not.exists) then
@@ -110,7 +111,6 @@
                 stop 1
             endif
                 
-            !write(*,*) n_roads_init,num_track_init,num_source_all_init,num_road_meteo_init,num_moisture_init
             ro=n_roads !Which is 0 for the single road
             do tr=1,num_track
                 read(unit_out,'(<num_source_all*num_size>e12.4)',ERR=10) ((M_road_data(s,x,ti,tr,ro),s=1,num_source_all),x=1,num_size)

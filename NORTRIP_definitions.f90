@@ -125,12 +125,16 @@
     integer road_temperature_obs_index,road_wetness_obs_index,T_sub_index,short_rad_net_clearsky_index,T_s_dewpoint_index
     integer r_aero_q_index,r_aero_q_notraffic_index
     integer num_road_meteo
+    integer E_corr_index
+    integer E_diff_index
     parameter (T_s_index=1,T_melt_index=2,r_aero_t_index=3,r_aero_t_notraffic_index=4,RH_s_index=5,RH_salt_final_index=6)
     parameter (L_index=7,H_index=8,G_index=9,G_sub_index=10,evap_index=11,evap_pot_index=12)
     parameter (rad_net_index=13,short_rad_net_index=14,long_rad_net_index=15,long_rad_out_index=16,H_traffic_index=17)
     parameter (road_temperature_obs_index=18,road_wetness_obs_index=19,T_sub_index=20,short_rad_net_clearsky_index=21,T_s_dewpoint_index=22)
     parameter (r_aero_q_index=23,r_aero_q_notraffic_index=24)
-    parameter (num_road_meteo=24)
+    parameter (E_corr_index=25)
+    parameter (E_diff_index=26)
+    parameter (num_road_meteo=26)
 
     !Road moisture mass balance production and sink data
     integer S_melt_index,P_melt_index,P_freeze_index,S_freeze_index,P_evap_index
@@ -311,6 +315,7 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_road_summary_data_flag=.false.
+    logical :: NORTRIP_save_road_summary_data_as_netcdf_flag=.true.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -353,6 +358,7 @@
     character(256) path_init
     character(256) path_init_out
     character(256) filename_init
+    character(256) filename_init_netcdf
     character(256) path_output_emis
     character(256) filename_output_emis
     character(256) filename_output_grid_emis
@@ -443,11 +449,14 @@
     integer :: use_melt_freeze_energy_flag=0
     integer :: salt_after_ploughing_flag=0
     integer :: use_stability_flag=1
-    
+    integer :: use_energy_correction_flag=1
+    integer :: use_netcdf_init = 1 !Set to 1 for saving init values to netcdf !TODO: Include in flag file
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
     real :: use_sanding_data_flag=1
     real :: retain_water_by_snow_flag=1
+    
+    integer :: save_road_counter =0 !NOTE: Put this here so that its not reset to 0 for every call in single_road mode
     
 
     !Auto activity data
@@ -721,7 +730,7 @@
 !loop variables commonly used
 !-----------------------------------------------------------------------
     integer x,s,t,v,i,j,k,m
-    integer ro,ti,tr
+    integer ro,ti,tr,tf
     integer ro_tot
 
 !bin dimmension variables to retain same structure as before but reduce memory

@@ -1,226 +1,149 @@
 !****************************************************************************
-!  NORTRIP_main_run_forecast.f90 
+!  NORTRIP_main_run_forecast.f90 !NOTE: Should be renamed, if so remember to update makefile
 !****************************************************************************
 !
-!   SUBROUTINE:     NORTRIP_main_run_forecast
-!   PURPOSE:        Controls the main road and time loop of NORTRIP but with a surface temperature forecast
-!   CALLED FROM:    NORTRIP_fortran_control
-!   CALLS TO:       NORTRIP_calc_radiation
-!                   NORTRIP_initialise_data
-!                   NORTRIP_read_init_data
-!                   NORTRIP_running_mean_temperature
-!                   NORTRIP_set_activity_data
-!                   NORTRIP_surface_moisture_submodel
-!                   NORTRIP_dust_emission_submodel
-!                   NORTRIP_unbin_variables
-!                   NORTRIP_ospm (not implemented)
-!                   NORTRIP_dispersion
-!                   NORTRIP_concentrations
-!                   NORTRIP_display_results
-!   SUBROUTINES:
+!   MODULE :        NORTRIP_main_run_forecast
+!   PURPOSE:        Contains subroutines related to the calculation and storing of forecasted data
+!   CALLS TO:       
+!   SUBROUTINES:    NORTRIP_main_run_forecast_prepare
+!                   NORTRIP_main_run_forecast_calculate
+!                   NORTRIP_main_run_forecast_save
 !   FUNCTIONS:                      
-!   VERSION:        14.10.2016
-!   AUTHOR:         Bruce Rolstad Denby 
+!   VERSION:        15.02.2024
+!   AUTHOR:         Bruce Rolstad Denby, Elin Aas 
 !                   Norwegian Meteorological Institute (www.met.no)
 !
 !****************************************************************************
+ module NORTRIP_main_run_forecast
+     implicit none
+ contains
 
-    subroutine NORTRIP_main_run_forecast
-  
-    use NORTRIP_definitions
-    
-    implicit none
-    
-    !Declare internal logical variables for showing results
-    logical :: show_time_moisture=.false.
-    logical :: show_time_dust=.false. !Not implemented
-    
-    !Local forecast variables
-    real, allocatable :: forecast_T_s(:,:)
-    integer tf,forecast_index
-    real :: flux_correction=0.
-    real :: bias_correction=0.
+    subroutine NORTRIP_main_run_forecast_prepare(bias_correction,forecast_index) !Prepare for forecast; Set previous temperature (in tf-1) to Tobs, or calculate bias_correction. forecast_T_s is allocated here
 
-    !Open log file for main run. Already established in NORTRIP_read_pathnames
-    !if (unit_logfile.gt.0) then
-    !    open(unit_logfile,file=filename_log,status='old',position='append')
-    !endif
-
-    write(unit_logfile,'(A)') ''
-    write(unit_logfile,'(A)') '================================================================'
-    write(unit_logfile,'(A)') 'Starting calculations (NORTRIP_main_run_forecast)' 
-  	write(unit_logfile,'(A)') '================================================================'
-    
-    if (.not.allocated(forecast_T_s)) allocate(forecast_T_s(n_time,num_track))   
-    
-    !Precalculate radiation for all roads
-    call NORTRIP_calc_radiation
+        use NORTRIP_definitions
         
-    !Initialising some data for all times and roads
-    call NORTRIP_initialise_data
-
-    !Read in init file and reinitialise. If not available then nothing happens
-    if (.not.use_single_road_loop_flag) then
-        call NORTRIP_read_init_data
-    endif
-    
-    !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
-    !call NORTRIP_running_mean_temperature(sub_surf_average_time)
-    
-    !Main road loop
-    !----------------------------------------------------------------------
-    do ro=n_roads_start,n_roads_end
-    
-        !Read in init file and reinitialise. If not available then nothing happens
-        if (use_single_road_loop_flag) then
-            call NORTRIP_read_init_data_single
-        endif
+        implicit none
         
-        !Calculate running mean (sub_surf_average_time) temperature if T_sub is not already available
-        call NORTRIP_running_mean_temperature(sub_surf_average_time)
+        !Output:
+        real,intent(out)    :: bias_correction 
+        integer,intent(out) :: forecast_index
 
-        !Print road to screen to see progress
-        if ((mod(ro,10000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,10000).eq.0.and.use_single_road_loop_flag)) then
-        if (unit_logfile.gt.0) then
-            write(*,'(A6,I5)') 'ROAD: ',ro
-        else
-            write(unit_logfile,'(A6,I5)') 'ROAD: ',ro
-        endif
-        endif
-        
-        !Main time loop
-        !----------------------------------------------------------------------
-        if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-            write(unit_logfile,'(A)')'Starting time loop (NORTRIP_main_run_forecast)'
-        endif
+        !local
+        real :: dummy
 
-       forecast_T_s=nodata
-       
-       do tf=min_time,max_time 
+        forecast_index=max(0,forecast_hour-1);
 
-            !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
-            !Do not do this if bias correction is used for the forecast
-            forecast_index=max(0,floor(forecast_hour/dt-1+0.5));
-            if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
-                tr=1       
-                if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   road_meteo_data(T_s_index,max(min_time,tf-1),:,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),:,ro)
-                   !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
-                endif
-            endif
-            !Bias correction
-            bias_correction=0.
-            if (forecast_hour.gt.0.and.forecast_type.eq.4) then
-                tr=1       
-                if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   bias_correction=-(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
-                   !write(*,*) ro,tf,bias_correction
-                endif
-            endif
-            !Flux correction. Estimate for now. To be replaced with energy correction
-            if (forecast_hour.gt.0.and.forecast_type.eq.5) then
-                tr=1       
-                if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                   bias_correction=(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
-                   if (bias_correction.gt.0.) flux_correction=-bias_correction*60./dt !76.9
-                   if (bias_correction.lt.0.) flux_correction=-bias_correction*60./dt !14.9
-                   !write(*,*) tf,max(min_time,tf-1),road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
-                   meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)=meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)+flux_correction !min(1000.,max(-1000.,flux_correction))
-                   !write(*,*) ro,tf,min(500.,max(-500.,flux_correction)),bias_correction
-                endif
-            endif
-
-
-            do ti=tf,tf+forecast_index
-      
-                if (ti.le.max_time) then
+        !Set the previous (initial) model surface temperature to the observed surface temperature in forecast mode
+        !Do not do this if bias correction is used for the forecast
+        if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
+            tr=1       
+            if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
+                road_meteo_data(T_s_index,max(min_time,tf-1),:,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),:,ro)
                 
-                    !Print the day date. Not active
-                    if (date_data(hour_index,ti).eq.1) then
-                        !write(unit_logfile,'(I5,I3,I3)') date_data(year_index,ti),date_data(month_index,ti),date_data(day_index,ti)
-                    endif
-              
-            
-                    !Use activity rules to determine salting, sanding and cleaning activities
-                    call NORTRIP_set_activity_data
+            endif
+        endif
         
-                    !Main track loop
-                    !----------------------------------------------------------------------
-                    do tr=1,num_track
-         
-                        !Calculate road surface conditions
-                        call NORTRIP_surface_moisture_submodel
+        !Bias correction
+        bias_correction=0.
+        if (forecast_hour.gt.0.and.forecast_type.eq.4) then
+            tr=1       
+            if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
+                bias_correction=-(road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)-road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro))
                 
-                        !For debugging purposes only
-                        if (show_time_moisture) then
-                            write(unit_logfile,'(a24,a2,f8.2,f8.1,f8.2,f8.2,f8.2,f8.2,f8.2)') trim(date_str(3,ti)),': ' &
-                            ,meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),road_meteo_data(T_s_index,ti,tr,ro),road_meteo_data(T_s_dewpoint_index,ti,tr,ro) &
-                            ,g_road_data(water_index,ti,tr,ro),g_road_data(snow_index,ti,tr,ro),g_road_data(ice_index,ti,tr,ro)
-                        endif
+            endif
+        endif
+        
+        !Energy correction
+        if (  forecast_type .eq. 5) then !Only calculate when we have observations!
 
-                        !Calculate road emissions and dust loading
-                        call NORTRIP_dust_emission_submodel
-                
-                    end do
-                    !End main track loop
-                    !----------------------------------------------------------------------
-      
-                    !Redistribute mass and moisture between tracks. Not yet implemented
-      
-                    !Put the binned variables in the unbinned ones 
-                    call NORTRIP_unbin_variables
-            
-                endif
-            
-            enddo
-
-            !Save the forecast surface temperature into the +forecast index if the starting surface temperature was valid
             tr=1
-            if (forecast_hour.gt.0.and.tf+forecast_index.le.max_time.and.road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                !modelled
-                if (forecast_type.eq.1) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)
-                    !write(*,*) max_time,tf+forecast_index,min(max_time,tf+forecast_index),forecast_T_s(min(max_time,tf+forecast_index),:)
-                endif
-                !persistence
-                if (forecast_type.eq.2) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,max(tf-1,min_time),:,ro);
-                endif
-                !linear extrapolation
-                !NOTE: THTis is likely wrong: date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2) as it is an integer day
-                if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,tf-2,tr,ro).ne.nodata) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,tf-1,:,ro) &
-                        +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
-                        /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &
-                        *(date_data(datenum_index,tf+forecast_index)-date_data(datenum_index,tf-1))
-                elseif (forecast_type.eq.3) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
-                endif
-                !bias correction
-                if (forecast_type.eq.4) then
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)+bias_correction
-                endif
-                !flux correction, just transfer results
-                if (forecast_type.eq.5) then
-                    !Remove correction
-                    meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)=meteo_data(long_rad_in_index,tf:tf+forecast_index,ro)-flux_correction
-                    forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)
-                    !write(*,*) forecast_T_s(min(max_time,tf+forecast_index),tr)-road_meteo_data(road_temperature_obs_index,min(max_time,tf+forecast_index),tr,ro),forecast_T_s(min(max_time,tf+forecast_index),tr),road_meteo_data(road_temperature_obs_index,min(max_time,tf+forecast_index),tr,ro),bias_correction
-                endif
-            else 
+            if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata .and. tf .gt. 2) then
+                call E_diff_func &
+                (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro) &
+                    ,road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro) &
+                    ,meteo_data(T_a_index,max(min_time,tf-1),ro) &
+                    ,road_meteo_data(T_sub_index,max(min_time,tf-1),tr,ro) &
+                    ,road_meteo_data(E_corr_index,max(min_time,tf-1),tr,ro) &
+                    ,meteo_data(pressure_index,max(min_time,tf-1),ro) &
+                    ,dzs &
+                    ,dt &
+                    ,road_meteo_data(r_aero_t_index,max(min_time,tf-1),tr,ro) &
+                    ,road_meteo_data(r_aero_q_index,max(min_time,tf-1),tr,ro) &
+                    ,road_meteo_data(rad_net_index,max(min_time,tf-1),tr,ro) &
+                    ,meteo_data(long_rad_in_index,max(min_time,tf-1),ro) &
+                    ,road_meteo_data(H_traffic_index,max(min_time,tf-1),tr,ro) &
+                    ,road_meteo_data(L_index,max(min_time,tf-1),tr,ro) &
+                    !,G_freeze & !find this
+                    !,G_melt & !find this
+                    ,sub_surf_param &
+                    ,use_subsurface_flag &
+                    !Output starts here
+                    ,road_meteo_data(E_diff_index,tf,tr,ro) &
+                    ,road_meteo_data(E_corr_index,tf,tr,ro) &
+                    ,dummy)
+
+            end if
+        end if
+
+        if ( forecast_type .eq. 5 .and. tf > 1/dt ) then
+            road_meteo_data(E_corr_index,tf,tr,ro) = road_meteo_data(E_corr_index,1/dt,tr,ro)
+        end if
+    end subroutine NORTRIP_main_run_forecast_prepare
+
+    subroutine NORTRIP_main_run_forecast_calculate(bias_correction,forecast_index, forecast_T_s) !Fill forecast_T_s using a method determined by forecast_type
+
+        use NORTRIP_definitions
+        
+        implicit none
+        
+        !Input
+        !integer,intent(in) :: tf
+        real,   intent(in) :: bias_correction
+        integer,intent(in) :: forecast_index
+        
+        !Output:
+        real,allocatable,intent(inout) :: forecast_T_s(:,:)
+
+        !Save the forecast surface temperature into the +forecast index if the starting surface temperature was valid
+        tr=1
+        if (forecast_hour.gt.0.and.tf+forecast_index.le.max_time.and.road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
+            !modelled
+            if (forecast_type.eq.1 .or. forecast_type .eq. 5) then
+                forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)
+            endif
+            !persistence
+            if (forecast_type.eq.2) then
+                forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,max(tf-1,min_time),:,ro);
+            endif
+            !linear extrapolation
+            if (forecast_type.eq.3.and.tf.ge.min_time+2.and.road_meteo_data(T_s_index,max(min_time,tf-2),tr,ro).ne.nodata) then
+                forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,tf-1,:,ro) &
+                +(road_meteo_data(T_s_index,tf-1,:,ro)-road_meteo_data(T_s_index,tf-2,:,ro)) &
+                /(date_data(datenum_index,tf-1)-date_data(datenum_index,tf-2)) &
+                *(date_data(datenum_index,tf+forecast_index)-date_data(datenum_index,tf-1))
+            elseif (forecast_type.eq.3) then
                 forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
             endif
-
-            !If the single road loop is used then save the init files here
-            if (use_single_road_loop_flag) then
-                call NORTRIP_save_init_data_single
+            !bias correction
+            if (forecast_type.eq.4) then
+                forecast_T_s(min(max_time,tf+forecast_index),:)=road_meteo_data(T_s_index,min(max_time,tf+forecast_index),:,ro)+bias_correction
             endif
+        else 
+            forecast_T_s(min(max_time,tf+forecast_index),:)=nodata
+        endif
 
-            !write(*,*) tf+forecast_index,forecast_T_s(min(max_time,tf+forecast_index),:)
-        enddo
-        !End main time loop
-        !----------------------------------------------------------------------
-    
+    end subroutine NORTRIP_main_run_forecast_calculate
+
+    subroutine NORTRIP_main_run_forecast_save(forecast_T_s,forecast_index)
+        use NORTRIP_definitions
+        
+        implicit none
+        
+        !Input
+        real,allocatable,intent(in)    :: forecast_T_s(:,:)
+        integer,intent(in) :: forecast_index
+
+
         !Put forecast surface temperature into the normal road temperature
         if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
             road_meteo_data(T_s_index,min_time:max_time,:,ro)=forecast_T_s(min_time:max_time,:)
@@ -235,55 +158,117 @@
                 endif
             enddo
         endif
+    end subroutine NORTRIP_main_run_forecast_save
 
+    subroutine E_diff_func(T_obs, TCs_0, TC, TCsub, E_correction_old,P,dzs_in,dt_h_in,r_aero_t,r_aero_q,short_net,long_in,H_traffic,L,sub_surf_param,use_subsurface_flag, E_diff, E_correction, T_new)
+            !G_freeze, G_melt
+        use NORTRIP_index_definitions
 
-        if (use_ospm_flag.eq.1) then
-            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-                write(unit_logfile,'(A)') 'Calculating dispersion using OSPM'
-            endif
-            !call ospm_nortrip_control
-        elseif (available_airquality_data(f_conc_index)) then
-            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-                write(unit_logfile,'(A)') 'Calculating dispersion using input dispersion factor'
-            endif
-            !call NORTRIP_dispersion
+        implicit none
+
+        !Input:
+        real, intent(in) :: T_obs
+        real, intent(in) :: TCs_0
+        real, intent(in) :: TC
+        real, intent(in) :: TCsub
+        real, intent(in) :: E_correction_old
+        real, intent(in) :: P
+        real, intent(in) :: dzs_in
+        real, intent(in) :: dt_h_in
+        real, intent(in) :: r_aero_t
+        real, intent(in) :: r_aero_q
+        real, intent(in) :: short_net
+        real, intent(in) :: long_in
+        real, intent(in) :: H_traffic
+        real, intent(in) :: L
+        real, intent(in) :: sub_surf_param(3)
+        integer, intent(in) :: use_subsurface_flag
+        
+        
+        !Output: TODO: Review these names
+        real, intent(out) :: E_diff
+        real, intent(out) :: E_correction
+        real, intent(out) :: T_new
+        
+        !Local:
+        real Cp,lambda,lambda_ice,lambda_melt
+        parameter (Cp=1006,lambda=2.50E6,lambda_ice=2.83E6,lambda_melt=3.33E5) !(J/kg)
+        real RD,T0C,sigma,eps_s,omega
+        parameter (RD=287.0,T0C=273.15,sigma=5.67E-8,eps_s=0.95,omega=7.3e-5)
+        real :: G_freeze !TODO: Find out if these should come from *_submodel_4
+        real :: G_melt
+        
+        real :: dt_sec
+        real :: dt_h
+        real :: rho_s
+        real :: c_s
+        real :: k_s_road
+        real :: c_rho_s
+        real :: dzs,mu
+        real :: TK_a
+        real :: rho
+        real :: TCs
+        real :: a_G
+        real :: a_rad
+        real :: a_RL
+        real :: b_RL
+        real :: a_H
+
+        !Function
+        real :: Energy_correction_func
+        
+        !Set time step in seconds
+        dt_sec=dt_h_in*3600
+
+        G_freeze = 0
+        G_melt = 0
+
+        !Set subsurface parameters
+        rho_s=sub_surf_param(1)
+        c_s=sub_surf_param(2)
+        k_s_road=sub_surf_param(3)
+        c_rho_s=rho_s*c_s
+
+        !Automatically set dzs if it is 0.
+        !This calculated value of dzs is optimal for a sinusoidal varying flux
+        if (dzs_in.eq.0.) then
+            dzs=(k_s_road/c_rho_s/2/omega)**.5
         else
-            if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-                write(unit_logfile,'(A)') 'Calculating dispersion using NOX'
-            endif
-            call NORTRIP_dispersion
+            dzs=dzs_in
+        endif
+        mu=omega*c_rho_s*dzs
+        
+        !If subsurface flux is turned of
+        if (use_subsurface_flag.eq.0) then
+            mu=0
         endif
 
-        !Calculate concentrations
-        if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-            write(unit_logfile,'(A)')'Calculating concentrations'
-        endif
-        call NORTRIP_concentrations
+        !Set atmospheric temperature in Kelvin
+        TK_a=T0C+TC
 
-    end do
-    !End road loop
-    !--------------------------------------------------------------------------
-            
-    !Write summary results to the log file for track=1 and the first and last road
-    do ro=n_roads_start,n_roads_end
-        if (ro.eq.1.or.ro.eq.n_roads.or.ro_tot.eq.1.or.ro_tot.eq.n_roads_total) then
-            write(unit_logfile,'(A)') '================================================================'
-            write(unit_logfile,'(A,8I)') 'Displaying summary results for road = ',ro 
-            write(unit_logfile,'(A)') '================================================================'           
-            call NORTRIP_display_results
-        endif
-    enddo
-            
-    write(unit_logfile,'(A)') ''
-    write(unit_logfile,'(A)') '================================================================'
-    write(unit_logfile,'(A)') 'Finished calculations (NORTRIP_main_run)' 
-  	write(unit_logfile,'(A)') '================================================================'
+        !Set air density
+        rho=P*100./(RD*TK_a)
 
-    !Close the log file
-    !if (unit_logfile.gt.0) then
-    !    close(unit_logfile,status='keep')
-    !endif
+        !Preset values of constants for implicit solution
+        a_G=1.0/(c_rho_s*dzs)
+        a_rad=short_net+long_in*eps_s+H_traffic
+        a_RL=(1-4*TC/TK_a)*eps_s*sigma*TK_a**4
+        b_RL=4.0*eps_s*sigma*TK_a**3
+        a_H=rho*Cp/r_aero_t
 
-    deallocate (forecast_T_s)
-    
-    end subroutine NORTRIP_main_run_forecast
+        !TODO: these might need to change if we make changes in the double loop in
+        !surface_energy_model_4_submodel
+        !G_freeze = 0;
+        !G_melt = 0;
+
+        !calculate the energy difference needed to make T_mod = T_obs
+        E_diff = (T_obs*(1+dt_sec*a_G*(a_H+b_RL+mu))-TCs_0)/(dt_sec*a_G)-a_rad+a_RL+L-a_H*TC-mu*TCsub + G_melt-G_freeze; !=E_diff + E_correction_old
+
+        E_correction = Energy_correction_func(E_diff,E_correction_old);
+
+        !Use the new E_correction to determine surface temperature. If f = 1 in
+        !Energy_correction_func, T_new = T_obs
+        T_new = (TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu));
+
+    end subroutine E_diff_func
+end module 

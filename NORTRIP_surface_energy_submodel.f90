@@ -1,9 +1,9 @@
 
-    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0 &
+    subroutine surface_energy_submodel_4(short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,T_obs,TCsub,RH,RHs_nosalt,RHs_0 &
         ,P,dzs_in,dt_h_in,g_surf_in,s_surf_in,g_min,M2_road_salt_0,salt_type,sub_surf_param &
-        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag &
+        ,surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag, E_correction,time,Ecorr_flag &
         ,TCs_out,melt_temperature,RH_salt_final,RHs,M_road_dissolved_ratio_temp &
-        ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub)
+        ,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub, E_diff)
 
     !Includes melt of snow as output and includes snow surface and melt temperature as
     !additional inputs to the original Surface_energy_model_2_func version
@@ -13,12 +13,15 @@
     implicit none
     
     !Input variables
-    real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in
+    real short_net,long_in,H_traffic,r_aero_t,r_aero_q,TC,TCs_in,TCsub,RH,RHs_nosalt,RHs_0,P,dzs_in,dt_h_in,T_obs
     real g_surf_in,s_surf_in,g_min,M2_road_salt_0(num_salt),sub_surf_param(3)
     integer surface_humidity_flag,use_subsurface_flag,use_salt_humidity_flag,use_melt_freeze_energy_flag,salt_type(num_salt)
+    real :: E_correction
+    integer :: time
+    integer :: Ecorr_flag
     !Output variables
     real TCs_out,melt_temperature,RH_salt_final,RHs,evap,evap_pot,melt,freeze,H,L,G,long_out,long_net,rad_net,G_sub
-    real M_road_dissolved_ratio_temp(num_salt)
+    real M_road_dissolved_ratio_temp(num_salt), E_diff
     
     !Parameters
     real Cp,lambda,lambda_ice,lambda_melt
@@ -284,10 +287,20 @@
                 endif
                 endif
             endif
-    
-            !Calculate surface temperature implicitly
-            TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze))/(1+dt_sec*a_G*(a_H+b_RL+mu))
-            
+
+
+            !Calculate surface temperature without energy correction
+            TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+            if ( Ecorr_flag.eq.1 ) then                
+                if ( time < 7 ) then   !TODO: Do not hardcode time condition!   
+                    !! Include the correction term in the calculation --> results in the observed temperature
+                    E_diff = (T_obs*(1+dt_sec*a_G*(a_H+b_RL+mu))-TCs_0)/(dt_sec*a_G)-a_rad+a_RL+L-a_H*TC-mu*TCsub + G_melt-G_freeze; !=E_diff + E_correction_old
+                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_diff))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+                else
+                    !Use the energy correction term that is a function of previous corrections and time. 
+                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+                end if
+            end if
 
             !Set the midpoint temperature for diagnostics
             TCs=(TCs_0+TCs_out)/2
@@ -315,27 +328,27 @@
             !Calculate additional melt, in addition to salting, due to energy
             !if (i.eq.1) then
                 if (s_surf.gt.0.and.G.ge.0.and.TCs_out.ge.melt_temperature) then
-	                melt=melt+G/lambda_melt*dt_sec
-	                !Limit the melting so it does not melt more water than is available
+                    melt=melt+G/lambda_melt*dt_sec
+                    !Limit the melting so it does not melt more water than is available
                     melt=min(melt,s_surf)
                     !Limit the melting so it does not go past the equilibrium salt level
                     melt=min(melt,max(g_road_equil_at_T_s-g_surf,0.))
                     G_melt=melt*lambda_melt/dt_sec
                 else
-	                melt=melt+0
+                    melt=melt+0
                     G_melt=melt*lambda_melt/dt_sec
                 endif
 
                 !Calculate additional freezing in first loop only
                 if (g_surf.gt.0.and.G.lt.0.and.TCs_out.lt.melt_temperature) then
-	                freeze=freeze-G/lambda_melt*dt_sec!/dt_h
-	                !Limit the freezing so it does not freeze more water than is available
+                    freeze=freeze-G/lambda_melt*dt_sec!/dt_h
+                    !Limit the freezing so it does not freeze more water than is available
                     freeze=min(freeze,g_surf)
                     !Limit the freezing so it does not go past the equilibrium salt level
                     freeze=min(freeze,max(s_road_equil_at_T_s-s_surf,0.))
                     G_freeze=freeze*lambda_melt/dt_sec!/dt_h
                 else
-	                freeze=freeze+0
+                    freeze=freeze+0
                     G_freeze=freeze*lambda_melt/dt_sec!/dt_h
                 endif
             !endif
@@ -345,7 +358,7 @@
                     G_freeze=0.
                     G_melt=0.
                 endif
- 
+
             !Diagnose surface flux with melt and freeze fluxes
             G=rad_net-H-L+H_traffic-G_melt+G_freeze
 
@@ -540,10 +553,10 @@
                 RH_over_saturated(i)=(100*(1-RH_over_saturated_fraction(salt_type(i))) &
                     +RH_salt_saturated*RH_over_saturated_fraction(salt_type(i)))!Large number chosen to make the impact clear. Not known
                 RH_salt(i)=min(100.,RH_salt_saturated+(RH_over_saturated(i)-RH_salt_saturated)/ &
-                     (f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
+                    (f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
                 melt_temperature_salt(i)=min(0.,melt_temperature_saturated(salt_type(i)) &
-                     +(melt_temperature_oversaturated(salt_type(i))-melt_temperature_saturated(salt_type(i))) &
-                     /(f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
+                    +(melt_temperature_oversaturated(salt_type(i))-melt_temperature_saturated(salt_type(i))) &
+                    /(f_salt_sat(salt_type(i))*saturated(salt_type(i))-saturated(salt_type(i)))*(solution_salt(i)-saturated(salt_type(i))))
             endif
         endif
     
@@ -570,7 +583,7 @@
 
 !--------------------------------------------------------------------------
     function antoine_func(a,b,c,TC)
- 
+
     implicit none
     
     !TC: Degrees C
