@@ -449,7 +449,7 @@
     integer :: use_melt_freeze_energy_flag=0
     integer :: salt_after_ploughing_flag=0
     integer :: use_stability_flag=1
-    integer :: use_energy_correction_flag=1
+    integer :: use_energy_correction_flag=0
     integer :: use_netcdf_init = 1 !Set to 1 for saving init values to netcdf !TODO: Include in flag file
     !Also used for scaling so set to real
     real use_salting_data_flag(2)
