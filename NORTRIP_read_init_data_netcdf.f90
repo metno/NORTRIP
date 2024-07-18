@@ -149,7 +149,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     !NORTRIP_multiroad_save_meteodata.f90
     do i = 1,num_road_meteo
         if (i .ne. road_temperature_obs_index) then
-            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i,1,1,0)
+            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i,1,1,1)
         endif
     end do
 

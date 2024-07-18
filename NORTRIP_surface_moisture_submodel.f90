@@ -239,7 +239,7 @@
             ,use_subsurface_flag &
             ,use_salt_humidity_flag &
             ,use_melt_freeze_energy_flag &
-            ,max(0.,road_meteo_data(E_corr_index,ti-1,tr,ro)) &
+            ,road_meteo_data(E_corr_index,max(1,ti-1),tr,ro) &
             ,ti &
             ,use_energy_correction_flag &
             !Outputs start here
@@ -266,7 +266,7 @@
                 if (ti > 1/dt  ) then
                     road_meteo_data(E_corr_index,ti,tr,ro) = Energy_correction_func(road_meteo_data(E_diff_index,6,tr,ro),road_meteo_data(E_diff_index,5,tr,ro))*relaxation_func(ti,dt)
                 else 
-                    road_meteo_data(E_corr_index,ti,tr,ro) = Energy_correction_func(road_meteo_data(E_diff_index,ti,tr,ro),max(0.,road_meteo_data(E_diff_index,ti-1,tr,ro)))!*relaxation_func(ti,dt)
+                    road_meteo_data(E_corr_index,ti,tr,ro) = Energy_correction_func(road_meteo_data(E_diff_index,ti,tr,ro),road_meteo_data(E_diff_index,max(1,ti-1),tr,ro))!*relaxation_func(ti,dt)
                 end if
             else
                 road_meteo_data(E_corr_index,ti,tr,ro) =0.
