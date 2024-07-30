@@ -80,8 +80,6 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     if (.not.exists) then
         if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: Initial netcdf input file does not exist: '//trim(filename)
         return 
-    else 
-        write(unit_logfile, '(A)')'Opening netcdf init file for reading: '//trim(filename)
     endif
     !If it is the first loop then check if the dimensions match
     if (ro_tot.eq.1) then

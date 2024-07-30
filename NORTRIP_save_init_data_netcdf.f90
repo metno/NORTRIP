@@ -119,7 +119,6 @@ subroutine NORTRIP_save_init_data_netcdf
             write(unit_logfile,*) "Creating and opening init file to save values: ", trim(filename)
             else
                 call check(nf90_open(filename,nf90_write,ncid))
-                write(unit_logfile,*) "Opening init file to save values: ", trim(filename)
         end if        
         !NOTE: Track is always = 1. If the model code is extended to include more than one track, this must be changed.
         tr=1

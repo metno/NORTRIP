@@ -41,10 +41,6 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     integer             :: datetime_int
     integer :: a(num_date_index)
 
-    write(unit_logfile,'(A)') '================================================================'
-	write(unit_logfile,'(A)') 'Create netcdf summary file'
-	write(unit_logfile,'(A)') '================================================================'
-
     
     call check(nf90_create(trim(filename),nf90_clobber,ncid))
     call check(nf90_def_dim(ncid,"time", nf90_unlimited, t_dimid))
@@ -321,25 +317,25 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     integer :: a(num_date_index)
     real    :: conversion
 
-    write(unit_logfile,'(A)') '================================================================'
-	write(unit_logfile,'(A)') 'Fill netcdf summary file'
-	write(unit_logfile,'(A)') '================================================================'
-
+    
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
-
+    
     filename =trim(path_outputdata)//trim(filename_outputdata)//'_summary.nc'
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
-
+    
     !Put in date if required
     call date_to_datestr_bracket(a,filename,filename)
     call date_to_datestr_bracket(a,filename,filename)
     call date_to_datestr_bracket(a,filename,filename)
-
+    
     !If file do not exist,  create and open, otherwise just open. 
     inquire(file=trim(filename),exist=exists)
     if (.not.exists) then
+        write(unit_logfile,'(A)') '================================================================'
+        write(unit_logfile,'(A)') 'Create netcdf summary file'
+        write(unit_logfile,'(A)') '================================================================'
         call NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_open(filename,nf90_write,ncid))
     else
