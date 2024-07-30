@@ -71,7 +71,7 @@ subroutine NORTRIP_main_run
 
     !Open netCDF file for storing init date. The file will be open 
     !during the whole road loop.
-    if ( use_netcdf_init .and. use_single_road_loop_flag) then
+    if ( NORTRIP_save_init_data_as_netcdf_flag .and. use_single_road_loop_flag) then
         call open_NETCDF_init_file(ncid_init,ncid_init_exists)
     end if
 
@@ -80,7 +80,7 @@ subroutine NORTRIP_main_run
     do ro=n_roads_start,n_roads_end
         !Read in init file and reinitialise. If not available then nothing happens
         if (use_single_road_loop_flag) then
-            if ( use_netcdf_init .and. ncid_init_exists) then
+            if ( NORTRIP_save_init_data_as_netcdf_flag .and. ncid_init_exists) then
                 call NORTRIP_read_init_data_netcdf(ncid_init)
             else
                 call NORTRIP_read_init_data_single
@@ -167,13 +167,14 @@ subroutine NORTRIP_main_run
             
             !If the single road loop is used then save the init files here
             if (use_single_road_loop_flag) then
-                if ( use_netcdf_init==1 ) then
+                if ( NORTRIP_save_init_data_as_netcdf_flag) then
                     call NORTRIP_save_init_data_netcdf
                 else
                     call NORTRIP_save_init_data_single
                 end if
             endif
         end do
+
         !End main time loop
         !----------------------------------------------------------------------
         if ( forecast_hour .gt. 0 ) then
@@ -210,7 +211,7 @@ subroutine NORTRIP_main_run
     enddo
     !End road loop
     !--------------------------------------------------------------------------
-    if (use_netcdf_init .and. ncid_init_exists) then
+    if (NORTRIP_save_init_data_flag .and. ncid_init_exists) then
         call close_NETCDF_init_file(ncid_init)
     end if
     !Write summary results to the log file for track=1 and the first and last road
