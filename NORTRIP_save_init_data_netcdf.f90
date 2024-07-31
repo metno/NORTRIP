@@ -88,8 +88,12 @@ subroutine NORTRIP_save_init_data_netcdf
 
     hour_test=1
     if (hours_between_init.ne.0) hour_test=mod(tf,hours_between_init)
-    if (hour_test.eq.0.or.tf.eq.max_time.or.tf.eq.ceiling(1/dt)) then
+    if (index(calculation_type,'Avinor').gt.0 .and. tf.eq.ceiling(1/dt)  .or. &
+        .not. index(calculation_type,'Avinor').gt.0 .and. hour_test.eq.0 .or. &
+        .not. index(calculation_type,'Avinor').gt.0 .and. tf.eq.max_time ) then
 
+        !TODO: THe first condition is to write an init file from the last timestep 
+        !with observations in the avinor forecasts. Should maybe be turned into a flag?
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)
         call date_to_datestr_bracket(a,path_init,temp_name)

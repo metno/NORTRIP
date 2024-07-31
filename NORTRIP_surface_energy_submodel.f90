@@ -28,7 +28,8 @@
     parameter (Cp=1006,lambda=2.50E6,lambda_ice=2.83E6,lambda_melt=3.33E5) !(J/kg)
     real RD,T0C,sigma,eps_s,omega
     parameter (RD=287.0,T0C=273.15,sigma=5.67E-8,eps_s=0.95,omega=7.3e-5)
-    
+    integer, parameter :: nodata = -99 !TODO: Should this be taken in as an argument?
+
     !Internal variables
     real dt_sec,dt_h
     real G_melt,G_freeze
@@ -67,6 +68,8 @@
     
     !Set time step in seconds
     dt_sec=dt_h_in*3600
+
+    E_diff = 0.
 
     !Initialise the available melting energy (W/m2)
     G_melt=0
@@ -288,17 +291,21 @@
                 endif
             endif
 
+            if ( E_correction > 1000 ) then
+                print*, "Large energy correction: ", E_correction, " in timestep", time
+            end if    
 
-            !Calculate surface temperature without energy correction
             TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
-            if ( Ecorr_flag.eq.1 ) then                
-                if ( time < 7 ) then   !TODO: Do not hardcode time condition!   
-                    !! Include the correction term in the calculation --> results in the observed temperature
-                    E_diff = (T_obs*(1+dt_sec*a_G*(a_H+b_RL+mu))-TCs_0)/(dt_sec*a_G)-a_rad+a_RL+L-a_H*TC-mu*TCsub + G_melt-G_freeze; !=E_diff + E_correction_old
-                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_diff))/(1+dt_sec*a_G*(a_H+b_RL+mu))
-                else
-                    !Use the energy correction term that is a function of previous corrections and time. 
-                    TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))
+
+            if ( T_obs.ne.nodata ) then
+                TCs_out = T_obs !If observed value exist, use that even if it is not used to calculate energy correction.
+
+                if ( Ecorr_flag.eq.1 ) then !Calculate 
+
+                        !! Include the correction term in the calculation --> results in the observed temperature
+                        E_diff = (T_obs*(1+dt_sec*a_G*(a_H+b_RL+mu))-TCs_0)/(dt_sec*a_G)-a_rad+a_RL+L-a_H*TC-mu*TCsub + G_melt-G_freeze; != E_correction(old) + difference 
+
+                        TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_diff))/(1+dt_sec*a_G*(a_H+b_RL+mu))
                 end if
             end if
 
@@ -323,7 +330,7 @@
 
             !Diagnose surface flux without melt and freeze fluxes
             !G=rad_net-H-L+H_traffic
-            G=rad_net-H-L+H_traffic-G_melt+G_freeze
+            G=rad_net-H-L+H_traffic-G_melt+G_freeze+E_correction
 
             !Calculate additional melt, in addition to salting, due to energy
             !if (i.eq.1) then

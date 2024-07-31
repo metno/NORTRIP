@@ -144,9 +144,9 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Energy correction term"))
 
-    call check(nf90_def_var(ncid, "Relaxed_energy_correction", nf90_float, (/f_dimid,t_dimid/),varid)) 
+    call check(nf90_def_var(ncid, "Energy_difference", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
-    call check(nf90_put_att(ncid,varid,"description","Relaxed energy correction term"))
+    call check(nf90_put_att(ncid,varid,"description","Energy difference"))
     
     call check(nf90_def_var(ncid, "W_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
@@ -346,9 +346,10 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     !NOTE: ro = 0 assumes that the single road flag is true
     tr=1
     ro=0
-    if (save_road_data_flag(ro).ne.0) then !TODO: why is the flag a function of ro?
+
+    !if (save_road_data_flag(ro).ne.0 .and. use_only_special_links_flag ) then !TODO: Unsure how it is best to do it with this if-test in the general case (not just for smartkjemi)
         conversion=1./1000./b_road_lanes(ro)
-        save_road_counter = min(save_road_counter + 1,sum(save_road_data_flag(:)))
+        save_road_counter = ro_tot 
         timestamp=0
 
         !Calculate time as seconds since base date
@@ -438,7 +439,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         call check(nf90_inq_varid(ncid, "Energy_correction",varid))
         call check(nf90_put_var(ncid, varid, road_meteo_data(E_corr_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
-        call check(nf90_inq_varid(ncid, "Relaxed_energy_correction",varid))
+        call check(nf90_inq_varid(ncid, "Energy_difference",varid))
         call check(nf90_put_var(ncid, varid, road_meteo_data(E_diff_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "W_surf_mod",varid))
@@ -542,7 +543,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
             call check(nf90_put_var(ncid, varid, sum(M_road_data(sand_index,pm_200,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
         end if
 
-    endif
+!    endif
 
     call check(nf90_close(ncid))
 end subroutine NORTRIP_save_road_summary_data_netcdf

@@ -115,7 +115,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
             stop 1    
         endif
     end if
-    ti = min_time
+
     tr=1
 
     !read M_road_data
@@ -147,24 +147,29 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     !NORTRIP_multiroad_save_meteodata.f90
     do i = 1,num_road_meteo
         if (i .ne. road_temperature_obs_index) then
-            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i,1,1,1)
+            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i,1,1,0) !TODO: This will fail in debug mode. The tmp array should probably be of a different shape to fix that. 
         endif
     end do
 
-    !Check for NaNs in the input data
+    !Make sure there is no energy correction when the flag is off.
+    if ( .not. use_energy_correction_flag ) then
+        road_meteo_data(E_corr_index,1,1,0) = 0.
+    end if
+
+    !Check for NaNs in the input data. !TODO: It is probably unecessary to stop the whole simulation if any NaNs are found. Should have better checks and solutions for this. 
     do tr=1,num_track
         do s=1,num_source_all
             do x=1,num_size
-                if (isnan(M_road_data(s,x,ti,tr,ro))) input_is_nan=.true.
+                if (isnan(M_road_data(s,x,min_time,tr,ro))) input_is_nan=.true.
             enddo
         enddo
         
         do i=1,num_road_meteo
-            if (isnan(road_meteo_data(i,ti,tr,ro))) input_is_nan=.true.
+            if (isnan(road_meteo_data(i,min_time,tr,ro))) input_is_nan=.true.
         enddo
         
         do m=1,num_moisture
-            if (isnan(g_road_data(m,ti,tr,ro))) input_is_nan=.true.
+            if (isnan(g_road_data(m,min_time,tr,ro))) input_is_nan=.true.
         enddo
         
         if (input_is_nan) then
