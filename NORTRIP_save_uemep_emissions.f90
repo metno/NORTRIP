@@ -375,6 +375,10 @@
             !Set the finished file name if it is to be used
             if (trim(finished_file_append).ne.'') then
             finished_filename=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(file_str)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+           
             endif
             
             !Put in date in path and filename if required

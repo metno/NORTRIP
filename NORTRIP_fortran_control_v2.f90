@@ -131,9 +131,11 @@
 
     !Save finished file
     if (trim(finished_filename).ne.'') then
-	    write(*,'(A)') 'Writing finished file for uEMEP emission output'
+	    write(*,'(A)') '################################################################'
+	    write(*,'(A)') 'Writing finished file to uEMEP emission output'
         open(unit_save_emissions,file=finished_filename,status='replace')
         close(unit_save_emissions)
+	    write(*,'(A)') '################################################################'
     endif
 
     end subroutine NORTRIP_fortran_control_v2

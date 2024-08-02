@@ -57,7 +57,11 @@
 	        !write(unit_logfile,'(A)') '----------------------------------------------------------------'
  
             !Check that path exists after filling in date stamp
-            a=date_data(:,min_time_save)
+            !This has been changed from the init_time_save to the current as it was not writing correctly
+            !Needs to be tested
+            !a=date_data(:,min_time_save)
+            current_date=date_data(:,tf)
+            a=current_date
             call date_to_datestr_bracket(a,path_init,temp_name)
             call date_to_datestr_bracket(a,temp_name,temp_name)
             call date_to_datestr_bracket(a,temp_name,temp_name)
@@ -71,7 +75,6 @@
             !do ti=min_time,max_time
         
 
-            current_date=date_data(:,tf)
             
             !Set the path and file name
             !path_init,filename_init,hours_between_init
