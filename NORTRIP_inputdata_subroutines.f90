@@ -817,13 +817,11 @@ subroutine read_NORTRIP_inputdata
     if (index(calculation_type,'Avinor').gt.0) then
         if (unit_logfile.gt.0) write(*,'(A)') 'Saving Avinor initial files'
         NORTRIP_save_init_data_flag=.false.
-        NORTRIP_save_init_data_as_netcdf_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.false.
         NORTRIP_save_uEMEP_grid_emissions_flag=.false.
         NORTRIP_save_road_meteo_data_flag=.true.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
-        NORTRIP_save_road_summary_data_flag=.false.
-        NORTRIP_save_road_summary_data_as_netcdf_flag=.true.
+        NORTRIP_save_road_summary_data_flag=.true.
         NORTRIP_save_road_emission_activity_data_flag=.false.
         use_ospm_flag=0
     endif

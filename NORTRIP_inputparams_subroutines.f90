@@ -632,6 +632,8 @@
     !OUTPUT                                                          
     plot_type_flag=match_string_int('plot_type_flag',unit_in,unit_logfile_temp,0)
     save_type_flag=match_string_int('save_type_flag',unit_in,unit_logfile_temp,0)
+    save_init_data_as_netcdf_flag=match_string_int('save_init_data_as_netcdf_flag',unit_in,unit_logfile_temp,0)
+    save_road_summary_data_as_netcdf_flag=match_string_int('save_road_summary_data_as_netcdf_flag',unit_in,unit_logfile_temp,0)
     !DISPERSION                                                      
     use_ospm_flag=match_string_int('use_ospm_flag',unit_in,unit_logfile_temp,0)
     !FORECAST

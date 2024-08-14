@@ -107,8 +107,18 @@
         if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
-        if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data
-        if (NORTRIP_save_road_summary_data_as_netcdf_flag) call NORTRIP_save_road_summary_data_netcdf
+        if (NORTRIP_save_road_summary_data_flag) then
+            if ( save_road_summary_data_as_netcdf_flag.eq.0) then
+                call NORTRIP_save_road_summary_data
+            else if (save_road_summary_data_as_netcdf_flag.eq.1) then
+                call NORTRIP_save_road_summary_data_netcdf
+            else if (save_road_summary_data_as_netcdf_flag.eq.2) then
+                call NORTRIP_save_road_summary_data_netcdf
+                call NORTRIP_save_road_summary_data
+            else
+                write(*,*) "Warning: Do not write summary files, bc. save_road_summary_data_as_netcdf_flag = ", save_road_summary_data_as_netcdf_flag
+            end if 
+        end if          
         if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
