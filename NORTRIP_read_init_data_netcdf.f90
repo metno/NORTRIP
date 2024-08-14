@@ -61,9 +61,8 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     integer, intent(in) :: ncid_init
     integer :: len_track, len_size, len_var, len_roads, len_moist, len_source
 
-    real :: road_meteo_data_tmp(num_road_meteo,n_time,num_track,n_roads)
+    real :: road_meteo_data_tmp(num_road_meteo)
     road_meteo_data_tmp = 0
-    !allocate (road_meteo_data(num_road_meteo,n_time,num_track,0:n_roads))
 
     !Set the path and file name
     filename_temp=filename_init_netcdf
@@ -74,7 +73,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     
     !Open the outputfile for date
     filename=trim(temp_name)//trim(filename_temp)
-    !filename_bin=trim(path_init)//trim(filename_temp)
+
     !Check file for reading
     inquire(file=trim(filename), exist = exists)
     if (.not.exists) then
@@ -123,7 +122,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     call check(nf90_get_var(ncid_init,varid, M_road_data(:,:,min_time,tr,0),start = (/1,1,1,ro_tot/)))
 
     call check(nf90_inq_varid(ncid_init,"road_meteo_data",varid))
-    call check(nf90_get_var(ncid_init,varid, road_meteo_data_tmp(:,1,tr,0),start = (/1,1,ro_tot/)))
+    call check(nf90_get_var(ncid_init,varid, road_meteo_data_tmp(:),start = (/1,1,ro_tot/)))
 
     !read g_road_data
     call check(nf90_inq_varid(ncid_init,"g_road_data",varid))
@@ -147,10 +146,11 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     !NORTRIP_multiroad_save_meteodata.f90
     do i = 1,num_road_meteo
         if (i .ne. road_temperature_obs_index) then
-            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i,1,1,0) !TODO: This will fail in debug mode. The tmp array should probably be of a different shape to fix that. 
+            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i) 
         endif
     end do
 
+    !stop 
     !Make sure there is no energy correction when the flag is off.
     if ( .not. use_energy_correction_flag ) then
         road_meteo_data(E_corr_index,1,1,0) = 0.
