@@ -41,6 +41,9 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     integer             :: datetime_int
     integer :: a(num_date_index)
 
+
+    
+    
     
     call check(nf90_create(trim(filename),nf90_clobber,ncid))
     call check(nf90_def_dim(ncid,"time", nf90_unlimited, t_dimid))
@@ -316,6 +319,8 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     real ,dimension(max_time_save) :: fr_hdv
     integer :: a(num_date_index)
     real    :: conversion
+    real, dimension(max_time_save) :: water,snow,ice
+    real, parameter :: surface_moisture_cutoff = 0.01
 
     
     !Check that path exists after filling in date stamp
@@ -443,13 +448,28 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         call check(nf90_put_var(ncid, varid, road_meteo_data(E_diff_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "W_surf_mod",varid))
-        call check(nf90_put_var(ncid, varid, g_road_data(water_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+        where(g_road_data(water_index,:,tr,0) .ge. surface_moisture_cutoff)
+            water = g_road_data(water_index,:,tr,0)
+        elsewhere
+            water = 0.
+        endwhere
+        call check(nf90_put_var(ncid, varid, water, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "I_surf_mod",varid))
-        call check(nf90_put_var(ncid, varid, g_road_data(ice_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+        where(g_road_data(ice_index,:,tr,0) .ge. surface_moisture_cutoff)
+            ice = g_road_data(ice_index,:,tr,0)
+        elsewhere
+            ice = 0.
+        endwhere
+        call check(nf90_put_var(ncid, varid, ice, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "S_surf_mod",varid))
-        call check(nf90_put_var(ncid, varid, g_road_data(snow_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+        where(g_road_data(snow_index,:,tr,0) .ge. surface_moisture_cutoff)
+            snow = g_road_data(snow_index,:,tr,0)
+        elsewhere
+            snow = 0.
+        endwhere
+        call check(nf90_put_var(ncid, varid, snow, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         call check(nf90_inq_varid(ncid, "f_q",varid))
         call check(nf90_put_var(ncid, varid, f_q(road_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
