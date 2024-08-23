@@ -40,164 +40,214 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     character(len=12)   :: datetime_string
     integer             :: datetime_int
     integer :: a(num_date_index)
+    integer,dimension(8) :: datetime_now
+    character(len=256) :: history_string
 
+    character(8)  :: date
+    character(10) :: time
+    character(5)  :: zone
+    call date_and_time(date = date,time=time,zone=zone)    
 
-    
-    
-    
+    history_string = "Created at: "//date//" "//time(1:2)//":"//time(3:4)//zone//"UTC"
     call check(nf90_create(trim(filename),nf90_clobber,ncid))
+    
+    !Add global attributes: 
+    call check(nf90_put_att(ncid,nf90_global,"title","NORTRIP output"))
+    call check(nf90_put_att(ncid,nf90_global,"history",trim(history_string)))
+    call check(nf90_put_att(ncid,nf90_global,"institution","Norwegian Meteorological Institute, MET Norway"))
+    
+    !call check(nf90_put_att(ncid,nf90_global,"Conventions","CF 1.10")) !TODO: Check which convention should be followed.
+    
     call check(nf90_def_dim(ncid,"time", nf90_unlimited, t_dimid))
     
     call check(nf90_def_dim(ncid,"road_id",n_roads_total, f_dimid))
-
+    
     call check(nf90_def_dim(ncid,"maxdatelength", int(24/dt) , date_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
-
+    
     call check(nf90_def_var(ncid, "time", nf90_float, t_dimid,varid))
     call check(nf90_put_att(ncid,varid, "units", "seconds since "//trim(date_str(4,min_time)))) !Time dimension as seconds since start of simulation.
     call check(nf90_put_att(ncid,varid, "calendar", "standard"))
+    call check(nf90_put_att(ncid,varid, "long_name", "time"))
     
     call check(nf90_def_var(ncid, "datetime", nf90_char, (/date_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "description", "date and time in format yyyy.mm.dd HH:MM:SS"))
+    call check(nf90_put_att(ncid,varid, "long_name", "yyyy.mm.dd_HH:MM:SS"))
     
     call check(nf90_def_var(ncid, "road_id", nf90_int, f_dimid,varid))
-    call check(nf90_put_att(ncid,varid, "units", "-"))
+    !call check(nf90_put_att(ncid,varid, "units", ""))
     call check(nf90_put_att(ncid,varid, "description", "ID number for road link"))
+    call check(nf90_put_att(ncid,varid, "long_name", "road_link_id"))
     
     call check(nf90_def_var(ncid, "T_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
+    call check(nf90_put_att(ncid,varid, "long_name", "surface_temperature"))
     call check(nf90_put_att(ncid,varid,"description","Modeled surface temperature"))
     
     call check(nf90_def_var(ncid, "T_surf_meteo", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
-    call check(nf90_put_att(ncid,varid,"description","Observed surface temperature")) !NOTE In code, could also be air temperature at surface height. Should it be two separate variables?
+    call check(nf90_put_att(ncid,varid,"description","Observed surface temperature, otherwise nodata value")) 
+    call check(nf90_put_att(ncid,varid,"long_name","surface_temperature")) 
     
     call check(nf90_def_var(ncid, "T_air", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
     call check(nf90_put_att(ncid,varid,"description","Air temperature at 2 m above ground")) 
+    call check(nf90_put_att(ncid,varid,"long_name","air_temperature")) 
     
     call check(nf90_def_var(ncid, "Td_air", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
     call check(nf90_put_att(ncid,varid,"description","Dew point temperature at 2 m above ground, calc. from relative humidity (RH).")) 
-
+    call check(nf90_put_att(ncid,varid,"long_name","dew_point_temperature")) 
+    
     call check(nf90_def_var(ncid, "T_freeze_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
     call check(nf90_put_att(ncid,varid,"description","Freezing point temperature"))
+    call check(nf90_put_att(ncid,varid,"long_name","freezing_point_temperature"))
     
     call check(nf90_def_var(ncid, "T_sub_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
     call check(nf90_put_att(ncid,varid,"description","Modeled subsurface temperature"))
-
+    call check(nf90_put_att(ncid,varid,"long_name","sub_surface_temperature_temperature"))
+    
     call check(nf90_def_var(ncid, "RH_air", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "percent"))
     call check(nf90_put_att(ncid,varid,"description","Relative humidity at 2 m above ground"))
+    call check(nf90_put_att(ncid,varid,"long_name","relative_humidity")) 
     
     call check(nf90_def_var(ncid, "Rain", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
     call check(nf90_put_att(ncid,varid,"description","Amount of liquid precipitation within the model time step"))
+    call check(nf90_put_att(ncid,varid,"long_name","rainfall_amount")) 
     
     call check(nf90_def_var(ncid, "Snow", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
     call check(nf90_put_att(ncid,varid,"description","Amount of solid precipitation within the model time step (water equivalent)"))
+    call check(nf90_put_att(ncid,varid,"long_name","snowfall_amount")) 
     
     call check(nf90_def_var(ncid, "Wind_FF", nf90_float, (/f_dimid,t_dimid/),varid)) !TODO: Rename to Wind_speed?
     call check(nf90_put_att(ncid,varid, "units", "m/s"))
     call check(nf90_put_att(ncid,varid,"description","Wind speed at 10 m above ground"))
+    call check(nf90_put_att(ncid,varid,"long_name","wind_speed")) 
     
     call check(nf90_def_var(ncid, "Wind_DD", nf90_float, (/f_dimid,t_dimid/),varid)) !TODO: Rename to Wind_direction?
     call check(nf90_put_att(ncid,varid, "units", "degree"))
-    call check(nf90_put_att(ncid,varid,"description","Wind direction at 10 m above ground"))
+    call check(nf90_put_att(ncid,varid,"description","Wind from direction at 10 m above ground"))
+    call check(nf90_put_att(ncid,varid,"long_name","wind_from_direction")) 
     
     call check(nf90_def_var(ncid, "SW_rad_cls", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Clear sky incoming short wave radiation"))
+    call check(nf90_put_att(ncid,varid,"long_name","downwelling_shortwave_flux_in_air_assuming_clear_sky")) 
     
     call check(nf90_def_var(ncid, "SW_rad_in", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Incoming short wave radiation"))
+    call check(nf90_put_att(ncid,varid,"long_name","downwelling_shortwave_flux_in_air")) 
     
     call check(nf90_def_var(ncid, "SW_rad_net", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Net short wave radiation"))
+    call check(nf90_put_att(ncid,varid,"long_name","net_downward_shortwave_flux_in_air")) 
+    
     
     call check(nf90_def_var(ncid, "LW_rad_net", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Net long wave radiation"))
+    call check(nf90_put_att(ncid,varid,"long_name","net_downward_longwave_flux_in_air")) 
     
     call check(nf90_def_var(ncid, "LW_rad_in", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Incoming long wave radiation"))
+    call check(nf90_put_att(ncid,varid,"long_name","downwelling_longwave_flux_in_air")) 
     
     call check(nf90_def_var(ncid, "H_in", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Surface sensible heat flux, positive downwards"))
+    call check(nf90_put_att(ncid,varid,"long_name","surface_downward_sensible_heat_flux")) 
     
     call check(nf90_def_var(ncid, "L_in", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Surface latent heat flux, positive downwards"))
-
+    call check(nf90_put_att(ncid,varid,"long_name","surface_downward_latent_heat_flux")) 
+    
     call check(nf90_def_var(ncid, "G_sub", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Sub-surface energy flux"))
+    call check(nf90_put_att(ncid,varid,"long_name","sub_surface_energy_flux")) !Need better long_name/long_name 
     
     call check(nf90_def_var(ncid, "G_net", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Surface energy flux"))
-
+    call check(nf90_put_att(ncid,varid,"long_name","surface_energy_flux")) !Need better long_name/long_name 
+    
     call check(nf90_def_var(ncid, "Energy_correction", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
-    call check(nf90_put_att(ncid,varid,"description","Energy correction term"))
-
+    call check(nf90_put_att(ncid,varid,"description","Energy correction term used in surface energy balance"))
+    call check(nf90_put_att(ncid,varid,"long_name","energy_correction_term")) 
+    
     call check(nf90_def_var(ncid, "Energy_difference", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
-    call check(nf90_put_att(ncid,varid,"description","Energy difference"))
+    call check(nf90_put_att(ncid,varid,"description","Energy difference needed to match observed surface temperature"))
+    call check(nf90_put_att(ncid,varid,"long_name","energy_difference_to_match_observed_surface_temperature")) 
     
     call check(nf90_def_var(ncid, "W_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
     call check(nf90_put_att(ncid,varid,"description","Water mass on the road surface (water equivalent)")) 
+    call check(nf90_put_att(ncid,varid,"long_name","liquid_water_on_surface")) 
     
     call check(nf90_def_var(ncid, "I_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
     call check(nf90_put_att(ncid,varid,"description","Ice mass on the road surface (water equivalent)")) 
+    call check(nf90_put_att(ncid,varid,"long_name","ice_on_surface_as_water_equivalent")) 
     
     call check(nf90_def_var(ncid, "S_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "mm"))
     call check(nf90_put_att(ncid,varid,"description","Snow mass on the road surface (water equivalent)")) 
-
+    call check(nf90_put_att(ncid,varid,"long_name","snow_on_surface_as_water_equivalent")) 
+    
     call check(nf90_def_var(ncid, "f_q", nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Give this a more descriptive name?
     call check(nf90_put_att(ncid,varid, "units", "1"))
     call check(nf90_put_att(ncid,varid,"description","Surface retainment factor (0-1) based on the surface moisture. All is retained when value is zero.")) 
+    call check(nf90_put_att(ncid,varid,"long_name","surface_retainment_factor")) 
     
     call check(nf90_def_var(ncid, "Salt1_a", nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Give this a more descriptive name? Salting instead of salt?
     call check(nf90_put_att(ncid,varid, "units", "g/m2"))
     call check(nf90_put_att(ncid,varid,"description","Total mass of NaCl applied in the time step")) !TODO: Need to rethink this in the context of 10 min resolution. 
+    call check(nf90_put_att(ncid,varid,"long_name","mass_of_applied_NaCl")) 
     
     call check(nf90_def_var(ncid, "Salt2_a", nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Give this a more descriptive name?
     call check(nf90_put_att(ncid,varid, "units", "g/m2"))
     call check(nf90_put_att(ncid,varid,"description","Total mass of alternative salt applied in the time step")) !TODO: Replace "alternative" with a string read from parameters?
+    call check(nf90_put_att(ncid,varid,"long_name","mass_of_applied_alternative_salt")) 
     
     call check(nf90_def_var(ncid, "Sand_a", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "g/m2"))
     call check(nf90_put_att(ncid,varid,"description","Total mass of sand applied in the time step"))
+    call check(nf90_put_att(ncid,varid,"long_name","mass_of_applied_sand")) 
     
     call check(nf90_def_var(ncid, "Wetting_a", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "mm")) 
     call check(nf90_put_att(ncid,varid,"description","Water added to the road during cleaning or salting "))
+    call check(nf90_put_att(ncid,varid,"long_name","water_added_during_activity")) 
 
     call check(nf90_def_var(ncid, "Ploughing_a", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "1"))
     call check(nf90_put_att(ncid,varid,"description","Snow ploughing event in time step (0 to 1)"))
+    call check(nf90_put_att(ncid,varid,"long_name","plowing_event")) 
     
     call check(nf90_def_var(ncid, "Cleaning_a", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "1")) 
     call check(nf90_put_att(ncid,varid,"description","Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency")) 
+    call check(nf90_put_att(ncid,varid,"long_name","cleaning_event")) 
     
     call check(nf90_def_var(ncid, "Mass_salt1", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "g/m2")) 
     call check(nf90_put_att(ncid,varid,"description","Mass of NaCl on road"))
+    call check(nf90_put_att(ncid,varid,"long_name","Mass_of_NaCl_on_road"))
     
     call check(nf90_def_var(ncid, "Mass_salt2", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "g/m2")) 
     call check(nf90_put_att(ncid,varid,"description","Mass of alternative salt on road"))
+    call check(nf90_put_att(ncid,varid,"long_name","mass_of_alternative_salt_on_road"))
 
     if ( .not. index(calculation_type,'Avinor').gt.0 ) then        
         call check(nf90_def_var(ncid, "PM10_Emissions_tot", nf90_float, (/f_dimid,t_dimid/),varid))     
