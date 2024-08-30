@@ -1,18 +1,21 @@
 
-subroutine open_NETCDF_init_file(ncid_init,exists)
+subroutine open_NETCDF_init_file(ncid)
     use NORTRIP_definitions
     use netcdf
     implicit none
 
-    logical,intent(out) :: exists
+    !Out
+    integer, intent(out):: ncid
+    
+    !Local
+    logical :: exists
     integer :: a(num_date_index)
     character(256) :: temp_name
     character(256) :: filename_temp
     character(256) :: filename
     integer :: dimid, varid
-    integer, intent(out):: ncid_init
-
-        !Set the path and file name
+    
+    !Set the path and file name
     filename_temp=filename_init_netcdf
     a=date_data(:,min_time)
     call date_to_datestr_bracket(a,path_init,temp_name)
@@ -28,12 +31,12 @@ subroutine open_NETCDF_init_file(ncid_init,exists)
         if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: Initial netcdf input file does not exist: '//trim(filename)
         return 
     else 
-        call check(NF90_OPEN(filename,nf90_nowrite, ncid_init))
+        call check(NF90_OPEN(filename,nf90_nowrite, ncid))
     endif
 
 end subroutine open_NETCDF_init_file
 
-subroutine close_NETCDF_init_file(ncid)
+subroutine close_NETCDF_file(ncid)
     use NORTRIP_definitions
     use netcdf
     implicit none
@@ -42,10 +45,10 @@ subroutine close_NETCDF_init_file(ncid)
 
     call check(NF90_close(ncid))
 
-end subroutine close_NETCDF_init_file
+end subroutine close_NETCDF_file
 
 !==================Read init files on netcdf format=========================
-subroutine NORTRIP_read_init_data_netcdf(ncid_init)
+subroutine NORTRIP_read_init_data_netcdf(ncid)
     use NORTRIP_definitions
     use netcdf
     implicit none
@@ -58,7 +61,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     character(256) :: filename
     logical :: input_is_nan=.false.
     integer :: dimid, varid
-    integer, intent(in) :: ncid_init
+    integer, intent(in) :: ncid
     integer :: len_track, len_size, len_var, len_roads, len_moist, len_source
 
     real :: road_meteo_data_tmp(num_road_meteo)
@@ -88,23 +91,23 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
         write(unit_logfile,'(A)') '================================================================'
 
         ! ! Read the first lines --> determine if array lengths match
-        call check(nf90_inq_dimid(ncid_init,"num_size",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_size))
+        call check(nf90_inq_dimid(ncid,"num_size",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_size))
 
-        call check(nf90_inq_dimid(ncid_init,"num_track",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_track))
+        call check(nf90_inq_dimid(ncid,"num_track",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_track))
 
-        call check(nf90_inq_dimid(ncid_init,"num_var",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_var))
+        call check(nf90_inq_dimid(ncid,"num_var",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_var))
 
-        call check(nf90_inq_dimid(ncid_init,"road_id",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_roads))
+        call check(nf90_inq_dimid(ncid,"road_id",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_roads))
 
-        call check(nf90_inq_dimid(ncid_init,"num_moisture",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_moist))
+        call check(nf90_inq_dimid(ncid,"num_moisture",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_moist))
 
-        call check(nf90_inq_dimid(ncid_init,"num_source_all",dimid))
-        call check(nf90_inquire_dimension(ncid_init,dimid,len=len_source))
+        call check(nf90_inq_dimid(ncid,"num_source_all",dimid))
+        call check(nf90_inquire_dimension(ncid,dimid,len=len_source))
 
         if (len_roads.ne.n_roads_total.or.len_track.ne.num_track.or.len_source.ne.num_source_all &
         .or.len_var.ne.num_road_meteo.or.len_moist.ne.num_moisture) then
@@ -118,29 +121,29 @@ subroutine NORTRIP_read_init_data_netcdf(ncid_init)
     tr=1
 
     !read M_road_data
-    call check(nf90_inq_varid(ncid_init,"M_road_data",varid))
-    call check(nf90_get_var(ncid_init,varid, M_road_data(:,:,min_time,tr,0),start = (/1,1,1,ro_tot/)))
+    call check(nf90_inq_varid(ncid,"M_road_data",varid))
+    call check(nf90_get_var(ncid,varid, M_road_data(:,:,min_time,tr,0),start = (/1,1,1,ro_tot/)))
 
-    call check(nf90_inq_varid(ncid_init,"road_meteo_data",varid))
-    call check(nf90_get_var(ncid_init,varid, road_meteo_data_tmp(:),start = (/1,1,ro_tot/)))
+    call check(nf90_inq_varid(ncid,"road_meteo_data",varid))
+    call check(nf90_get_var(ncid,varid, road_meteo_data_tmp(:),start = (/1,1,ro_tot/)))
 
     !read g_road_data
-    call check(nf90_inq_varid(ncid_init,"g_road_data",varid))
-    call check(nf90_get_var(ncid_init,varid, g_road_data(:,min_time,tr,0),start = (/1,1,ro_tot/)))
+    call check(nf90_inq_varid(ncid,"g_road_data",varid))
+    call check(nf90_get_var(ncid,varid, g_road_data(:,min_time,tr,0),start = (/1,1,ro_tot/)))
 
     ro = 0
     !read "time_since last" data
-    call check(nf90_inq_varid(ncid_init,"time_since_last_salting",varid))
-    call check(nf90_get_var(ncid_init,varid, time_since_last_salting(ro),start=(/ro_tot/)))
+    call check(nf90_inq_varid(ncid,"time_since_last_salting",varid))
+    call check(nf90_get_var(ncid,varid, time_since_last_salting(ro),start=(/ro_tot/)))
 
-    call check(nf90_inq_varid(ncid_init,"time_since_last_sanding",varid))
-    call check(nf90_get_var(ncid_init,varid, time_since_last_sanding(ro),start=(/ro_tot/)))
+    call check(nf90_inq_varid(ncid,"time_since_last_sanding",varid))
+    call check(nf90_get_var(ncid,varid, time_since_last_sanding(ro),start=(/ro_tot/)))
 
-    call check(nf90_inq_varid(ncid_init,"time_since_last_cleaning",varid))
-    call check(nf90_get_var(ncid_init,varid, time_since_last_cleaning(ro),start=(/ro_tot/)))
+    call check(nf90_inq_varid(ncid,"time_since_last_cleaning",varid))
+    call check(nf90_get_var(ncid,varid, time_since_last_cleaning(ro),start=(/ro_tot/)))
 
-    call check(nf90_inq_varid(ncid_init,"time_since_last_ploughing",varid))
-    call check(nf90_get_var(ncid_init,varid, time_since_last_ploughing(ro),start=(/ro_tot/)))
+    call check(nf90_inq_varid(ncid,"time_since_last_ploughing",varid))
+    call check(nf90_get_var(ncid,varid, time_since_last_ploughing(ro),start=(/ro_tot/)))
 
     !Do not overwrite the observed surface temperature with the init file, bc. it has already been set to observations in 
     !NORTRIP_multiroad_save_meteodata.f90

@@ -363,7 +363,8 @@
     character(256) filename_output_grid_emis
     character(256) path_output_roadmeteo
     character(256) filename_output_roadmeteo
- 
+
+    integer :: ncid_init !! Identifier for the init file that are being read.
 !Model parameter variables
 !-----------------------------------------------------------------------
     real W_0(num_wear,num_tyre,num_veh)

@@ -87,6 +87,12 @@
 
     !Allocate arrays based on input data
     call allocate_NORTRIP_arrays
+
+    !Open netCDF file for reading init data. The file will be open 
+    !during the whole simulation.
+    if ( save_init_data_as_netcdf_flag.eq.1 .and. use_single_road_loop_flag) then
+        call open_NETCDF_init_file(ncid_init)
+    end if
     
     !Call main run time and road loop
     if (unit_logfile.gt.0) write(*,'(A)') 'Starting calculations'
@@ -126,6 +132,10 @@
         if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
+
+    if (NORTRIP_save_init_data_flag ) then
+        call close_NETCDF_file(ncid_init)
+    end if
         
     call deallocate_NORTRIP_arrays
     
