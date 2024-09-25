@@ -34,7 +34,7 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     integer :: varid
     integer :: t_dimid
     integer :: f_dimid
-    integer :: date_dimid
+    integer :: char_dimid
     integer :: exists
     character(len=4)    :: time_string
     character(len=12)   :: datetime_string
@@ -62,14 +62,14 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     
     call check(nf90_def_dim(ncid,"road_id",n_roads_total, f_dimid))
     
-    call check(nf90_def_dim(ncid,"maxdatelength", int(24/dt) , date_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
+    call check(nf90_def_dim(ncid,"maxcharlength", int(24/dt) , char_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
     
     call check(nf90_def_var(ncid, "time", nf90_float, t_dimid,varid))
     call check(nf90_put_att(ncid,varid, "units", "seconds since "//trim(date_str(4,min_time)))) !Time dimension as seconds since start of simulation.
     call check(nf90_put_att(ncid,varid, "calendar", "standard"))
     call check(nf90_put_att(ncid,varid, "long_name", "time"))
     
-    call check(nf90_def_var(ncid, "datetime", nf90_char, (/date_dimid,t_dimid/),varid))
+    call check(nf90_def_var(ncid, "datetime", nf90_char, (/char_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "description", "date and time in format yyyy.mm.dd HH:MM:SS"))
     call check(nf90_put_att(ncid,varid, "long_name", "yyyy.mm.dd_HH:MM:SS"))
     
@@ -77,6 +77,14 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     !call check(nf90_put_att(ncid,varid, "units", ""))
     call check(nf90_put_att(ncid,varid, "description", "ID number for road link"))
     call check(nf90_put_att(ncid,varid, "long_name", "road_link_id"))
+
+    call check(nf90_def_var(ncid, "lat", nf90_float, f_dimid,varid))
+    call check(nf90_put_att(ncid,varid, "description", "latitude for road link"))
+    call check(nf90_put_att(ncid,varid, "long_name", "latitude"))
+
+    call check(nf90_def_var(ncid, "lon", nf90_float, f_dimid,varid))
+    call check(nf90_put_att(ncid,varid, "description", "longitude for road link"))
+    call check(nf90_put_att(ncid,varid, "long_name", "longitude"))
     
     call check(nf90_def_var(ncid, "T_surf_mod", nf90_float, (/f_dimid,t_dimid/),varid))
     call check(nf90_put_att(ncid,varid, "units", "Celsius"))
@@ -334,6 +342,10 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_def_var(ncid, "Mass_sand_PM200", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
         call check(nf90_put_att(ncid,varid,"description","Mass of non-suspendable sand (>200 micrometer) on road"))
+    else
+        call check(nf90_def_var(ncid, "runway_name", nf90_char,(/char_dimid,f_dimid/),varid))
+        call check(nf90_put_att(ncid,varid, "description", "Location name and segment for runway"))
+        call check(nf90_put_att(ncid,varid, "long_name", "runway_name_and_segment"))    
     end if
 
     
@@ -430,6 +442,12 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
         call check(nf90_inq_varid(ncid, "road_id",varid))
         call check(nf90_put_var(ncid, varid, road_ID(ro_tot), start = (/save_road_counter/)))
+
+        call check(nf90_inq_varid(ncid, "lat",varid))
+        call check(nf90_put_var(ncid, varid, LAT(ro_tot), start = (/save_road_counter/)))
+
+        call check(nf90_inq_varid(ncid, "lon",varid))
+        call check(nf90_put_var(ncid, varid, LON(ro_tot), start = (/save_road_counter/)))
 
         call check  (nf90_inq_varid(ncid, "T_surf_mod",varid))
         call check(nf90_put_var(ncid, varid, road_meteo_data(T_s_index,:,tr,0), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
@@ -611,6 +629,35 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     
             call check(nf90_inq_varid(ncid, "Mass_sand_PM200",varid))
             call check(nf90_put_var(ncid, varid, sum(M_road_data(sand_index,pm_200,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+        else
+            !TODO: This is a hardcoded hack for getting the airport names. When expanding to all airports this should be read in (from *stationlist_api.txt?)
+            call check(nf90_inq_varid(ncid, "runway_name",varid))
+
+            if ( road_ID(ro_tot) == 1000030  ) then
+                call check(nf90_put_var(ncid, varid, "flesland_A", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000031  ) then
+                call check(nf90_put_var(ncid, varid, "flesland_B", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000032  ) then
+                    call check(nf90_put_var(ncid, varid, "flesland_C", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000040  ) then
+                call check(nf90_put_var(ncid, varid, "vaernes_A", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000041  ) then
+                call check(nf90_put_var(ncid, varid, "vaernes_B", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000042  ) then
+                call check(nf90_put_var(ncid, varid, "vaernes_C", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000050  ) then
+                call check(nf90_put_var(ncid, varid, "evenes_A", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000051  ) then
+                call check(nf90_put_var(ncid, varid, "evenes_B", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000052  ) then
+                    call check(nf90_put_var(ncid, varid, "evenes_C", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000060  ) then
+                call check(nf90_put_var(ncid, varid, "vigra_A", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000061  ) then
+                call check(nf90_put_var(ncid, varid, "vigra_B", start = (/1,save_road_counter/)))
+            elseif ( road_ID(ro_tot) == 1000062  ) then
+                    call check(nf90_put_var(ncid, varid, "vigra_C", start = (/1,save_road_counter/)))
+            end if
         end if
 
 !    endif
