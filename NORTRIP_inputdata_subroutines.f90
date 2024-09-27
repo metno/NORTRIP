@@ -37,7 +37,7 @@ subroutine read_NORTRIP_inputdata
     i_road=1
 
     unit_logfile_temp=unit_logfile !use -1 not to write anything, 0 to go to screen
-   
+
     !Open log file
     !if (unit_logfile.gt.0) then
     !    open(unit_logfile,file=filename_log,status='old',position='append')
@@ -74,7 +74,7 @@ subroutine read_NORTRIP_inputdata
     !Read from the metadata file
     temp_file=trim(filename_inputdata)//'_metadata.txt'
     write(unit_logfile_temp,'(A)') 'Reading road metadata file (read_NORTRIP_inputdata)' 
- 	write(unit_logfile_temp,'(A)') '================================================================'
+    write(unit_logfile_temp,'(A)') '================================================================'
 
     !Open pathname file for reading
     temp_name=trim(temp_path)//trim(temp_file)
@@ -307,7 +307,7 @@ subroutine read_NORTRIP_inputdata
 
     temp_file=trim(filename_inputdata)//'_initial.txt'
     write(unit_logfile_temp,'(A)') 'Reading road initial conditions file (read_NORTRIP_inputdata)' 
-  	write(unit_logfile_temp,'(A)') '================================================================'
+     write(unit_logfile_temp,'(A)') '================================================================'
  
     !Allocate and initialise arrays for the initial conditions
     if (.not.allocated(M_road_init)) then
@@ -393,7 +393,7 @@ subroutine read_NORTRIP_inputdata
     !Loop through the different input files
     do input_file_type=1,n_file_type
  
- 	write(unit_logfile_temp,'(A)') '================================================================'
+    write(unit_logfile_temp,'(A)') '================================================================'
     if (input_file_type.eq.date_file_type) then
         temp_file=trim(filename_inputdata)//'_traffic'
         write(unit_logfile_temp,'(A)') 'Reading model traffic date input data (read_NORTRIP_inputdata)' 
@@ -511,7 +511,7 @@ subroutine read_NORTRIP_inputdata
             input_array(i,1,1),input_array(i,n_date,n_roads), &
             sum(input_array(i,1:n_date,1:n_roads)/(n_date*n_roads))
     end do
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
    
     if (input_file_type.eq.date_file_type) then
         !Allocate the date array
@@ -816,10 +816,10 @@ subroutine read_NORTRIP_inputdata
     endif
     if (index(calculation_type,'Avinor').gt.0) then
         if (unit_logfile.gt.0) write(*,'(A)') 'Saving Avinor initial files'
-        NORTRIP_save_init_data_flag=.false.
+        NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.false.
         NORTRIP_save_uEMEP_grid_emissions_flag=.false.
-        NORTRIP_save_road_meteo_data_flag=.true.
+        NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
         NORTRIP_save_road_summary_data_flag=.true.
         NORTRIP_save_road_emission_activity_data_flag=.false.
@@ -844,36 +844,36 @@ subroutine read_NORTRIP_inputdata
     !endif
 
 
- 	write(unit_logfile,'(A)') '================================================================'
- 	write(unit_logfile,'(A)') 'Checking input data for road 1 only'
-   
+    write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') 'Checking input data for road 1 only'
+
     !Check traffic data for missing values and fill in with daily cycles. Not done
     
     !Only do these checks for road 1
     ro=1
 
     !Check traffic data. Fill nodata values with last valid value
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input traffic data available (%) with min and max and road average total'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') 'Input traffic data available (%) with min and max and road average total'
     do i=1,num_traffic_index
         call check_data_sub(traffic_data(i,:,ro),available_traffic_data(i),nodata_input,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(traffic_match_str(i)),percent_available,minval(traffic_data(i,:,ro)),maxval(traffic_data(i,:,ro)),sum(traffic_data(i,:,:))/n_roads   
+        write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(traffic_match_str(i)),percent_available,minval(traffic_data(i,:,ro)),maxval(traffic_data(i,:,ro)),sum(traffic_data(i,:,:))/n_roads   
     enddo
 
     !Check meteo data. Fill nodata values with last valid value
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input meteo data available (%) with min and max'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') 'Input meteo data available (%) with min and max'
     do i=1,num_meteo_index
         call check_data_sub(meteo_data(i,:,ro),available_meteo_data(i),nodata_input,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(meteo_match_str(i)),percent_available,minval(meteo_data(i,:,ro)),maxval(meteo_data(i,:,ro))
+        write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(meteo_match_str(i)),percent_available,minval(meteo_data(i,:,ro)),maxval(meteo_data(i,:,ro))
     enddo    
 
-   !Check activity data. Only check availability
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Activity data available (%) with min and max'
+    !Check activity data. Only check availability
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') 'Activity data available (%) with min and max'
     do i=1,num_activity_index
         call check_available_data_sub(activity_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_data(i,:,ro)),maxval(activity_data(i,:,ro))
+        write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_data(i,:,ro)),maxval(activity_data(i,:,ro))
         !Special case, must be set to 0 if not available
         if (.not.available_activity_data(i)) then
             activity_data(i,:,ro)=0.
@@ -883,11 +883,11 @@ subroutine read_NORTRIP_inputdata
 
     !Check input activity data. Only check availability
     !Do not check as it sets the availability to false
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input activity data available (%) with min and max'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') 'Input activity data available (%) with min and max'
     do i=1,num_activity_index
         !call check_available_data_sub(activity_input_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
+        write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
         !Special case, must be set to 0 if not available
         if (.not.available_activity_data(i)) then
             activity_input_data(i,:,ro)=0.
@@ -896,14 +896,14 @@ subroutine read_NORTRIP_inputdata
     enddo
     
     !Check air quality data. Only checks availability
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
- 	write(unit_logfile,'(A)') 'Input air quality data available (%) with min and max and road average total'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') 'Input air quality data available (%) with min and max and road average total'
     do i=1,num_airquality_index
         call check_available_data_sub(airquality_data(i,:,ro),available_airquality_data(i),nodata_input,percent_available)
- 	    write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(airquality_match_str(i)),percent_available,minval(airquality_data(i,:,ro)),maxval(airquality_data(i,:,ro)),sum(airquality_data(i,:,:))/n_roads
+        write(unit_logfile,'(a32,f6.1,f10.1,f10.1,f10.1)') trim(airquality_match_str(i)),percent_available,minval(airquality_data(i,:,ro)),maxval(airquality_data(i,:,ro)),sum(airquality_data(i,:,:))/n_roads
     enddo
     
- 	write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') '================================================================'
    
     !Close log file
     !if (unit_logfile.gt.0) then
@@ -930,13 +930,13 @@ subroutine read_NORTRIP_inputdata
     !    open(unit_logfile,file=filename_log,status='old',position='append')
     !endif
 
- 	write(unit_logfile,'(A)') '================================================================'
- 	write(unit_logfile,'(A)') 'Processing activity data'
-   
+    write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') 'Processing activity data'
+
     n_input_activity=size(activity_input_data,2)
     n_output_activity=size(activity_data,2)
     
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
     if (n_input_activity.eq.n_output_activity) then
         
@@ -1012,21 +1012,21 @@ subroutine read_NORTRIP_inputdata
         !Tag the nodata values
         do ti=1,n_time
             if (val_in(ti).eq.nodata_in) then
-               available(ti)=0.0
+                available(ti)=0.0
             else
-               available(ti)=1.0
+                available(ti)=1.0
             endif
         enddo
 
         percent_available=sum(available)/size(available,1)*100.
         !If there is no data available then set the availability to false
         if (sum(available).eq.0) then
-           available_flag=.false.
-           val=nodata
+            available_flag=.false.
+            val=nodata
         else
-           available_flag=.true.
+            available_flag=.true.
         endif
-       
+        
         !Set the nodata values to the last valid data point forwards
         if (available_flag) then          
             do ti=2,n_time
@@ -1197,7 +1197,7 @@ subroutine find_read_line_int1(unit_in,unit_output,val1,search_str,val_default)
         return
     endif       
     
-	write(unit_output,'(A40,A3,i12,A40)') trim(search_str),' = ',val1,'STRING NOT FOUND, SET TO DEFAULT'
+    write(unit_output,'(A40,A3,i12,A40)') trim(search_str),' = ',val1,'STRING NOT FOUND, SET TO DEFAULT'
     return
 10	write(unit_output,'(A40,A3,i12,A40)') trim(search_str),' = ',val1,'ERROR'
 

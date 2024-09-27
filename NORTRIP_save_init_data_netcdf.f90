@@ -26,7 +26,7 @@ subroutine NORTRIP_create_init_netcdf(filename)
     integer :: a(num_date_index)
 
 
-    call check(nf90_create(trim(filename),nf90_netcdf4,ncid))
+    call check(nf90_create(trim(filename),nf90_clobber,ncid))
 
     call check(nf90_def_dim(ncid,"road_id", n_roads_total , roadid))
 
@@ -116,13 +116,15 @@ subroutine NORTRIP_save_init_data_netcdf
         !If file do not exist,  create and open, otherwise just open. 
         inquire(file=trim(filename),exist=exists)
         if (.not.exists) then
-
-            call NORTRIP_create_init_netcdf(filename)
-
-            call check(nf90_open(filename,nf90_write,ncid))
             write(unit_logfile,*) "Creating and opening init file to save values: ", trim(filename)
-            else
-                call check(nf90_open(filename,nf90_write,ncid))
+            call NORTRIP_create_init_netcdf(filename)
+            call check(nf90_open(filename,nf90_write,ncid))
+        else
+            if ( tf == 1 .and. ro_tot==1) then !If the file exists at the first timestep and road, it must have been created in another run. Overwrite that file by creating a new one.
+                write(unit_logfile,*) "Overwriting existing init file to save values: ", trim(filename)
+                call NORTRIP_create_init_netcdf(filename)
+            end if
+            call check(nf90_open(filename,nf90_write,ncid))
         end if        
         !NOTE: Track is always = 1. If the model code is extended to include more than one track, this must be changed.
         tr=1

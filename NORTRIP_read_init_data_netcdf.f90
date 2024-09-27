@@ -1,23 +1,22 @@
 
-subroutine open_NETCDF_init_file(ncid)
+subroutine open_NETCDF_init_file(ncid,exists)
     use NORTRIP_definitions
     use netcdf
     implicit none
 
     !Out
     integer, intent(out):: ncid
+    logical, intent(out) :: exists
     
     !Local
-    logical :: exists
     integer :: a(num_date_index)
     character(256) :: temp_name
     character(256) :: filename_temp
     character(256) :: filename
-    integer :: dimid, varid
     
     !Set the path and file name
     filename_temp=filename_init_netcdf
-    a=date_data(:,min_time)
+    a=date_data(:,1)
     call date_to_datestr_bracket(a,path_init,temp_name)
     call date_to_datestr_bracket(a,temp_name,temp_name)
     call date_to_datestr_bracket(a,temp_name,temp_name)
@@ -37,12 +36,10 @@ subroutine open_NETCDF_init_file(ncid)
 end subroutine open_NETCDF_init_file
 
 subroutine close_NETCDF_file(ncid)
-    use NORTRIP_definitions
     use netcdf
     implicit none
 
     integer, intent(in) :: ncid
-
     call check(NF90_close(ncid))
 
 end subroutine close_NETCDF_file
@@ -53,7 +50,6 @@ subroutine NORTRIP_read_init_data_netcdf(ncid)
     use netcdf
     implicit none
 
-    integer :: current_data(num_date_index)
     logical :: exists
     integer :: a(num_date_index)
     character(256) :: temp_name
@@ -156,7 +152,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid)
     !stop 
     !Make sure there is no energy correction when the flag is off.
     if ( .not. use_energy_correction_flag ) then
-        road_meteo_data(E_corr_index,1,1,0) = 0.
+        road_meteo_data(E_corr_index,1,1,ro) = 0.
     end if
 
     !Check for NaNs in the input data. !TODO: It is probably unecessary to stop the whole simulation if any NaNs are found. Should have better checks and solutions for this. 

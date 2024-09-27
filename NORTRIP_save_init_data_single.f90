@@ -16,7 +16,7 @@
     integer current_date(num_date_index)
     integer tt
     logical :: save_bin=.false.
-    integer exists
+    logical exists
     integer a(num_date_index)
     integer unit_save_init_data_temp
     integer unit_counter

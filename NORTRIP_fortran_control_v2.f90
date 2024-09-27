@@ -35,13 +35,15 @@
     subroutine NORTRIP_fortran_control_v2
 
     use NORTRIP_definitions
-    
+
     implicit none
- 
- 	write(*,'(A)') ''
- 	write(*,'(A)') '################################################################'
-	write(*,'(A)') 'Starting program NORTRIP_fortran_v3.6 (64 bit)'
-	write(*,'(A)') '################################################################'
+
+    logical :: init_exists 
+
+    write(*,'(A)') ''
+    write(*,'(A)') '################################################################'
+    write(*,'(A)') 'Starting program NORTRIP_fortran_v3.6 (64 bit)'
+    write(*,'(A)') '################################################################'
     
 
     !NOTE: When use_single_road_loop_flag=.true. then cannot use the following routine:
@@ -51,7 +53,7 @@
     call set_constant_string_values
 
     if (.not.NORTRIP_fortran_combined_flag) then
-	    !Read in commandline, input paths and input parameters
+        !Read in commandline, input paths and input parameters
         if (unit_logfile.gt.0) write(*,'(A)') 'Reading parameters' 
         call read_NORTRIP_commandline
         call read_NORTRIP_pathnames !Opens logfile here
@@ -91,7 +93,7 @@
     !Open netCDF file for reading init data. The file will be open 
     !during the whole simulation.
     if ( save_init_data_as_netcdf_flag.eq.1 .and. use_single_road_loop_flag) then
-        call open_NETCDF_init_file(ncid_init)
+        call open_NETCDF_init_file(ncid_init,init_exists)
     end if
     
     !Call main run time and road loop
@@ -108,7 +110,7 @@
         call NORTRIP_main_run
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'   
-        if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag) call NORTRIP_save_init_data
+        if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
         if (NORTRIP_save_episode_emissions_flag) call NORTRIP_save_episode_emissions
         if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
@@ -133,29 +135,29 @@
     
     enddo
 
-    if (NORTRIP_save_init_data_flag ) then
+    if (NORTRIP_save_init_data_flag.eq.1 .and. init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
         
     call deallocate_NORTRIP_arrays
     
- 	write(*,'(A)') ''
- 	write(*,'(A)') '################################################################'
-	write(*,'(A)') 'Finished program NORTRIP_fortran'
-	write(*,'(A)') '################################################################'
-	write(*,'(A)') ''
-	write(*,'(A)') ''
+    write(*,'(A)') ''
+    write(*,'(A)') '################################################################'
+    write(*,'(A)') 'Finished program NORTRIP_fortran'
+    write(*,'(A)') '################################################################'
+    write(*,'(A)') ''
+    write(*,'(A)') ''
 
     !Close log file that was opened in read_NORTRIP_pathnames
     call close_logfile    
 
     !Save finished file
     if (trim(finished_filename).ne.'') then
-	    write(*,'(A)') '################################################################'
-	    write(*,'(A)') 'Writing finished file to uEMEP emission output'
+        write(*,'(A)') '################################################################'
+        write(*,'(A)') 'Writing finished file to uEMEP emission output'
         open(unit_save_emissions,file=finished_filename,status='replace')
         close(unit_save_emissions)
-	    write(*,'(A)') '################################################################'
+        write(*,'(A)') '################################################################'
     endif
 
     end subroutine NORTRIP_fortran_control_v2

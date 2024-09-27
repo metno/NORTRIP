@@ -55,14 +55,12 @@
     real observed_moisture_cutoff_value_temp
     real f_q_temp,f_q_binder_temp,f_q_brake_temp
     real :: f_q_limit=1.0e-8
-    real :: Energy_correction
     !Functions
     real r_aero_func
     real r_aero_func_with_stability
     real f_spray_func
     real mass_balance_func
     real dewpoint_from_RH_func
-    real energy_correction_func
     real relaxation_func
     !Flag
     logical :: use_stability=.false.

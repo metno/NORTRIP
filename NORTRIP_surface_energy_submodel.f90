@@ -292,7 +292,7 @@
             endif
 
             if ( E_correction > 1000 ) then
-                print*, "Large energy correction: ", E_correction, " in timestep", time
+                write(*,*) "Warning: Large energy correction: ", E_correction, " in timestep", time
             end if    
 
             TCs_out=(TCs_0+dt_sec*a_G*(a_rad-a_RL-L+a_H*TC+mu*TCsub-G_melt+G_freeze+E_correction))/(1+dt_sec*a_G*(a_H+b_RL+mu))

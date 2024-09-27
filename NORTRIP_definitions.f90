@@ -314,7 +314,7 @@
     logical :: NORTRIP_save_road_meteo_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
-    logical :: NORTRIP_save_road_summary_data_flag=.true.
+    logical :: NORTRIP_save_road_summary_data_flag=.false.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -445,7 +445,7 @@
     integer :: plot_type_flag=2   
     integer :: save_type_flag=1   
     integer :: save_road_summary_data_as_netcdf_flag=1 
-    integer :: save_init_data_as_netcdf_flag=1  
+    integer :: save_init_data_as_netcdf_flag=0  
     integer :: use_ospm_flag=0   
     integer :: activity_in_tunnels_flag=0
     integer :: use_melt_freeze_energy_flag=0
