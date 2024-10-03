@@ -46,6 +46,7 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     character(8)  :: date
     character(10) :: time
     character(5)  :: zone
+
     call date_and_time(date = date,time=time,zone=zone)    
 
     history_string = "Created at: "//date//" "//time(1:2)//":"//time(3:4)//zone//"UTC"
@@ -257,7 +258,7 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"description","Mass of alternative salt on road"))
     call check(nf90_put_att(ncid,varid,"long_name","mass_of_alternative_salt_on_road"))
 
-    if ( .not. index(calculation_type,'Avinor').gt.0 ) then        
+    if ( ANY(roadtype_index==normal_roadtype) ) then  !TODO: This if-test could be further refined to include variables only applicable for e.g tunnels
         call check(nf90_def_var(ncid, "PM10_Emissions_tot", nf90_float, (/f_dimid,t_dimid/),varid))     
         call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
         call check(nf90_put_att(ncid,varid,"description","Total non-exhaust emissions of PM10")) 
@@ -342,7 +343,8 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_def_var(ncid, "Mass_sand_PM200", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
         call check(nf90_put_att(ncid,varid,"description","Mass of non-suspendable sand (>200 micrometer) on road"))
-    else
+    endif
+    if ( ANY(roadtype_index==runway_roadtype)) then
         call check(nf90_def_var(ncid, "runway_name", nf90_char,(/char_dimid,f_dimid/),varid))
         call check(nf90_put_att(ncid,varid, "description", "Location name and segment for runway"))
         call check(nf90_put_att(ncid,varid, "long_name", "runway_name_and_segment"))    
@@ -566,7 +568,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         call check(nf90_inq_varid(ncid, "Mass_salt2",varid))
         call check(nf90_put_var(ncid, varid, sum(M_road_data(salt_index(2),pm_all,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
-        if ( .not. index(calculation_type,'Avinor').gt.0 ) then
+        if ( roadtype_index(ro_tot) .ne. runway_roadtype ) then
             call check(nf90_inq_varid(ncid, "Traffic",varid))
             call check(nf90_put_var(ncid, varid, traffic_data(N_total_index,:,ro), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
