@@ -950,4 +950,79 @@
 
 end subroutine read_NORTRIP_activities
 !----------------------------------------------------------------------
+!----------------------------------------------------------------------
+subroutine read_NORTRIP_runway_info
+    use NORTRIP_definitions
+    implicit none 
+    
+    character(256) filename
 
+
+    !Local
+    character(256) :: temp_str
+    logical :: exists
+    integer :: n_info
+    integer :: unit_in=40
+    integer :: n !!counter
+
+
+    write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') 'Reading runway information (read_NORTRIP_runway_info)'
+    write(unit_logfile,'(A)') '================================================================'
+
+    !Read in the meteo obs metadata file
+    !Test existence of the filename. If does not exist then use default. TODO: Read from parameter file?
+    filename=trim(path_inputparam)//"runway_info.csv"
+    inquire(file=trim(filename),exist=exists)
+    if (.not.exists) then
+        write(unit_logfile,'(A,A)') ' WARNING: Runway info file does not exist ', trim(filename)
+        return
+    endif
+
+    if (exists) then
+        write(unit_logfile,'(2A)') ' Opening runway information file: ',trim(filename)
+        open(unit_in,file=filename,access='sequential',status='old',readonly)  
+    end if
+
+    !Find out how long the file is, reading a dummy variable
+    !Including the header so start at -1
+    n_info = -1 
+    do while(.not.eof(unit_in))
+        n_info = n_info + 1
+        read(unit_in,*,ERR=5)
+    end do 
+
+5   write(unit_logfile,*) 'Number of data rows in runway info file= ',n_info
+
+
+    if (n_info .gt. 0) then 
+        if (.not.allocated(runway_char_info_data)) allocate(runway_char_info_data(n_char_columns,n_info))
+        if (.not.allocated(runway_real_info_data)) allocate(runway_real_info_data(n_real_columns,n_info))
+        if (.not.allocated(runway_int_info_data)) allocate(runway_int_info_data(n_int_columns,n_info))
+    end if
+
+    rewind(unit_in)
+
+    !Read header
+    read(unit_in,*) temp_str
+
+    do n=1,n_info
+        read(unit_in,*) &
+        runway_char_info_data(Airport_ICAO_index, n), &
+        runway_char_info_data(Airport_name_index, n), &
+        runway_int_info_data(Airport_section_station_ID_index, n), &
+        runway_real_info_data(Airport_section_lon_index, n), &
+        runway_real_info_data(Airport_section_lat_index, n), &
+        runway_char_info_data(Airport_section_index, n), &
+        runway_char_info_data(Airport_PhysRunway_index, n),&
+        runway_int_info_data(Airport_section_RoadID_index,n)
+    enddo 
+
+    close(unit_in)
+
+end subroutine read_NORTRIP_runway_info
+
+!AirportICAO	AirportName	StationID	longitude	latitude	RunwaySection	PhysicalRunway
+!ENBO	Bodø	822900	14.34043406	67.26729931	A	RWY1
+!ENBO	Bodø	822902	14.39235259	67.27163197	C	RWY1
+!ENBR	Bergen_Flesland	505000	5.214406068	60.30560426	A	RWY1

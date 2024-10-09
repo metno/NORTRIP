@@ -627,6 +627,25 @@
     !Order is (time,track,road)
     real, allocatable :: f_q_obs(:,:,:)
 
+    ! For reading airport information for the SmartKjemi project
+    character(256), allocatable :: runway_char_info_data(:,:)
+    real, allocatable :: runway_real_info_data(:,:)
+    integer, allocatable :: runway_int_info_data(:,:)
+
+    integer, parameter :: Airport_ICAO_index = 1
+    integer, parameter :: Airport_name_index = 2
+    integer, parameter :: Airport_section_index = 3
+    integer, parameter :: Airport_PhysRunway_index = 4
+    integer, parameter :: n_char_columns = 4
+    
+    integer, parameter :: Airport_section_station_ID_index = 1
+    integer, parameter :: Airport_section_RoadID_index = 2
+    integer, parameter :: n_int_columns = 2
+    
+    integer, parameter :: Airport_section_lon_index = 1
+    integer, parameter :: Airport_section_lat_index = 2
+    integer, parameter :: n_real_columns = 2
+
 !Road initial conditions
 !-----------------------------------------------------------------------
     !Initial conditions arrays (source_type,size,track,road)

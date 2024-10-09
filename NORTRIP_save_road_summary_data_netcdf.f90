@@ -345,14 +345,22 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_put_att(ncid,varid,"description","Mass of non-suspendable sand (>200 micrometer) on road"))
     endif
     if ( ANY(roadtype_index==runway_roadtype)) then
-        call check(nf90_def_var(ncid, "runway_name", nf90_char,(/char_dimid,f_dimid/),varid))
-        call check(nf90_put_att(ncid,varid, "description", "Location name and segment for runway"))
-        call check(nf90_put_att(ncid,varid, "long_name", "runway_name_and_segment"))    
+        call check(nf90_def_var(ncid, "AirportName", nf90_char,(/char_dimid,f_dimid/),varid))
+        call check(nf90_put_att(ncid,varid, "description", "Name of the airport"))
+        call check(nf90_put_att(ncid,varid, "long_name", "airport_name"))    
+
+        call check(nf90_def_var(ncid, "AirportICAO", nf90_char,(/char_dimid,f_dimid/),varid))
+        call check(nf90_put_att(ncid,varid, "description", "ICAO code for airport"))
+        call check(nf90_put_att(ncid,varid, "long_name", "airport_ICAO_code"))    
+
+        call check(nf90_def_var(ncid, "RunwaySection", nf90_char,(/char_dimid,f_dimid/),varid))
+        call check(nf90_put_att(ncid,varid, "description", "Runway section"))
+        call check(nf90_put_att(ncid,varid, "long_name", "section_of_runway"))    
+
+        call check(nf90_def_var(ncid, "PhysicalRunway", nf90_char,(/char_dimid,f_dimid/),varid))
+        call check(nf90_put_att(ncid,varid, "description", "Identifies runway"))
+        call check(nf90_put_att(ncid,varid, "long_name", "physical_runway"))    
     end if
-
-    
-
-
 
     call check(nf90_enddef(ncid))
     
@@ -386,6 +394,8 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     real, dimension(max_time_save) :: water,snow,ice
     real, parameter :: surface_moisture_cutoff = 0.01
 
+    integer, dimension(2) :: runway_match
+    integer :: runway_index
     
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
@@ -632,34 +642,26 @@ subroutine NORTRIP_save_road_summary_data_netcdf
             call check(nf90_inq_varid(ncid, "Mass_sand_PM200",varid))
             call check(nf90_put_var(ncid, varid, sum(M_road_data(sand_index,pm_200,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
         else
-            !TODO: This is a hardcoded hack for getting the airport names. When expanding to all airports this should be read in (from *stationlist_api.txt?)
-            call check(nf90_inq_varid(ncid, "runway_name",varid))
+            runway_match = findloc(runway_int_info_data,road_ID(ro_tot),dim=2)
+            runway_index = runway_match(2)
 
-            if ( road_ID(ro_tot) == 1000030  ) then
-                call check(nf90_put_var(ncid, varid, "flesland_A", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000031  ) then
-                call check(nf90_put_var(ncid, varid, "flesland_B", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000032  ) then
-                    call check(nf90_put_var(ncid, varid, "flesland_C", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000040  ) then
-                call check(nf90_put_var(ncid, varid, "vaernes_A", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000041  ) then
-                call check(nf90_put_var(ncid, varid, "vaernes_B", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000042  ) then
-                call check(nf90_put_var(ncid, varid, "vaernes_C", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000050  ) then
-                call check(nf90_put_var(ncid, varid, "evenes_A", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000051  ) then
-                call check(nf90_put_var(ncid, varid, "evenes_B", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000052  ) then
-                    call check(nf90_put_var(ncid, varid, "evenes_C", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000060  ) then
-                call check(nf90_put_var(ncid, varid, "vigra_A", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000061  ) then
-                call check(nf90_put_var(ncid, varid, "vigra_B", start = (/1,save_road_counter/)))
-            elseif ( road_ID(ro_tot) == 1000062  ) then
-                    call check(nf90_put_var(ncid, varid, "vigra_C", start = (/1,save_road_counter/)))
+            if ( runway_index.ne.0 ) then
+                call check(nf90_inq_varid(ncid, "AirportName",varid))
+                call check(nf90_put_var(ncid, varid, trim(runway_char_info_data(Airport_name_index,runway_index)), start = (/1,save_road_counter/)))
+
+                call check(nf90_inq_varid(ncid, "RunwaySection",varid))
+                call check(nf90_put_var(ncid, varid, trim(runway_char_info_data(Airport_section_index,runway_index)), start = (/1,save_road_counter/)))
+
+                call check(nf90_inq_varid(ncid, "AirportICAO",varid))
+                call check(nf90_put_var(ncid, varid, trim(runway_char_info_data(Airport_ICAO_index,runway_index)), start = (/1,save_road_counter/)))
+
+                call check(nf90_inq_varid(ncid, "PhysicalRunway",varid))
+                call check(nf90_put_var(ncid, varid, trim(runway_char_info_data(Airport_PhysRunway_index,runway_index)), start = (/1,save_road_counter/)))
             end if
+                
+  
+                
+
         end if
 
 !    endif

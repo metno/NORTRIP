@@ -73,6 +73,10 @@
     
     !Set which file types to save based on the calculation_type
     call set_NORTRIP_save_file_flags
+
+    if ( calculation_type=="Avinor" ) then
+        call read_NORTRIP_runway_info
+    end if
  
     !Reassign input arrays to save memory by running NORTRIP one road at a time
     if (use_single_road_loop_flag) then
