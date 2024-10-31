@@ -492,10 +492,10 @@
         
         real :: relaxation_func
         
-        if (forecast_step >  int(1/dt)+size(lin_array)) then
+        if (forecast_step >  nint(1/dt)+size(lin_array)) then
             relaxation_func = 0.0
         else
-            relaxation_func = lin_array(forecast_step-int(1/dt))
+            relaxation_func = lin_array(forecast_step-nint(1/dt))
         end if
     end function relaxation_func
 

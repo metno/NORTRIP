@@ -259,10 +259,9 @@
             ,road_meteo_data(G_sub_index,ti,tr,ro) &
             ,road_meteo_data(E_diff_index,ti,tr,ro))
 
-
             if (use_energy_correction_flag.eq.1) then
-                if (ti > 1/dt  ) then
-                    road_meteo_data(E_corr_index,ti,tr,ro) = sum(road_meteo_data(E_corr_index,1:int(1/dt),tr,ro))/(int(1/dt))*relaxation_func(ti,dt)
+                if (ti > nint(1/dt)  ) then
+                    road_meteo_data(E_corr_index,ti,tr,ro) = sum(road_meteo_data(E_corr_index,1:nint(1/dt),tr,ro))/(nint(1/dt))*relaxation_func(ti,dt)
                 else 
                     road_meteo_data(E_corr_index,ti,tr,ro) = road_meteo_data(E_diff_index,ti,tr,ro)
                     !Energy_correction_func(road_meteo_data(E_diff_index,ti,tr,ro),road_meteo_data(E_diff_index,max(1,ti-1),tr,ro))
