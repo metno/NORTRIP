@@ -480,19 +480,34 @@
 
 !----------------------------------------------------------------------    
     function relaxation_func(forecast_step,dt)
-        !Used to relax the energy correction during the course of the forecast
-        !TODO: Consider making the lin_array a function of forecast steps, so that there will be a decrease at every timestep for 10 min runs.
+        !Used to calculate a relaxation term for the energy correction during the course of the forecast
 
         !Input
         integer, intent(in) :: forecast_step
         real, intent(in) :: dt
 
         !Local
-        real, dimension(18),parameter :: lin_array=(/1., 0.94117647, 0.88235294, 0.82352941, 0.76470588,0.70588235, 0.64705882, 0.58823529, 0.52941176, 0.47058824,0.41176471, 0.35294118, 0.29411765, 0.23529412, 0.17647059,0.11764706, 0.05882353, 0./)
-        
-        real :: relaxation_func
-        
-        if (forecast_step >  nint(1/dt)+size(lin_array)) then
+        real :: start
+        real :: end 
+        real :: step 
+        integer :: i 
+        integer,parameter :: h = 3 !Relaxation time: 3 hours 
+        real, dimension(nint(h/dt)) :: lin_array !Length of array depends
+
+        !result: 
+        real  :: relaxation_func
+
+        !Generate array in which the values decrease from 1 to 0 in 3 hours
+        start = 1.0
+        end = 0.0
+        step = (end -start)/(nint(h/dt)- 1)
+
+        do i = 1, nint(h/dt)
+            lin_array(i) = start + (i - 1) * step
+        end do
+
+        !Read value from array
+        if (forecast_step-nint(1/dt) > nint(h/dt)) then
             relaxation_func = 0.0
         else
             relaxation_func = lin_array(forecast_step-nint(1/dt))
