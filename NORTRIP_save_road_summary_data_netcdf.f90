@@ -36,9 +36,6 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     integer :: f_dimid
     integer :: char_dimid
     integer :: exists
-    character(len=4)    :: time_string
-    character(len=12)   :: datetime_string
-    integer             :: datetime_int
     integer :: a(num_date_index)
     integer,dimension(8) :: datetime_now
     character(len=256) :: history_string
@@ -132,12 +129,12 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"description","Amount of solid precipitation within the model time step (water equivalent)"))
     call check(nf90_put_att(ncid,varid,"long_name","snowfall_amount")) 
     
-    call check(nf90_def_var(ncid, "Wind_FF", nf90_float, (/f_dimid,t_dimid/),varid)) !TODO: Rename to Wind_speed?
+    call check(nf90_def_var(ncid, "Wind_FF", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "m/s"))
     call check(nf90_put_att(ncid,varid,"description","Wind speed at 10 m above ground"))
     call check(nf90_put_att(ncid,varid,"long_name","wind_speed")) 
     
-    call check(nf90_def_var(ncid, "Wind_DD", nf90_float, (/f_dimid,t_dimid/),varid)) !TODO: Rename to Wind_direction?
+    call check(nf90_def_var(ncid, "Wind_DD", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "degree"))
     call check(nf90_put_att(ncid,varid,"description","Wind from direction at 10 m above ground"))
     call check(nf90_put_att(ncid,varid,"long_name","wind_from_direction")) 
@@ -380,9 +377,6 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     integer :: f_dimid
     integer :: exists
     real :: timestamp
-    character(len=4)    :: time_string
-    character(len=12)   :: datetime_string
-    integer             :: datetime_int
     character(len=256)      :: filename
     character(len=19) :: datetime
     integer ro_num
