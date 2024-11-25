@@ -130,7 +130,7 @@ subroutine NORTRIP_save_init_data_netcdf
         tr=1
 
         !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
-        !TODO: No formating is done except defining the netcdf variables as nf90_float. Should be put on approproate format when the file is read.
+        !NOTE: No formating is done except defining the netcdf variables as nf90_float
 
         call check(nf90_inq_varid(ncid, "M_road_data",varid))
         call check(nf90_put_var(ncid, varid, M_road_data(:,:,tf,tr,0),start = (/1,1,1,ro_tot/)))
