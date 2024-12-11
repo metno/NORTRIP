@@ -3,7 +3,7 @@
 !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
-    subroutine number_to_date(date_num,date_array)
+    subroutine number_to_date(date_num,date_array,ref_year)
     
     implicit none
     
@@ -18,15 +18,14 @@
     integer daysinmonth(12)
     data (daysinmonth(i),i=1,12) /31,28,31,30,31,30,31,31,30,31,30,31/ 
     
-    ref_year=1970
+    !ref_year=1900
     !Set day fraction to the nearest second. Avoiding round off errors
     day_int=idint(date_num)
     day_fraction=(date_num-day_int)
-    !write(*,*) day_fraction
       
     !Determine hours, minutes and seconds
     date_array=0
-    rest_seconds=idint(day_fraction*24.*3600.+.5) !Rounded off for seconds
+    rest_seconds=int(day_fraction*24.*3600.+.5) !Rounded off
     date_array(4)=int(rest_seconds/3600.)
     date_array(5)=int((rest_seconds/60.-date_array(4)*60.))
     date_array(6)=int((rest_seconds-date_array(4)*3600.-date_array(5)*60.))
@@ -70,19 +69,19 @@
 !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
-    function date_to_number(a)
+    function date_to_number(a,ref_year)
     
     implicit none
     
     double precision date_to_number
     integer ref_year
-    integer y,m,d,i
+    integer y,m,i
     integer a(6)
     
     integer daysinmonth(12)
     data (daysinmonth(i),i=1,12) /31,28,31,30,31,30,31,31,30,31,30,31/ 
     
-    ref_year=1970
+    !ref_year=1900
     date_to_number=0.
     daysinmonth(2)=28
     if (a(1).gt.ref_year) then
@@ -120,13 +119,14 @@
 !----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
-    function date_to_julian(a)
+    function date_to_julian(a,ref_year)
     
     implicit none
     
     double precision date_to_number
     real date_to_julian
     integer a(6),b(6)
+    integer ref_year
     
     b(1)=a(1)
     b(2)=1
@@ -135,7 +135,7 @@
     b(5)=0
     b(6)=0
     
-    date_to_julian=date_to_number(a)-date_to_number(b)+1
+    date_to_julian=date_to_number(a,ref_year)-date_to_number(b,ref_year)+1
     
     end function date_to_julian
 !----------------------------------------------------------------------
@@ -590,9 +590,9 @@
     b_end(3)=(31 - mod((((5 * year)/4) + 1),7))
     b_end(4)=1
     
-    datenum_start=date_to_number(b_start)
-    datenum_end=date_to_number(b_end)
-    datenum=date_to_number(a)
+    datenum_start=date_to_number(b_start,ref_year)
+    datenum_end=date_to_number(b_end,ref_year)
+    datenum=date_to_number(a,ref_year)
     
     summer_time_europe=.false.
     if (datenum.ge.datenum_start.and.datenum.lt.datenum_end) summer_time_europe=.true.

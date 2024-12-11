@@ -246,7 +246,7 @@
     !double precision date_to_number
     real date_to_julian
     
-    JULIAN_DAY=date_to_julian(date_a)
+    JULIAN_DAY=date_to_julian(date_a,2000)
     TIME_S=(JULIAN_DAY-1)*24.*3600.
     ![Y, M, D, H, MN, S] = datevec(date_num)
     !JULIAN_DAY=floor(date_num(i)-datenum(Y, 0, 0, 0, 0, 0)+1)

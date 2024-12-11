@@ -170,6 +170,8 @@ subroutine read_NORTRIP_inputdata
     if (.not.allocated(y_road)) allocate (y_road(2,0:n_roads))
     if (.not.allocated(length_road)) allocate (length_road(0:n_roads))
     if (.not.allocated(line_or_grid_data_flag)) allocate (line_or_grid_data_flag(0:n_roads))
+    if (.not.allocated(lon_road)) allocate (lon_road(2,0:n_roads))
+    if (.not.allocated(lat_road)) allocate (lat_road(2,0:n_roads))
     !if (.not.allocated(adt_road)) allocate (adt_road(0:n_roads))
     
     !Road type actvity factors
@@ -239,6 +241,10 @@ subroutine read_NORTRIP_inputdata
     call find_read_line_valn(unit_in,unit_logfile_temp,x_road(2,1:n_roads),n_roads,'Road position x2',0.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,y_road(2,1:n_roads),n_roads,'Road position y2',0.0)
     call find_read_line_valn(unit_in,unit_logfile_temp,length_road(1:n_roads),n_roads,'Road length',0.0)
+    call find_read_line_valn(unit_in,unit_logfile_temp,lon_road(1,1:n_roads),n_roads,'Road position lon1',0.0)
+    call find_read_line_valn(unit_in,unit_logfile_temp,lat_road(1,1:n_roads),n_roads,'Road position lat1',0.0)
+    call find_read_line_valn(unit_in,unit_logfile_temp,lon_road(2,1:n_roads),n_roads,'Road position lon2',0.0)
+    call find_read_line_valn(unit_in,unit_logfile_temp,lat_road(2,1:n_roads),n_roads,'Road position lat2',0.0)
     !call find_read_line_valn(unit_in,unit_logfile_temp,adt_road(1:n_roads),n_roads,'Road ADT',0.0) !Not used for anything in NORTRIP 
    
     call find_read_line_intn(unit_in,unit_logfile_temp,road_type_activity_flag(road_type_salt_index(1),1:n_roads),n_roads,'road_type_salting_flag',1)
@@ -804,10 +810,11 @@ subroutine read_NORTRIP_inputdata
     !Save emissions, initi data, summary road meteo and summary emission and mass data for uEMEP calculation type
     !if (trim(calculation_type).eq.'uEMEP') then
     if (index(calculation_type,'uEMEP').gt.0) then
-        if (unit_logfile.gt.0) write(*,'(A)') 'Saving uEMEP emission and initial files'
+        !if (unit_logfile.gt.0) write(*,'(A)') 'Saving uEMEP emission and initial files'
+        write(unit_logfile,'(A)') 'Saving uEMEP emission and initial files'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.true.
-        NORTRIP_save_uEMEP_grid_emissions_flag=.false.
+        NORTRIP_save_uEMEP_grid_emissions_flag=.false. !Temporarally set to true
         NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
         NORTRIP_save_road_summary_data_flag=.true.
@@ -815,7 +822,8 @@ subroutine read_NORTRIP_inputdata
         use_ospm_flag=0
     endif
     if (index(calculation_type,'Avinor').gt.0) then
-        if (unit_logfile.gt.0) write(*,'(A)') 'Saving Avinor initial files'
+        !if (unit_logfile.gt.0) write(*,'(A)') 'Saving Avinor initial files'
+        write(unit_logfile,'(A)') 'Saving Avinor initial files'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.false.
         NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -823,6 +831,18 @@ subroutine read_NORTRIP_inputdata
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
         NORTRIP_save_road_summary_data_flag=.true.
         NORTRIP_save_road_emission_activity_data_flag=.false.
+        use_ospm_flag=0
+    endif
+    if (index(calculation_type,'gridded').gt.0) then
+        !if (unit_logfile.gt.0) write(*,'(A)') 'Saving gridded emission and initial files'
+        write(unit_logfile,'(A)') 'Saving gridded emission and initial files'
+        NORTRIP_save_init_data_flag=.true.
+        NORTRIP_save_uEMEP_emissions_flag=.false.
+        NORTRIP_save_uEMEP_grid_emissions_flag=.true.
+        NORTRIP_save_road_meteo_data_flag=.false.
+        NORTRIP_save_road_emission_and_mass_data_flag=.false.
+        NORTRIP_save_road_summary_data_flag=.false.
+        NORTRIP_save_road_emission_activity_data_flag=.true.
         use_ospm_flag=0
     endif
 
@@ -850,7 +870,7 @@ subroutine read_NORTRIP_inputdata
     !Check traffic data for missing values and fill in with daily cycles. Not done
     
     !Only do these checks for road 1
-    ro=1
+    ro=5
 
     !Check traffic data. Fill nodata values with last valid value
  	write(unit_logfile,'(A)') '----------------------------------------------------------------'

@@ -16,7 +16,7 @@ subroutine NORTRIP_initialise_time
     !if (unit_logfile.gt.0) then
     !    open(unit_logfile,file=filename_log,status='old',position='append')
     !endif
-
+    
     if (ro_tot.eq.1) then
         
     write(unit_logfile,'(A)') ''
@@ -34,7 +34,7 @@ subroutine NORTRIP_initialise_time
     !NOTE: THis, to be of any use, should be seconds, not days and should be fixed elsewhere.
     do ti=1,n_time
         a(1:5)=date_data(1:5,ti)
-        date_data(datenum_index,ti)=date_to_number(a)
+        date_data(datenum_index,ti)=date_to_number(a,2000)
         call date_to_datestr(a,trim('yyyy.mm.dd HH'),date_str(1,ti))
         call date_to_datestr(a,trim('HH:MM dd mm '),date_str(2,ti))
         call date_to_datestr(a,date_format_str,date_str(3,ti))
@@ -52,7 +52,7 @@ subroutine NORTRIP_initialise_time
     !Use the following versioon to preserve the double precision
     a(1:5)=date_data(1:5,1)
     b(1:5)=date_data(1:5,2)
-    dt=(date_to_number(b)-date_to_number(a))*24.
+    dt=(date_to_number(b,2000)-date_to_number(a,2000))*24.
     
     !Set start and end dates based on date string (if specified in 'set_road_dust_inputdata_files_v1')
     call find_time_index(start_date_str,min_time)

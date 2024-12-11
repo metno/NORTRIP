@@ -453,7 +453,6 @@
                                 emis_road=sum(E_road_data(s,x,E_total_index,ti,:,ro))*conversion
                             endif
                         endif
-            
                         !Save emissions when using single roads to get it in the right order
                         !Write them at end of calculation
                         emis_time(ti)=emis_road            
@@ -520,7 +519,19 @@
     !Declare functions
     real line_fraction_in_grid_func
     
-    return
+    !Declare quick or slow gridding
+    logical :: quick_grid=.false.
+    integer grid_start(2),grid_end(2)
+    integer grid_start_temp(2),grid_end_temp(2)
+    real x_temp(3),y_temp(3)
+    logical grid_inside
+    
+    !return
+    if (index(calculation_type,'gridded').gt.0) then
+        quick_grid=.true.
+    endif
+    !Always true
+    quick_grid=.true.
     
     unit_out=unit_save_grid_emissions
     save_size(1)=pm_10;save_size(2)=pm_25;save_size(3)=pm_exhaust;save_size(4)=nox_exhaust
@@ -593,10 +604,55 @@
     
     !Calculate the emissions in each grid
     !write(*,*) grid_dim,grid_0,grid_delta
-   
-            
-    do j=1,grid_dim(2)
-    do i=1,grid_dim(1)
+    !This assumes that we are using the one road at a time option. Whole thing should be built better
+    ro=0
+    
+    if (quick_grid) then
+        !Assumed gridding onto a lat lon grid and use just the lat lon road centre position to make it general for all calculation types
+            x_temp(3)=LON(ro)
+            y_temp(3)=LAT(ro)
+            x_temp(1)=lon_road(1,ro)
+            x_temp(2)=lon_road(2,ro)
+            y_temp(1)=lat_road(1,ro)
+            y_temp(2)=lat_road(2,ro)
+        !line_fraction_in_grid_func does not work for 0 length, so perturb slightly. Use the (3) index to keep the central position of the line
+            !x_temp(2)=x_temp(3)+grid_delta(1)/10000
+           ! y_temp(2)=y_temp(3)+grid_delta(2)/10000
+            !x_temp(1)=x_temp(3)-grid_delta(1)/10000
+            !y_temp(1)=y_temp(3)-grid_delta(2)/10000
+           
+            !x_temp=x_road(:,ro)
+            !y_tempy_road(:,ro)
+        grid_start_temp(1)=floor((x_temp(1)-grid_0(1))/grid_delta(1))+1
+        grid_start_temp(2)=floor((y_temp(1)-grid_0(2))/grid_delta(2))+1
+        grid_end_temp(1)=floor((x_temp(2)-grid_0(1))/grid_delta(1))+1
+        grid_end_temp(2)=floor((y_temp(2)-grid_0(2))/grid_delta(2))+1
+        grid_start(1)=min(grid_start_temp(1),grid_end_temp(1))
+        grid_end(1)=max(grid_start_temp(1),grid_end_temp(1))
+        grid_start(2)=min(grid_start_temp(2),grid_end_temp(2))
+        grid_end(2)=max(grid_start_temp(2),grid_end_temp(2))
+        if (grid_start(1).lt.1.or.grid_start(1).gt.grid_dim(1)) write(unit_logfile,'(A,3i)') 'Warning: Road start outside of X grid. Not using (ro,grid_end,grid_dim) ',ro,grid_start(1),grid_dim(1)
+        if (grid_start(2).lt.1.or.grid_start(2).gt.grid_dim(2)) write(unit_logfile,'(A,3i)') 'Warning: Road start outside of Y grid. Not using (ro,grid_end,grid_dim) ',ro,grid_start(2),grid_dim(2)
+        if (grid_end(1).lt.1.or.grid_end(1).gt.grid_dim(1)) write(unit_logfile,'(A,3i)') 'Warning: Road end outside of x grid. Not using (ro,grid_end,grid_dim) ',ro,grid_end(1),grid_dim(1)
+        if (grid_end(2).lt.1.or.grid_end(2).gt.grid_dim(2)) write(unit_logfile,'(A,3i)') 'Warning: Road end outside of Y grid. Not using (ro,grid_end,grid_dim) ',ro,grid_end(2),grid_dim(2)
+        
+        grid_inside=.false.
+        if (grid_start(1).ge.1.and.grid_start(1).le.grid_dim(1).and.grid_start(2).ge.1.and.grid_start(2).le.grid_dim(2).and.grid_end(1).ge.1.and.grid_end(1).le.grid_dim(1).and.grid_end(2).ge.1.and.grid_end(2).le.grid_dim(2)) then
+            grid_inside=.true.
+        endif
+
+        !grid_start(1)=max(1,min(grid_start(1),grid_dim(1)))
+        !grid_start(2)=max(1,min(grid_start(2),grid_dim(2)))
+        !grid_end(1)=max(1,min(grid_end(1),grid_dim(1)))
+        !grid_end(2)=max(1,min(grid_end(2),grid_dim(2)))
+    else
+        grid_start=1
+        grid_end=grid_dim
+    endif
+    
+    if (grid_inside) then
+    do j=grid_start(2),grid_end(2)
+    do i=grid_start(1),grid_end(1)
                     
         x_grid(1)=grid_0(1)+grid_delta(1)*(i-1)
         x_grid(2)=grid_0(1)+grid_delta(1)*i
@@ -604,14 +660,18 @@
         y_grid(2)=grid_0(2)+grid_delta(2)*j
                                 
         do ro=n_roads_start,n_roads_end                   
-            !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then          
+            !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then 
+            !if (line_or_grid_data_flag(ro).ne.3) write(*,*) line_or_grid_data_flag(ro) 
             if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
-                f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
-                !if (f_grid(ro).ne.0) write(*,*) ro,f_grid(ro)
+            
+            !Check this logic!!!!
+            !if (line_or_grid_data_flag(ro).ge.1) then
+                !f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
+                f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_temp(1:2),y_temp(1:2))
+                !if (f_grid(ro).lt.1.0.and.f_grid(ro).gt.0.0) write(*,*) ro,f_grid(ro)
             else
                 f_grid(ro)=0.
             endif 
-            
         enddo
                    
         do x_loop=1,4   
@@ -643,7 +703,8 @@
 
     enddo
     enddo
-
+    endif
+    
     !Save if the last road
     if (ro_tot.eq.n_roads_total) then 
     

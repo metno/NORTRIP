@@ -187,7 +187,7 @@
     if (use_traffic_turb_flag.eq.1) then
         do v=1,num_veh
             road_meteo_data(H_traffic_index,ti,tr,ro)=road_meteo_data(H_traffic_index,ti,tr,ro) &
-                +H_veh(v)*min(1.,length_veh(v)/traffic_data(V_veh_index(v),ti,ro)*traffic_data(N_v_index(v),ti,ro)/(n_lanes(ro)*1000))
+                +H_veh(v)*min(1.,length_veh(v)/traffic_data(V_veh_index(v),ti,ro)*traffic_data(N_v_index(v),ti,ro)/(n_lanes(ro)*1000))            
         enddo
     endif
 
@@ -206,11 +206,6 @@
         if (g_road_0_data(snow_index).gt.dz_snow_albedo) then
             short_rad_net_temp=road_meteo_data(short_rad_net_index,ti,tr,ro)*(1.-albedo_snow)/(1.-albedo_road(ro))
         endif
-
-        !if (ro.eq.18163) then
-        !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
-        !    
-        !    endif
                
         call surface_energy_submodel_4 &
             (short_rad_net_temp &

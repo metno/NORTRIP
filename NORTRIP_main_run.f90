@@ -35,7 +35,7 @@
     logical :: show_time_moisture=.false.
     logical :: show_time_dust=.false.
 
-    !Open log file for main run. Already established in NORTRIP_read_pathnames
+    !Open  log file for main run. Already established in NORTRIP_read_pathnames 
     !if (unit_logfile.gt.0) then
     !    open(unit_logfile,file=filename_log,status='old',position='append')
     !endif
