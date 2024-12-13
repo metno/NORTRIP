@@ -439,13 +439,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
             call check(nf90_put_var(ncid, varid, trim(date_str(4,ti)),start = (/1,ti/)))
         enddo
 
-        !Calculate percentages of studded tyres and heavy duty vehicles
-        st_li=traffic_data(N_st_li_index,:,ro)/traffic_data(N_li_index,:,ro)*100.
-        if (isnan(st_li(i))) st_li(i)=0.
-        st_he=traffic_data(N_st_he_index,:,ro)/traffic_data(N_he_index,:,ro)*100.
-        if (isnan(st_he(i))) st_he(i)=0.
-        fr_hdv=traffic_data(N_he_index,:,ro)/traffic_data(N_total_index,:,ro)*100.
-        if (isnan(fr_hdv(i))) fr_hdv(i)=0.
+
 
         !Fill netcdf file with variables. NOTE: This is assuming that single road flag is used (It is a bit confusing that the iterator is called ro_tot...)
         call check(nf90_inq_varid(ncid, "road_id",varid))
@@ -575,6 +569,22 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         call check(nf90_put_var(ncid, varid, sum(M_road_data(salt_index(2),pm_all,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
         if ( roadtype_index(ro_tot) .ne. runway_roadtype ) then
+
+            !Calculate percentages of studded tyres and heavy duty vehicles
+            st_li=traffic_data(N_st_li_index,:,ro)/traffic_data(N_li_index,:,ro)*100.
+            st_he=traffic_data(N_st_he_index,:,ro)/traffic_data(N_he_index,:,ro)*100.
+            fr_hdv=traffic_data(N_he_index,:,ro)/traffic_data(N_total_index,:,ro)*100.
+            where ((isnan(st_li)))
+                st_li=0.
+            endwhere
+            where ((isnan(st_he)))
+                st_he=0.
+            endwhere
+            where ((isnan(fr_hdv)))
+                fr_hdv=0.
+            endwhere
+
+
             call check(nf90_inq_varid(ncid, "Traffic",varid))
             call check(nf90_put_var(ncid, varid, traffic_data(N_total_index,:,ro), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 

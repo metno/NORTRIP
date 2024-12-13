@@ -205,12 +205,6 @@
         if (g_road_0_data(snow_index).gt.dz_snow_albedo) then
             short_rad_net_temp=road_meteo_data(short_rad_net_index,ti,tr,ro)*(1.-albedo_snow)/(1.-albedo_road(ro))
         endif
-
-        !if (ro.eq.18163) then
-        !   write(*,*) ti,short_rad_net_temp,road_meteo_data(short_rad_net_index,ti,tr,ro),g_road_0_data(snow_index),dz_snow_albedo,(1.-albedo_snow)/(1.-albedo_road(ro))
-        !    
-        !    endif
-
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &

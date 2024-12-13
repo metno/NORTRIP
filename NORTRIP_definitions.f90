@@ -706,6 +706,8 @@
     real, allocatable :: y_road(:,:)
     !real, allocatable :: adt_road(:)
     real, allocatable :: length_road(:)
+    real, allocatable :: lon_road(:,:)
+    real, allocatable :: lat_road(:,:)
     
     !Special BB declaration for database ID. Only reads when type is 'Bedre Byluft'
     character(256) :: BB_output_ID(num_size)='{}'

@@ -39,7 +39,7 @@ subroutine NORTRIP_main_run
     real,allocatable :: forecast_T_s(:,:)
     real    :: bias_correction
 
-    !Open log file for main run. Already established in NORTRIP_read_pathnames
+    !Open log file for main run. Already established in NORTRIP_read_pathnames 
     !if (unit_logfile.gt.0) then
     !    open(unit_logfile,file=filename_log,status='old',position='append')
     !endif

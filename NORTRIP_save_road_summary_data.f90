@@ -265,10 +265,10 @@
             write(unit_logfile,'(A)')'ERROR: Path '//trim(path_outputdata)//' does not exist. No file saved'
             return
         endif
-        if (sum(save_road_data_flag).eq.0) then
-            write(unit_logfile,'(A)')'WARNING: No receptor link sites selected. Will not save to '//trim(path_outputdata)
-            return
-        endif
+        !if (sum(save_road_data_flag).eq.0) then
+        !    write(unit_logfile,'(A)')'WARNING: No receptor link sites selected. Will not save to '//trim(path_outputdata)
+        !    return
+        !endif
  
         !Open the outputfile for date
         temp_name=trim(path_outputdata)//trim(filename_outputdata)//'_activities.txt'

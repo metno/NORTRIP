@@ -67,6 +67,8 @@
         x_road(:,0)=x_road(:,ro_tot)
         y_road(:,0)=y_road(:,ro_tot)
         length_road(0)=length_road(ro_tot)
+        lon_road(:,0)=lon_road(:,ro_tot)
+        lat_road(:,0)=lat_road(:,ro_tot)
         line_or_grid_data_flag(0)=line_or_grid_data_flag(ro_tot)
 
         M_road_init(:,:,:,0)=M_road_init(:,:,:,ro_tot)
