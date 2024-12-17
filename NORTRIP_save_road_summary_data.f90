@@ -23,9 +23,9 @@
     
     if (ro_tot.eq.1) then
 
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
-	    write(unit_logfile,'(A)') 'Saving selected road summary data to file'
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
+        write(unit_logfile,'(A)') 'Saving selected road summary data to file'
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)
@@ -58,7 +58,7 @@
     
         !35 fields
         !write(unit_out,'(67A6)') &
-        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
+        write(unit_out,'(a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14,a,a14)') &
             'Road_num',achar(9), &
             'Road_ID',achar(9),&
             'Year',achar(9), &
@@ -110,6 +110,8 @@
             'L_in',achar(9), &
             'G_sub',achar(9), &
             'G_net',achar(9), &
+            'Energy_corr',achar(9), &
+            'Energy_diff',achar(9), &
             'W_surf_mod',achar(9), &
             'I_surf_mod',achar(9), &
             'S_surf_mod',achar(9), &
@@ -146,7 +148,7 @@
                     
                    ! write(*,*) 'saving',ro_num,unit_out
                     
-                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
+                    write(unit_out,'(i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,i14,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3,a,es14.3)') &
                         ro_num,achar(9), &
                         road_ID(ro),achar(9),&
                         int(date_data(year_index,ti)),achar(9), &
@@ -198,6 +200,8 @@
                         -road_meteo_data(L_index,ti,tr,ro),achar(9), &
                         road_meteo_data(G_sub_index,ti,tr,ro),achar(9), &
                         road_meteo_data(G_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(E_corr_index,ti,tr,ro),achar(9), &
+                        road_meteo_data(E_diff_index,ti,tr,ro),achar(9), &
                         g_road_data(water_index,ti,tr,ro),achar(9), &
                         g_road_data(ice_index,ti,tr,ro),achar(9), &
                         g_road_data(snow_index,ti,tr,ro),achar(9), &
@@ -247,9 +251,9 @@
     
     if (ro_tot.eq.1) then
 
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
-	    write(unit_logfile,'(A)') 'Saving summed emission and activity data to file'
-	    write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(A)') 'Saving summed emission and activity data to file'
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
         !Check that path exists after filling in date stamp
         a=date_data(:,min_time_save)

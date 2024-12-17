@@ -18,7 +18,7 @@
     integer daysinmonth(12)
     data (daysinmonth(i),i=1,12) /31,28,31,30,31,30,31,31,30,31,30,31/ 
     
-    !ref_year=1900
+
     !Set day fraction to the nearest second. Avoiding round off errors
     day_int=idint(date_num)
     day_fraction=(date_num-day_int)

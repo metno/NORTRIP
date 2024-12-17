@@ -651,58 +651,58 @@
     endif
     
     if (grid_inside) then
-    do j=grid_start(2),grid_end(2)
-    do i=grid_start(1),grid_end(1)
+        do j=grid_start(2),grid_end(2)
+            do i=grid_start(1),grid_end(1)
+                        
+                x_grid(1)=grid_0(1)+grid_delta(1)*(i-1)
+                x_grid(2)=grid_0(1)+grid_delta(1)*i
+                y_grid(1)=grid_0(2)+grid_delta(2)*(j-1)
+                y_grid(2)=grid_0(2)+grid_delta(2)*j
+                                        
+                do ro=n_roads_start,n_roads_end                   
+                    !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then 
+                    !if (line_or_grid_data_flag(ro).ne.3) write(*,*) line_or_grid_data_flag(ro) 
+                    if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
                     
-        x_grid(1)=grid_0(1)+grid_delta(1)*(i-1)
-        x_grid(2)=grid_0(1)+grid_delta(1)*i
-        y_grid(1)=grid_0(2)+grid_delta(2)*(j-1)
-        y_grid(2)=grid_0(2)+grid_delta(2)*j
-                                
-        do ro=n_roads_start,n_roads_end                   
-            !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then 
-            !if (line_or_grid_data_flag(ro).ne.3) write(*,*) line_or_grid_data_flag(ro) 
-            if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
-            
-            !Check this logic!!!!
-            !if (line_or_grid_data_flag(ro).ge.1) then
-                !f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
-                f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_temp(1:2),y_temp(1:2))
-                !if (f_grid(ro).lt.1.0.and.f_grid(ro).gt.0.0) write(*,*) ro,f_grid(ro)
-            else
-                f_grid(ro)=0.
-            endif 
-        enddo
-                   
-        do x_loop=1,4   
-            x=save_size(x_loop)
-            do ti=min_time_save,max_time_save             
-                do ro=n_roads_start,n_roads_end
-                    if (x.eq.pm_exhaust) then
-                        emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
-                    elseif (x.eq.nox_exhaust) then
-                        emis_road=0.
-                        if (available_airquality_data(NOX_emis_index)) then
-                            emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
-                        elseif (NOX_EF_available.ne.0) then
-                            do v=1,num_veh
-                                emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
-                            enddo
-                        else
-                            emis_road=0.
-                        endif                              
+                    !Check this logic!!!!
+                    !if (line_or_grid_data_flag(ro).ge.1) then
+                        !f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
+                        f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_temp(1:2),y_temp(1:2))
+                        !if (f_grid(ro).lt.1.0.and.f_grid(ro).gt.0.0) write(*,*) ro,f_grid(ro)
                     else
-                        emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))
-                    endif                    
-                    emis_grid(i,j,x,ti)=emis_grid(i,j,x,ti)+length_road_km(ro)*f_grid(ro)*emis_road*conversion
-                enddo                                   
-                !emis_grid(i,j,x,ti)=sum(length_road(:)*f_grid(:)*sum(E_road_data(total_dust_index,x,E_total_index,ti,:,:),1))                  
-                !write(*,*) length_road(ro),f_grid(ro),E_road_data(total_dust_index,x,E_total_index,ti,tr,ro),conversion
+                        f_grid(ro)=0.
+                    endif 
+                enddo
+                    
+                do x_loop=1,4   
+                    x=save_size(x_loop)
+                    do ti=min_time_save,max_time_save             
+                        do ro=n_roads_start,n_roads_end
+                            if (x.eq.pm_exhaust) then
+                                emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
+                            elseif (x.eq.nox_exhaust) then
+                                emis_road=0.
+                                if (available_airquality_data(NOX_emis_index)) then
+                                    emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
+                                elseif (NOX_EF_available.ne.0) then
+                                    do v=1,num_veh
+                                        emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                                    enddo
+                                else
+                                    emis_road=0.
+                                endif                              
+                            else
+                                emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))
+                            endif                    
+                            emis_grid(i,j,x,ti)=emis_grid(i,j,x,ti)+length_road_km(ro)*f_grid(ro)*emis_road*conversion
+                        enddo                                   
+                        !emis_grid(i,j,x,ti)=sum(length_road(:)*f_grid(:)*sum(E_road_data(total_dust_index,x,E_total_index,ti,:,:),1))                  
+                        !write(*,*) length_road(ro),f_grid(ro),E_road_data(total_dust_index,x,E_total_index,ti,tr,ro),conversion
+                    enddo
+                enddo
+
             enddo
         enddo
-
-    enddo
-    enddo
     endif
     
     !Save if the last road

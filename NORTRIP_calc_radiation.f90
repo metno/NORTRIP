@@ -35,190 +35,187 @@
     !Start road loop
     do ro=n_roads_start,n_roads_end
     
-    !Initialise arrays
-    shadow_fraction=0.
-    short_rad_direct=0.
-    short_rad_diffuse=0.
-    
-    !Set the clear sky fraction of radiation that is diffuse
-    tau_cs_diffuse=0.2
-    
-    !Set search window in hours for calculating cloud cover
-    dti=11
+        !Initialise arrays
+        shadow_fraction=0.
+        short_rad_direct=0.
+        short_rad_diffuse=0.
+        
+        !Set the clear sky fraction of radiation that is diffuse
+        tau_cs_diffuse=0.2
+        
+        !Set search window in hours for calculating cloud cover
+        dti=11
 
-    !Set initial cloud cover to default value if no data available
-    cloud_cover_default=0.5
-    do ti=min_time,max_time
-        if (.not.available_meteo_data(cloud_cover_index).or.meteo_data(cloud_cover_index,ti,ro).eq.nodata) then
-            meteo_data(cloud_cover_index,ti,ro)=cloud_cover_default
-        endif
-    end do
+        !Set initial cloud cover to default value if no data available
+        cloud_cover_default=0.5
+        do ti=min_time,max_time
+            if (.not.available_meteo_data(cloud_cover_index).or.meteo_data(cloud_cover_index,ti,ro).eq.nodata) then
+                meteo_data(cloud_cover_index,ti,ro)=cloud_cover_default
+            endif
+        end do
 
-    !Calculate net shortwave radiation
-    do ti=min_time,max_time
-        a(1:5)=date_data(1:5,ti)
-        a(6)=0
-        if (available_meteo_data(short_rad_in_index).and.meteo_data(short_rad_in_index,ti,ro).ne.nodata) then
-        !Calculate short wave net radiation when global radiation is available
-            road_meteo_data(short_rad_net_index,ti,1:num_track,ro) = meteo_data(short_rad_in_index,ti,ro)*(1-albedo_road(ro))
-        else   
-        !Calculate short wave net radiation when global radiation is not available
-            !+dt/2 is there so that it extracts between the solar time further west (ti-1 and ti), as in the solar angle 30 minutes ago sinc ehte radiation at time tt is based on accumulated between tt and tt-1
-            call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),meteo_data(cloud_cover_index,ti,ro),albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
-            road_meteo_data(short_rad_net_index,ti,1:num_track,ro) =short_rad_net_temp
-        endif
-            
+        !Calculate net shortwave radiation
+        do ti=min_time,max_time
+            a(1:5)=date_data(1:5,ti)
+            a(6)=0
+            if (available_meteo_data(short_rad_in_index).and.meteo_data(short_rad_in_index,ti,ro).ne.nodata) then
+            !Calculate short wave net radiation when global radiation is available
+                road_meteo_data(short_rad_net_index,ti,1:num_track,ro) = meteo_data(short_rad_in_index,ti,ro)*(1-albedo_road(ro))
+                else   
+                    !Calculate short wave net radiation when global radiation is not available
+                    !+dt/2 is there so that it extracts between the solar time further west (ti-1 and ti), as in the solar angle 30 minutes ago sinc ehte radiation at time tt is based on accumulated between tt and tt-1
+                    call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-1./2,Z_SURF(ro),meteo_data(cloud_cover_index,ti,ro),albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
+                    road_meteo_data(short_rad_net_index,ti,1:num_track,ro) =short_rad_net_temp
+            endif
                 
-        !Calculate clear sky short radiation
-        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),0.,0.,meteo_data(short_rad_in_clearsky_index,ti,ro),azimuth_ang(ti,ro),zenith_ang(ti,ro))
-        call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-dt/2,Z_SURF(ro),0.,albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
-        road_meteo_data(short_rad_net_clearsky_index,ti,1:num_track,ro) = short_rad_net_temp
-        !write(*,*) short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro)
-
-    enddo
+                    
+            !Calculate clear sky short radiation
+            call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-1./2,Z_SURF(ro),0.,0.,meteo_data(short_rad_in_clearsky_index,ti,ro),azimuth_ang(ti,ro),zenith_ang(ti,ro))
+            call global_radiation_sub(LAT(ro),LON(ro),a,DIFUTC_H(ro)-1./2,Z_SURF(ro),0.,albedo_road(ro),short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro))
+            road_meteo_data(short_rad_net_clearsky_index,ti,1:num_track,ro) = short_rad_net_temp
+            !write(*,*) short_rad_net_temp,azimuth_ang(ti,ro),zenith_ang(ti,ro)
+        enddo
     
     
-    !Calculate cloud cover when cloud cover is not available and global is available
-    !Calculate running means to calculate cloud cover per hour
-    if ((.not.available_meteo_data(cloud_cover_index)).and.(available_meteo_data(short_rad_in_index))) then
-        do ti=min_time,max_time
-          if (meteo_data(short_rad_in_index,ti,ro).ne.nodata) then
-            tr=1
-            ti1=max(ti-dti,min_time)
-            ti2=min(ti+dti,max_time)
-            ti_num=ti2-ti1+1
-            short_rad_net_rmean=0
-            short_rad_net_clearsky_rmean=0
-            do tt=ti1,ti2
-                short_rad_net_rmean=short_rad_net_rmean+road_meteo_data(short_rad_net_index,tt,tr,ro)/ti_num
-                short_rad_net_clearsky_rmean=short_rad_net_clearsky_rmean+road_meteo_data(short_rad_net_clearsky_index,tt,tr,ro)/ti_num
+        !Calculate cloud cover when cloud cover is not available and global is available
+        !Calculate running means to calculate cloud cover per hour
+        if ((.not.available_meteo_data(cloud_cover_index)).and.(available_meteo_data(short_rad_in_index))) then
+            do ti=min_time,max_time
+            if (meteo_data(short_rad_in_index,ti,ro).ne.nodata) then
+                tr=1
+                ti1=max(ti-dti,min_time)
+                ti2=min(ti+dti,max_time)
+                ti_num=ti2-ti1+1
+                short_rad_net_rmean=0
+                short_rad_net_clearsky_rmean=0
+                do tt=ti1,ti2
+                    short_rad_net_rmean=short_rad_net_rmean+road_meteo_data(short_rad_net_index,tt,tr,ro)/ti_num
+                    short_rad_net_clearsky_rmean=short_rad_net_clearsky_rmean+road_meteo_data(short_rad_net_clearsky_index,tt,tr,ro)/ti_num
+                enddo
+                f_short_rad=short_rad_net_rmean/short_rad_net_clearsky_rmean
+                f_short_rad=max(0.,f_short_rad)
+                f_short_rad=min(1.,f_short_rad)
+                meteo_data(cloud_cover_index,ti,ro)=min(1.,(1.-f_short_rad)/.9)
+            else
+                meteo_data(cloud_cover_index,ti,ro)=cloud_cover_default
+            endif          
             enddo
-            f_short_rad=short_rad_net_rmean/short_rad_net_clearsky_rmean
-            f_short_rad=max(0.,f_short_rad)
-            f_short_rad=min(1.,f_short_rad)
-            meteo_data(cloud_cover_index,ti,ro)=min(1.,(1.-f_short_rad)/.9)
-          else
-            meteo_data(cloud_cover_index,ti,ro)=cloud_cover_default
-          endif          
-        enddo
-    endif
-
-    !Calculate incoming long wave radiation
-    !available_meteo_data(long_rad_in_index)=.false.
-    do ti=min_time,max_time
-        if (.not.available_meteo_data(long_rad_in_index).or.meteo_data(long_rad_in_index,ti,ro).eq.nodata) then
-            meteo_data(long_rad_in_index,ti,ro)=longwave_in_radiation_func(meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),meteo_data(cloud_cover_index,ti,ro),meteo_data(pressure_index,ti,ro))
         endif
-    enddo
 
-    !Calculate the shadow fraction
-    if (canyon_shadow_flag.eq.1) then
-        h_canyon_temp=h_canyon(:,ro)+.001!Avoids division by 0
+        !Calculate incoming long wave radiation
+        !available_meteo_data(long_rad_in_index)=.false.
         do ti=min_time,max_time
-            shadow_fraction(ti) = road_shading_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp)
-            !shadow_fraction = 0
-            tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
-            !write(*,*) shadow_fraction,tau_diffuse
-            short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
-            short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
-            road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
-            !if (ro.eq.18163) then
-                !write(*,*) ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
-            !    write(*,*) ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp,azimuth_ang(ti,ro)-ang_road(ro)
-        !endif
-
+            if (.not.available_meteo_data(long_rad_in_index).or.meteo_data(long_rad_in_index,ti,ro).eq.nodata) then
+                meteo_data(long_rad_in_index,ti,ro)=longwave_in_radiation_func(meteo_data(T_a_index,ti,ro),meteo_data(RH_index,ti,ro),meteo_data(cloud_cover_index,ti,ro),meteo_data(pressure_index,ti,ro))
+            endif
         enddo
-    endif
 
-    !Calculate the shadow fraction using the skyview data
-    !Can only return 0 or 1 for shadow fraction
-    if (canyon_shadow_flag.eq.2) then
-        do ti=min_time,max_time
-            !write(*,*) 'n_skyview ',n_skyview
-            shadow_fraction(ti) = road_shading_skyview_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),az_skyview(:,ro),zen_skyview(:,ro),n_skyview)
-            !shadow_fraction = 0
-            tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
-            !write(*,*) shadow_fraction,tau_diffuse
-            short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
-            short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
-            road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
-            !if (ro.eq.2) then
-                !write(*,*) ro,ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
-                !write(*,*) ro,ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),zen_skyview(:,ro)
-                !if (zenith_ang(ti,ro).lt.90) write(*,*) ro,ti,shadow_fraction(ti)
+        !Calculate the shadow fraction
+        if (canyon_shadow_flag.eq.1) then
+            h_canyon_temp=h_canyon(:,ro)+.001!Avoids division by 0
+            do ti=min_time,max_time
+                shadow_fraction(ti) = road_shading_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp)
+                !shadow_fraction = 0
+                tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
+                !write(*,*) shadow_fraction,tau_diffuse
+                short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
+                short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
+                road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
+                !if (ro.eq.18163) then
+                    !write(*,*) ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
+                !    write(*,*) ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp,azimuth_ang(ti,ro)-ang_road(ro)
             !endif
+            enddo
+        endif
 
-        enddo
-    endif
+        !Calculate the shadow fraction using the skyview data
+        !Can only return 0 or 1 for shadow fraction
+        if (canyon_shadow_flag.eq.2) then
+            do ti=min_time,max_time
+                !write(*,*) 'n_skyview ',n_skyview
+                shadow_fraction(ti) = road_shading_skyview_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),az_skyview(:,ro),zen_skyview(:,ro),n_skyview)
+                !shadow_fraction = 0
+                tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
+                !write(*,*) shadow_fraction,tau_diffuse
+                short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
+                short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
+                road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
+                !if (ro.eq.2) then
+                    !write(*,*) ro,ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
+                    !write(*,*) ro,ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),zen_skyview(:,ro)
+                    !if (zenith_ang(ti,ro).lt.90) write(*,*) ro,ti,shadow_fraction(ti)
+                !endif
+            enddo
+        endif
 
-    !Calculate the shadow fraction using both the skyview and canyon data. if
-    !Can only return 0 or 1 for shadow fraction
-    if (canyon_shadow_flag.eq.3) then
-        h_canyon_temp=h_canyon(:,ro)+.001!Avoids division by 0
-        do ti=min_time,max_time
-            shadow_fraction1 = road_shading_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp)
-            !write(*,*) 'n_skyview ',n_skyview
-            shadow_fraction2 = road_shading_skyview_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),az_skyview(:,ro),zen_skyview(:,ro),n_skyview)
-            shadow_fraction(ti)=max(shadow_fraction1,shadow_fraction2)
-            !shadow_fraction = 0
-            tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
-            !write(*,*) shadow_fraction,tau_diffuse
-            short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
-            short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
-            road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
-            !if (ro.eq.2) then
-                !write(*,*) ro,ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
-                !write(*,*) ro,ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),zen_skyview(:,ro)
-                !if (zenith_ang(ti,ro).lt.90) write(*,*) ro,ti,shadow_fraction(ti)
-            !endif
+        !Calculate the shadow fraction using both the skyview and canyon data. if
+        !Can only return 0 or 1 for shadow fraction
+        if (canyon_shadow_flag.eq.3) then
+            h_canyon_temp=h_canyon(:,ro)+.001!Avoids division by 0
+            do ti=min_time,max_time
+                shadow_fraction1 = road_shading_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),b_road(ro),b_canyon(ro),h_canyon_temp)
+                !write(*,*) 'n_skyview ',n_skyview
+                shadow_fraction2 = road_shading_skyview_func(azimuth_ang(ti,ro),zenith_ang(ti,ro),ang_road(ro),az_skyview(:,ro),zen_skyview(:,ro),n_skyview)
+                shadow_fraction(ti)=max(shadow_fraction1,shadow_fraction2)
+                !shadow_fraction = 0
+                tau_diffuse=tau_cs_diffuse+meteo_data(cloud_cover_index,ti,ro)*(1-tau_cs_diffuse)
+                !write(*,*) shadow_fraction,tau_diffuse
+                short_rad_direct(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*(1-tau_diffuse)*(1-shadow_fraction(ti))
+                short_rad_diffuse(:,ti)=road_meteo_data(short_rad_net_index,ti,1:num_track,ro)*tau_diffuse    
+                road_meteo_data(short_rad_net_index,ti,1:num_track,ro)=short_rad_direct(:,ti)+short_rad_diffuse(:,ti)
+                !if (ro.eq.2) then
+                    !write(*,*) ro,ti,shadow_fraction(ti),tau_diffuse,short_rad_direct(:,ti),short_rad_diffuse(:,ti),road_meteo_data(short_rad_net_index,ti,1:num_track,ro)    
+                    !write(*,*) ro,ti,shadow_fraction(ti),azimuth_ang(ti,ro),zenith_ang(ti,ro),zen_skyview(:,ro)
+                    !if (zenith_ang(ti,ro).lt.90) write(*,*) ro,ti,shadow_fraction(ti)
+                !endif
 
-        enddo
-    endif
+            enddo
+        endif
 
-    !Canyon building fascade contribution to longwave radiation
-    if (canyon_long_rad_flag.eq.1) then
-        !This is based on the integral of a cylinder of height h_canyon. Could be done better
-        !Uses the average of the two possible canyon heights
-        h_canyon_temp2=(h_canyon(1,ro)+h_canyon(2,ro))/2.+0.001!Avoids division by 0
-        !canyon_fraction=(1-sin(atan(b_canyon(ro)/2/h_canyon_temp)))!original
-        theta=atan(h_canyon_temp2*2./b_canyon(ro))
-        !canyon_fraction=(1-cos(2*theta))/2/3!factor 1/3 accounts for the non-cylyndrical nature
-        canyon_fraction=(1-cos(2*theta/2))/2.!factor 2 for theta to get an average
-        do ti=min_time,max_time
-            long_rad_canyon=sigma*(T0C+meteo_data(T_a_index,ti,ro))**4.
-            meteo_data(long_rad_in_index,ti,ro)=meteo_data(long_rad_in_index,ti,ro)*(1-canyon_fraction)+long_rad_canyon*canyon_fraction
-        enddo
-    endif
+        !Canyon building fascade contribution to longwave radiation
+        if (canyon_long_rad_flag.eq.1) then
+            !This is based on the integral of a cylinder of height h_canyon. Could be done better
+            !Uses the average of the two possible canyon heights
+            h_canyon_temp2=(h_canyon(1,ro)+h_canyon(2,ro))/2.+0.001!Avoids division by 0
+            !canyon_fraction=(1-sin(atan(b_canyon(ro)/2/h_canyon_temp)))!original
+            theta=atan(h_canyon_temp2*2./b_canyon(ro))
+            !canyon_fraction=(1-cos(2*theta))/2/3!factor 1/3 accounts for the non-cylyndrical nature
+            canyon_fraction=(1-cos(2*theta/2))/2.!factor 2 for theta to get an average
+            do ti=min_time,max_time
+                long_rad_canyon=sigma*(T0C+meteo_data(T_a_index,ti,ro))**4.
+                meteo_data(long_rad_in_index,ti,ro)=meteo_data(long_rad_in_index,ti,ro)*(1-canyon_fraction)+long_rad_canyon*canyon_fraction
+            enddo
+        endif
 
-    !do ti=min_time,max_time
-    !write(unit_logfile,'(a32,f14.2,f14.2,f14.2,f14.2,f14.2)') 'LONG SHORT SHORTNET SNET_CLEAR CC:', meteo_data(long_rad_in_index,ti,ro),meteo_data(short_rad_in_index,ti,ro),road_meteo_data(short_rad_net_index,ti,1,ro),road_meteo_data(short_rad_net_clearsky_index,ti,1,ro),meteo_data(cloud_cover_index,ti,ro)
-    !enddo
-    
-    !Write for first and last road
-    if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
-    
-    write(unit_logfile,'(A)') ''
-    write(unit_logfile,'(A)') 'Calculating radiation (NORTRIP_calc_radiation)' 
-  	write(unit_logfile,'(A)') '================================================================'
+        !do ti=min_time,max_time
+        !write(unit_logfile,'(a32,f14.2,f14.2,f14.2,f14.2,f14.2)') 'LONG SHORT SHORTNET SNET_CLEAR CC:', meteo_data(long_rad_in_index,ti,ro),meteo_data(short_rad_in_index,ti,ro),road_meteo_data(short_rad_net_index,ti,1,ro),road_meteo_data(short_rad_net_clearsky_index,ti,1,ro),meteo_data(cloud_cover_index,ti,ro)
+        !enddo
+        
+        !Write for first and last road
+        if (((ro.eq.1.or.ro.eq.n_roads).and..not.use_single_road_loop_flag).or.((ro_tot.eq.1.or.ro_tot.eq.n_roads_total).and.use_single_road_loop_flag)) then
+        
+            write(unit_logfile,'(A)') ''
+            write(unit_logfile,'(A)') 'Calculating radiation (NORTRIP_calc_radiation)' 
+            write(unit_logfile,'(A)') '================================================================'
 
-    write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(short_rad_in_index))//' available',' = ',available_meteo_data(short_rad_in_index)
-    write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(long_rad_in_index))//' available',' = ',available_meteo_data(long_rad_in_index)
-    write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(cloud_cover_index))//' available',' = ',available_meteo_data(cloud_cover_index)
+            write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(short_rad_in_index))//' available',' = ',available_meteo_data(short_rad_in_index)
+            write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(long_rad_in_index))//' available',' = ',available_meteo_data(long_rad_in_index)
+            write(unit_logfile,'(A40,A3,L)') trim(meteo_match_str(cloud_cover_index))//' available',' = ',available_meteo_data(cloud_cover_index)
 
-	write(unit_logfile,'(A)') '----------------------------------------------------------------'
-    write(unit_logfile,'(a32,a14,a14,a14)') 'Radiation parameter','Min value','Max value','Mean value'
-	write(unit_logfile,'(A)') '----------------------------------------------------------------'
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_in',minval(meteo_data(short_rad_in_index,min_time:max_time,ro)),maxval(meteo_data(short_rad_in_index,min_time:max_time,ro)),sum(meteo_data(short_rad_in_index,min_time:max_time,ro)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net',minval(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)),maxval(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)),sum(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_clearsky',minval(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)),maxval(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)),sum(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'shadow_fraction',minval(shadow_fraction(min_time:max_time)),maxval(shadow_fraction(min_time:max_time)),sum(shadow_fraction(min_time:max_time)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_direct',minval(short_rad_direct(1,min_time:max_time)),maxval(short_rad_direct(1,min_time:max_time)),sum(short_rad_direct(1,min_time:max_time)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_diffuse',minval(short_rad_diffuse(1,min_time:max_time)),maxval(short_rad_diffuse(1,min_time:max_time)),sum(short_rad_diffuse(1,min_time:max_time)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'long_rad_in',minval(meteo_data(long_rad_in_index,min_time:max_time,ro)),maxval(meteo_data(long_rad_in_index,min_time:max_time,ro)),sum(meteo_data(long_rad_in_index,min_time:max_time,ro)/(max_time-min_time+1))
-    write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'cloud_cover',minval(meteo_data(cloud_cover_index,min_time:max_time,ro)),maxval(meteo_data(cloud_cover_index,min_time:max_time,ro)),sum(meteo_data(cloud_cover_index,min_time:max_time,ro)/(max_time-min_time+1))
- 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
-    
-    endif
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(a32,a14,a14,a14)') 'Radiation parameter','Min value','Max value','Mean value'
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_in',minval(meteo_data(short_rad_in_index,min_time:max_time,ro)),maxval(meteo_data(short_rad_in_index,min_time:max_time,ro)),sum(meteo_data(short_rad_in_index,min_time:max_time,ro)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net',minval(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)),maxval(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)),sum(road_meteo_data(short_rad_net_index,min_time:max_time,1,ro)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_clearsky',minval(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)),maxval(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)),sum(road_meteo_data(short_rad_net_clearsky_index,min_time:max_time,1,ro)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'shadow_fraction',minval(shadow_fraction(min_time:max_time)),maxval(shadow_fraction(min_time:max_time)),sum(shadow_fraction(min_time:max_time)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_direct',minval(short_rad_direct(1,min_time:max_time)),maxval(short_rad_direct(1,min_time:max_time)),sum(short_rad_direct(1,min_time:max_time)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'short_rad_net_diffuse',minval(short_rad_diffuse(1,min_time:max_time)),maxval(short_rad_diffuse(1,min_time:max_time)),sum(short_rad_diffuse(1,min_time:max_time)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'long_rad_in',minval(meteo_data(long_rad_in_index,min_time:max_time,ro)),maxval(meteo_data(long_rad_in_index,min_time:max_time,ro)),sum(meteo_data(long_rad_in_index,min_time:max_time,ro)/(max_time-min_time+1))
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') 'cloud_cover',minval(meteo_data(cloud_cover_index,min_time:max_time,ro)),maxval(meteo_data(cloud_cover_index,min_time:max_time,ro)),sum(meteo_data(cloud_cover_index,min_time:max_time,ro)/(max_time-min_time+1))
+            write(unit_logfile,'(A)') '----------------------------------------------------------------'
+            
+        endif
     
     enddo !End road loop
     

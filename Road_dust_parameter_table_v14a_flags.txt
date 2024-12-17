@@ -29,6 +29,7 @@ use_subsurface_flag             	2           Use the underlaying subsurface in t
 use_melt_freeze_energy_flag     	0           Include the melting and freezing energy in the surface energy calculations                                                              	
 use_traffic_turb_flag           	1           Use the enhanced turbulence and heat flux for traffic                                                                           	
 use_stability_flag              	1           Use atmospheric stability in sensible heat fux calculation. Default is 1 (on)
+use_energy_correction_flag      	1           	Add correction term to the energy balance, based on the difference between modeled and observed surface temperature.	
 ACTIVITY                        	                                                                                                                                            	
 use_salting_data_1_flag         	1           Allows salting, either from the input data or by rule for salt type 1 (NaCl). Other than 1 is scaling                           	
 use_salting_data_2_flag         	0           Allows salting, either from the input data or by rule for salt type 2 (Binder). Other than 1 is scaling                         	
@@ -47,6 +48,8 @@ salt_after_ploughing_flag       	1           Will salt after all snow ploughing 
 OUTPUT                          	                                                                                                                                            	
 plot_type_flag                  	2           1 = hourly, 2 = daily, 3 = daily cycle, 4 = 1/2 daily means , 5 = day of week, 7= weekly , 8= monthly                           	
 save_type_flag                  	1           1 = save data, 2 = save plots, 3 = save both, 4 = save data as text, 0 = none                                                   	
+save_init_data_as_netcdf_flag   	1   	       0 = save as .txt files, 1 = save as .nc files
+save_road_summary_data_as_netcdf_flag	1 	       0 = save as .txt files, 1 = save as .nc files, 3 = save as both .txt files and .nc files.
 OSPM                            	                                                                                                                                            	
 use_ospm_flag                   	0           Runs OSPM for dispersion. 1 uses NORTRIP data, 2 uses ospm data in input file sheet 'OSPM' (2 NOT ACTIVE!)                      	
 FORECAST
