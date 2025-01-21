@@ -358,13 +358,13 @@
             not_dissolved_ratio_temp=1.
         endif
         do t=1,num_tyre
-        do v=1,num_veh
-            f_0_suspension_temp(1:num_size)=h_sus(ro)*f_0_suspension(s,1:num_size,t,v)*f_susroad_func(traffic_data(V_veh_index(v),ti,ro),a_sus)
-            R_suspension_array(1:num_size)=traffic_data(N_t_v_index(t,v),ti,ro)/n_lanes(ro)*veh_track(tr)*f_0_suspension_temp(1:num_size) &
-                *(f_q(s,ti,tr,ro)*h_0_q_road(1:num_size)+(1.-h_0_q_road(1:num_size))) &
-                *not_dissolved_ratio_temp*road_suspension_flag        
-            R_suspension(s,1:num_size)=R_suspension(s,1:num_size)+R_suspension_array(1:num_size)
-        enddo
+            do v=1,num_veh
+                f_0_suspension_temp(1:num_size)=h_sus(ro)*f_0_suspension(s,1:num_size,t,v)*f_susroad_func(traffic_data(V_veh_index(v),ti,ro),a_sus)
+                R_suspension_array(1:num_size)=traffic_data(N_t_v_index(t,v),ti,ro)/n_lanes(ro)*veh_track(tr)*f_0_suspension_temp(1:num_size) &
+                    *(f_q(s,ti,tr,ro)*h_0_q_road(1:num_size)+(1.-h_0_q_road(1:num_size))) &
+                    *not_dissolved_ratio_temp*road_suspension_flag        
+                R_suspension(s,1:num_size)=(R_suspension(s,1:num_size)+R_suspension_array(1:num_size))
+            enddo
         enddo
 
         !Diagnose the suspension sink 

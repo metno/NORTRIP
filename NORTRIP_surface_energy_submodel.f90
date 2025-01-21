@@ -283,11 +283,11 @@
             !Limit the amount that can be condensed
             if (limit_condens.eq.1) then
                 if (g_equil.le.g_min.and.evap.lt.0) then !Allows unlimitted condensation if the equilibrium g is > g threshold
-                if (evap.le.(g_s_surf-g_equil)/dt_h.and.evap.lt.0) then                   
-                    evap=min(0.,(g_s_surf-g_equil)/dt_h)
-                    L=evap*lambda_mixed*dt_h/dt_sec
-                    L=max(L_min,min(L_max,L))
-                endif
+                    if (evap.le.(g_s_surf-g_equil)/dt_h.and.evap.lt.0) then                   
+                        evap=min(0.,(g_s_surf-g_equil)/dt_h)
+                        L=evap*lambda_mixed*dt_h/dt_sec
+                        L=max(L_min,min(L_max,L))
+                    endif
                 endif
             endif
 

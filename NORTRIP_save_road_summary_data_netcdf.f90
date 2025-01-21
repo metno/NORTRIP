@@ -154,7 +154,6 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"description","Net short wave radiation"))
     call check(nf90_put_att(ncid,varid,"long_name","net_downward_shortwave_flux_in_air")) 
     
-    
     call check(nf90_def_var(ncid, "LW_rad_net", nf90_float, (/f_dimid,t_dimid/),varid)) 
     call check(nf90_put_att(ncid,varid, "units", "W/m2"))
     call check(nf90_put_att(ncid,varid,"description","Net long wave radiation"))
@@ -210,7 +209,7 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"description","Snow mass on the road surface (water equivalent)")) 
     call check(nf90_put_att(ncid,varid,"long_name","snow_on_surface_as_water_equivalent")) 
     
-    call check(nf90_def_var(ncid, "f_q", nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Give this a more descriptive name?
+    call check(nf90_def_var(ncid, "f_q", nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Give this a more descriptive name? This is also just for road wear, should it also be written for the other sources or is it always the same?
     call check(nf90_put_att(ncid,varid, "units", "1"))
     call check(nf90_put_att(ncid,varid,"description","Surface retainment factor (0-1) based on the surface moisture. All is retained when value is zero.")) 
     call check(nf90_put_att(ncid,varid,"long_name","surface_retainment_factor")) 
@@ -256,25 +255,31 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
     call check(nf90_put_att(ncid,varid,"long_name","mass_of_alternative_salt_on_road"))
 
     if ( ANY(roadtype_index==normal_roadtype) ) then  !TODO: This if-test could be further refined to include variables only applicable for e.g tunnels
+        
+        
+        call check(nf90_def_var(ncid, "f_conc", nf90_float,(/f_dimid,t_dimid/),varid))     
+        call check(nf90_put_att(ncid,varid,"description","Factor used for converting from emissions to concentrations.")) 
+        call check(nf90_put_att(ncid,varid,"long_name","f_concentration"))
+
         call check(nf90_def_var(ncid, "PM10_Emissions_tot", nf90_float, (/f_dimid,t_dimid/),varid))     
-        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
+        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
         call check(nf90_put_att(ncid,varid,"description","Total non-exhaust emissions of PM10")) 
 
         call check(nf90_def_var(ncid, "PM25_Emissions_tot", nf90_float, (/f_dimid,t_dimid/),varid)) 
-        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
+        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
         call check(nf90_put_att(ncid,varid,"description","Total non-exhaust emissions of PM2.5")) 
         
         call check(nf90_def_var(ncid, "PM10_Emissions_roadwear", nf90_float, (/f_dimid,t_dimid/),varid)) 
-        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
+        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
         call check(nf90_put_att(ncid,varid,"description","Emissions of PM10 from roadwear")) 
         
         call check(nf90_def_var(ncid, "PM10_Emissions_tyrewear", nf90_float, (/f_dimid,t_dimid/),varid)) 
-        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
+        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
         call check(nf90_put_att(ncid,varid,"description","Emissions of PM10 from tyrewear")) 
         
-        call check(nf90_def_var(ncid, "PM10_Emissions_breakwear", nf90_float, (/f_dimid,t_dimid/),varid)) 
-        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) !NOTE: doublecheck units
-        call check(nf90_put_att(ncid,varid,"description","Emissions of PM10 from breakwear")) 
+        call check(nf90_def_var(ncid, "PM10_Emissions_brakewear", nf90_float, (/f_dimid,t_dimid/),varid)) 
+        call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
+        call check(nf90_put_att(ncid,varid,"description","Emissions of PM10 from brakewear")) 
         
         call check(nf90_def_var(ncid, "PM10_Emissions_sand", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "g/km/h")) 
@@ -310,7 +315,7 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
 
         call check(nf90_def_var(ncid, "Traffic", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "veh")) 
-        call check(nf90_put_att(ncid,varid,"description","Annual average daily traffic (AADT)")) 
+        call check(nf90_put_att(ncid,varid,"description","Vehicles per timestep")) 
         
         call check(nf90_def_var(ncid, "HDV", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "%")) 
@@ -336,6 +341,15 @@ subroutine NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_def_var(ncid, "Mass_dust_PM200", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
         call check(nf90_put_att(ncid,varid,"description","Mass of non-suspendable dust (>200 micrometer) on road"))
+
+        call check(nf90_def_var(ncid, "Mass_dust_PM10", nf90_float, (/f_dimid,t_dimid/),varid)) 
+        call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
+        call check(nf90_put_att(ncid,varid,"description","Mass of PM10 particles on road"))
+
+        call check(nf90_def_var(ncid, "Mass_dust_PM25", nf90_float, (/f_dimid,t_dimid/),varid)) 
+        call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
+        call check(nf90_put_att(ncid,varid,"description","Mass of PM25 particles on road"))
+        
         
         call check(nf90_def_var(ncid, "Mass_sand_PM200", nf90_float, (/f_dimid,t_dimid/),varid)) 
         call check(nf90_put_att(ncid,varid, "units", "g/m2")) !TODO: Check units and description
@@ -386,7 +400,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
     integer :: a(num_date_index)
     real    :: conversion
     real, dimension(max_time_save) :: water,snow,ice
-    real, parameter :: surface_moisture_cutoff = 0.01
+    real, parameter :: surface_moisture_cutoff = -5 !0.01
 
     integer, dimension(2) :: runway_match
     integer :: runway_index
@@ -584,6 +598,10 @@ subroutine NORTRIP_save_road_summary_data_netcdf
                 fr_hdv=0.
             endwhere
 
+            
+            call check(nf90_inq_varid(ncid, "f_conc",varid))
+            call check(nf90_put_var(ncid, varid, airquality_data(f_conc_index,:,ro), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+
 
             call check(nf90_inq_varid(ncid, "Traffic",varid))
             call check(nf90_put_var(ncid, varid, traffic_data(N_total_index,:,ro), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
@@ -615,7 +633,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
             call check(nf90_inq_varid(ncid, "PM10_Emissions_tyrewear",varid))
             call check(nf90_put_var(ncid, varid, sum(E_road_data(tyre_index,pm_10,E_total_index,:,:,ro),dim=2), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
-            call check(nf90_inq_varid(ncid, "PM10_Emissions_breakwear",varid))
+            call check(nf90_inq_varid(ncid, "PM10_Emissions_brakewear",varid))
             call check(nf90_put_var(ncid, varid, sum(E_road_data(brake_index,pm_10,E_total_index,:,:,ro),dim=2), start = (/save_road_counter,1/), count = (/1,max_time_save/)))
 
             call check(nf90_inq_varid(ncid, "PM10_Emissions_sand",varid))
@@ -644,6 +662,12 @@ subroutine NORTRIP_save_road_summary_data_netcdf
 
             call check(nf90_inq_varid(ncid, "Mass_dust_PM200",varid))
             call check(nf90_put_var(ncid, varid, sum(M_road_data(total_dust_index,pm_200,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+    
+            call check(nf90_inq_varid(ncid, "Mass_dust_PM10",varid))
+            call check(nf90_put_var(ncid, varid, sum(M_road_data(total_dust_index,pm_10,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
+    
+            call check(nf90_inq_varid(ncid, "Mass_dust_PM25",varid))
+            call check(nf90_put_var(ncid, varid, sum(M_road_data(total_dust_index,pm_25,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
     
             call check(nf90_inq_varid(ncid, "Mass_sand_PM200",varid))
             call check(nf90_put_var(ncid, varid, sum(M_road_data(sand_index,pm_200,:,:,ro),dim=2)*conversion, start = (/save_road_counter,1/), count = (/1,max_time_save/)))
