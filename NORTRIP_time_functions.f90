@@ -577,7 +577,7 @@
     double precision date_to_number
 
     a=a_in
-    ref_year=2000
+    ref_year=1970
     b_start=0
     b_end=0
     year=a(1)
