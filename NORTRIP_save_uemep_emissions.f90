@@ -377,8 +377,7 @@
             finished_filename=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(file_str)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
-            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
-           
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
             endif
             
             !Put in date in path and filename if required
@@ -715,6 +714,13 @@
     call date_to_datestr(a_start,uemep_date_format_str,uemep_start_date_str)
     call date_to_datestr(a_end,uemep_date_format_str,uemep_end_date_str)
 
+    !Set the finished filename, but only if the emissions flag is false since this also saves a finished file.
+    if (trim(finished_file_append).ne.''.and..not.NORTRIP_save_uEMEP_emissions_flag) then
+            finished_filename=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
+    endif
     
     do x_loop=1,4   
         
