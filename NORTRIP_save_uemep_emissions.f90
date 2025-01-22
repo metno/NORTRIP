@@ -591,10 +591,12 @@
                 if (isnan(E_road_data(total_dust_index,pm_10,E_total_index,ti,tr,ro)).or.isnan(E_road_data(total_dust_index,pm_25,E_total_index,ti,tr,ro))) then
                     !E_road_data(total_dust_index,x,E_total_index,ti,tr,ro))=0.
                     write(unit_logfile,'(A,2i12,A,i12,A,A)')'WARNING: NaN found for road link index/ID ',ro,road_ID(ro),' at time index ',ti,' and time ',trim(date_str(3,ti))
+                    stop
                 endif
                 if (E_road_data(total_dust_index,pm_10,E_total_index,ti,tr,ro).lt.0.or.E_road_data(total_dust_index,pm_25,E_total_index,ti,tr,ro).lt.0) then
                     !E_road_data(total_dust_index,x,E_total_index,ti,tr,ro))=0.
                     write(unit_logfile,'(A,2i12,A,i12,A,A)')'WARNING: Negative emission found for road link index/ID ',ro,road_ID(ro),' at time index ',ti,' and time ',trim(date_str(3,ti))
+                    stop
                 endif
             enddo 
         enddo
