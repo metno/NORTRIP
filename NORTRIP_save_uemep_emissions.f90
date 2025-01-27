@@ -377,8 +377,7 @@
             finished_filename=trim(path_output_emis)//trim(filename_output_emis)//'_'//trim(file_str)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
-            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
-           
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
             endif
             
             !Put in date in path and filename if required
@@ -592,10 +591,12 @@
                 if (isnan(E_road_data(total_dust_index,pm_10,E_total_index,ti,tr,ro)).or.isnan(E_road_data(total_dust_index,pm_25,E_total_index,ti,tr,ro))) then
                     !E_road_data(total_dust_index,x,E_total_index,ti,tr,ro))=0.
                     write(unit_logfile,'(A,2i12,A,i12,A,A)')'WARNING: NaN found for road link index/ID ',ro,road_ID(ro),' at time index ',ti,' and time ',trim(date_str(3,ti))
+                    stop
                 endif
                 if (E_road_data(total_dust_index,pm_10,E_total_index,ti,tr,ro).lt.0.or.E_road_data(total_dust_index,pm_25,E_total_index,ti,tr,ro).lt.0) then
                     !E_road_data(total_dust_index,x,E_total_index,ti,tr,ro))=0.
                     write(unit_logfile,'(A,2i12,A,i12,A,A)')'WARNING: Negative emission found for road link index/ID ',ro,road_ID(ro),' at time index ',ti,' and time ',trim(date_str(3,ti))
+                    stop
                 endif
             enddo 
         enddo
@@ -715,6 +716,13 @@
         call date_to_datestr(a_start,uemep_date_format_str,uemep_start_date_str)
         call date_to_datestr(a_end,uemep_date_format_str,uemep_end_date_str)
 
+    !Set the finished filename, but only if the emissions flag is false since this also saves a finished file.
+    if (trim(finished_file_append).ne.''.and..not.NORTRIP_save_uEMEP_emissions_flag) then
+            finished_filename=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(uemep_start_date_str)//'.'//trim(finished_file_append)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
+            call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
+    endif
         
         do x_loop=1,4   
             
