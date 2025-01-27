@@ -27,7 +27,7 @@ subroutine open_NETCDF_init_file(ncid,exists)
     !Check file for reading
     inquire(file=trim(filename), exist = exists)
     if (.not.exists) then
-        if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: Initial netcdf input file does not exist: '//trim(filename)
+        if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: (open_NETCDF_init_file) Initial netcdf input file does not exist: '//trim(filename)
         return 
     else 
         call check(NF90_OPEN(filename,nf90_nowrite, ncid))
@@ -76,7 +76,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid)
     !Check file for reading
     inquire(file=trim(filename), exist = exists)
     if (.not.exists) then
-        if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: Initial netcdf input file does not exist: '//trim(filename)
+        if (ro_tot.eq.1) write(unit_logfile,'(A)')' WARNING: (NORTRIP_read_init_data_netcdf) Initial netcdf input file does not exist: '//trim(filename)
         return 
     endif
     !If it is the first loop then check if the dimensions match
