@@ -460,4 +460,58 @@
     end function R_0_wind_func
 !----------------------------------------------------------------------
 
+!----------------------------------------------------------------------
+    function Energy_correction_func(dE1,dE2)
+        !Energy_correction_func: Used for correcting energy balance based on observed road temperature
+        implicit none
+
+        !Input
+        real, intent(in) :: dE1 !Energy difference in last time step
+        real, intent(in) :: dE2 !Energy difference in second to last timestep
+        !Output
+        real :: Energy_correction_func
+        !Local
+        real,parameter :: f = 0.5 !Determines weighting between dE1 and dE2. TODO: Consider to move to param file
+
+        Energy_correction_func = f*dE1 + (1.-f)*dE2
     
+    end function Energy_correction_func
+!----------------------------------------------------------------------    
+
+!----------------------------------------------------------------------    
+    function relaxation_func(forecast_step,dt)
+        !Used to calculate a relaxation term for the energy correction during the course of the forecast
+
+        !Input
+        integer, intent(in) :: forecast_step
+        real, intent(in) :: dt
+
+        !Local
+        real :: start
+        real :: end 
+        real :: step 
+        integer :: i 
+        integer,parameter :: h = 3 !Relaxation time: 3 hours 
+        real, dimension(nint(h/dt)) :: lin_array !Length of array depends
+
+        !result: 
+        real  :: relaxation_func
+
+        !Generate array in which the values decrease from 1 to 0 in 3 hours
+        start = 1.0
+        end = 0.0
+        step = (end -start)/(nint(h/dt)- 1)
+
+        do i = 1, nint(h/dt)
+            lin_array(i) = start + (i - 1) * step
+        end do
+
+        !Read value from array
+        if (forecast_step-nint(1/dt) > nint(h/dt)) then
+            relaxation_func = 0.0
+        else
+            relaxation_func = lin_array(forecast_step-nint(1/dt))
+        end if
+    end function relaxation_func
+
+    !----------------------------------------------------------------------    

@@ -38,6 +38,7 @@ subroutine NORTRIP_initialise_time
         call date_to_datestr(a,trim('yyyy.mm.dd HH'),date_str(1,ti))
         call date_to_datestr(a,trim('HH:MM dd mm '),date_str(2,ti))
         call date_to_datestr(a,date_format_str,date_str(3,ti))
+        call date_to_datestr(a,trim('yyyy-mm-dd HH:MM:SS'),date_str(4,ti))
     enddo
     
     a(1:5)=date_data(1:5,1)
@@ -89,7 +90,7 @@ subroutine NORTRIP_initialise_time
     write(unit_logfile,'(2A24,i6)') 'End date: ',trim(end_date_str),max_time
     write(unit_logfile,'(2A24,i6)') 'Start save date: ',trim(start_date_save_str),min_time_save
     write(unit_logfile,'(2A24,i6)') 'End save date: ',trim(end_date_save_str),max_time_save
-    write(unit_logfile,'(A24,f6.1)') 'Time step (hours): ',dt
+    write(unit_logfile,'(A24,f6.2)') 'Time step (hours): ',dt
   	write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
     !if (unit_logfile.gt.0) then

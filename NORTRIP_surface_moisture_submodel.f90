@@ -55,14 +55,13 @@
     real observed_moisture_cutoff_value_temp
     real f_q_temp,f_q_binder_temp,f_q_brake_temp
     real :: f_q_limit=1.0e-8
-    
     !Functions
     real r_aero_func
     real r_aero_func_with_stability
     real f_spray_func
     real mass_balance_func
     real dewpoint_from_RH_func
-    
+    real relaxation_func
     !Flag
     logical :: use_stability=.false.
     
@@ -187,7 +186,7 @@
     if (use_traffic_turb_flag.eq.1) then
         do v=1,num_veh
             road_meteo_data(H_traffic_index,ti,tr,ro)=road_meteo_data(H_traffic_index,ti,tr,ro) &
-                +H_veh(v)*min(1.,length_veh(v)/traffic_data(V_veh_index(v),ti,ro)*traffic_data(N_v_index(v),ti,ro)/(n_lanes(ro)*1000))            
+                +H_veh(v)*min(1.,length_veh(v)/traffic_data(V_veh_index(v),ti,ro)*traffic_data(N_v_index(v),ti,ro)/(n_lanes(ro)*1000))
         enddo
     endif
 
@@ -206,32 +205,35 @@
         if (g_road_0_data(snow_index).gt.dz_snow_albedo) then
             short_rad_net_temp=road_meteo_data(short_rad_net_index,ti,tr,ro)*(1.-albedo_snow)/(1.-albedo_road(ro))
         endif
-               
         call surface_energy_submodel_4 &
             (short_rad_net_temp &
             ,meteo_data(long_rad_in_index,ti,ro) &
-	        ,road_meteo_data(H_traffic_index,ti,tr,ro) &
-	        ,road_meteo_data(r_aero_t_index,ti,tr,ro) &
-	        ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
-	        ,meteo_data(T_a_index,ti,ro) &
-	        ,T_s_0 &
-	        ,road_meteo_data(T_sub_index,ti,tr,ro) &
-	        ,meteo_data(RH_index,ti,ro) &
-	        ,road_meteo_data(RH_s_index,ti,tr,ro) &
-	        ,RH_s_0 &
-	        ,meteo_data(pressure_index,ti,ro) &
-	        ,dzs &
-	        ,dt &
-	        ,g_road_0_data(water_index) &
-	        ,g_road_0_data(ice_index)+g_road_0_data(snow_index) &
-	        ,g_road_evaporation_thresh &
+            ,road_meteo_data(H_traffic_index,ti,tr,ro) &
+            ,road_meteo_data(r_aero_t_index,ti,tr,ro) &
+            ,road_meteo_data(r_aero_q_index,ti,tr,ro) &
+            ,meteo_data(T_a_index,ti,ro) &
+            ,T_s_0 &
+            ,road_meteo_data(road_temperature_obs_index,ti,tr,ro) &
+            ,road_meteo_data(T_sub_index,ti,tr,ro) &
+            ,meteo_data(RH_index,ti,ro) &
+            ,road_meteo_data(RH_s_index,ti,tr,ro) &
+            ,RH_s_0 &
+            ,meteo_data(pressure_index,ti,ro) &
+            ,dzs &
+            ,dt &
+            ,g_road_0_data(water_index) &
+            ,g_road_0_data(ice_index)+g_road_0_data(snow_index) &
+            ,g_road_evaporation_thresh &
             ,M2_road_salt_0 &
             ,salt_type &
-	        ,sub_surf_param &
-	        ,surface_humidity_flag &
-	        ,use_subsurface_flag &
+            ,sub_surf_param &
+            ,surface_humidity_flag &
+            ,use_subsurface_flag &
             ,use_salt_humidity_flag &
             ,use_melt_freeze_energy_flag &
+            ,road_meteo_data(E_corr_index,max(min_time,ti-1),tr,ro) &
+            ,ti &
+            ,use_energy_correction_flag &
             !Outputs start here
             ,road_meteo_data(T_s_index,ti,tr,ro) &  
             ,road_meteo_data(T_melt_index,ti,tr,ro) &
@@ -248,9 +250,22 @@
             ,road_meteo_data(long_rad_out_index,ti,tr,ro) &
             ,road_meteo_data(long_rad_net_index,ti,tr,ro) &
             ,road_meteo_data(rad_net_index,ti,tr,ro) &
-            ,road_meteo_data(G_sub_index,ti,tr,ro))
-            
-         !Taken out of the call to avoid overlapping in and outputs to the subroutine
+            ,road_meteo_data(G_sub_index,ti,tr,ro) &
+            ,road_meteo_data(E_diff_index,ti,tr,ro))
+
+            if (use_energy_correction_flag.eq.1) then
+                if (ti > nint(1/dt)  ) then
+                    road_meteo_data(E_corr_index,ti,tr,ro) = sum(road_meteo_data(E_corr_index,1:nint(1/dt),tr,ro))/(nint(1/dt))*relaxation_func(ti,dt)
+                else 
+                    road_meteo_data(E_corr_index,ti,tr,ro) = road_meteo_data(E_diff_index,ti,tr,ro)
+                    !Energy_correction_func(road_meteo_data(E_diff_index,ti,tr,ro),road_meteo_data(E_diff_index,max(1,ti-1),tr,ro))
+                end if
+            else
+                road_meteo_data(E_corr_index,ti,tr,ro) =0.
+            end if
+    
+
+        !Taken out of the call to avoid overlapping in and outputs to the subroutine
         road_meteo_data(RH_s_index,ti,tr,ro)=RH_s_final
                 
         !Because does not differentiate between snow and ice resdistribute the

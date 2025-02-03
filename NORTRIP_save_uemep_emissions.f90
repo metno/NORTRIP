@@ -299,7 +299,7 @@
     if (ro_tot.eq.1) then
         
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
-	write(unit_logfile,'(A)') 'Saving uEMEP emissions to file'
+	write(unit_logfile,'(A)') 'Saving uEMEP emissions all to file'
 	write(unit_logfile,'(A)') '----------------------------------------------------------------'
 
     !Set start and end date stamps
@@ -652,69 +652,69 @@
     endif
     
     if (grid_inside) then
-    do j=grid_start(2),grid_end(2)
-    do i=grid_start(1),grid_end(1)
+        do j=grid_start(2),grid_end(2)
+            do i=grid_start(1),grid_end(1)
+                        
+                x_grid(1)=grid_0(1)+grid_delta(1)*(i-1)
+                x_grid(2)=grid_0(1)+grid_delta(1)*i
+                y_grid(1)=grid_0(2)+grid_delta(2)*(j-1)
+                y_grid(2)=grid_0(2)+grid_delta(2)*j
+                                        
+                do ro=n_roads_start,n_roads_end                   
+                    !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then 
+                    !if (line_or_grid_data_flag(ro).ne.3) write(*,*) line_or_grid_data_flag(ro) 
+                    if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
                     
-        x_grid(1)=grid_0(1)+grid_delta(1)*(i-1)
-        x_grid(2)=grid_0(1)+grid_delta(1)*i
-        y_grid(1)=grid_0(2)+grid_delta(2)*(j-1)
-        y_grid(2)=grid_0(2)+grid_delta(2)*j
-                                
-        do ro=n_roads_start,n_roads_end                   
-            !if (adt_road(ro).ge.grid_adt_cutoff(1).and.adt_road(ro).lt.grid_adt_cutoff(2)) then 
-            !if (line_or_grid_data_flag(ro).ne.3) write(*,*) line_or_grid_data_flag(ro) 
-            if (line_or_grid_data_flag(ro).eq.2.or.line_or_grid_data_flag(ro).eq.3) then
-            
-            !Check this logic!!!!
-            !if (line_or_grid_data_flag(ro).ge.1) then
-                !f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
-                f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_temp(1:2),y_temp(1:2))
-                !if (f_grid(ro).lt.1.0.and.f_grid(ro).gt.0.0) write(*,*) ro,f_grid(ro)
-            else
-                f_grid(ro)=0.
-            endif 
-        enddo
-                   
-        do x_loop=1,4   
-            x=save_size(x_loop)
-            do ti=min_time_save,max_time_save             
-                do ro=n_roads_start,n_roads_end
-                    if (x.eq.pm_exhaust) then
-                        emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
-                    elseif (x.eq.nox_exhaust) then
-                        emis_road=0.
-                        if (available_airquality_data(NOX_emis_index)) then
-                            emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
-                        elseif (NOX_EF_available.ne.0) then
-                            do v=1,num_veh
-                                emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
-                            enddo
-                        else
-                            emis_road=0.
-                        endif                              
+                    !Check this logic!!!!
+                    !if (line_or_grid_data_flag(ro).ge.1) then
+                        !f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_road(:,ro),y_road(:,ro))
+                        f_grid(ro)=line_fraction_in_grid_func(x_grid,y_grid,x_temp(1:2),y_temp(1:2))
+                        !if (f_grid(ro).lt.1.0.and.f_grid(ro).gt.0.0) write(*,*) ro,f_grid(ro)
                     else
-                        emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))
-                    endif                    
-                    emis_grid(i,j,x,ti)=emis_grid(i,j,x,ti)+length_road_km(ro)*f_grid(ro)*emis_road*conversion
-                enddo                                   
-                !emis_grid(i,j,x,ti)=sum(length_road(:)*f_grid(:)*sum(E_road_data(total_dust_index,x,E_total_index,ti,:,:),1))                  
-                !write(*,*) length_road(ro),f_grid(ro),E_road_data(total_dust_index,x,E_total_index,ti,tr,ro),conversion
+                        f_grid(ro)=0.
+                    endif 
+                enddo
+                    
+                do x_loop=1,4   
+                    x=save_size(x_loop)
+                    do ti=min_time_save,max_time_save             
+                        do ro=n_roads_start,n_roads_end
+                            if (x.eq.pm_exhaust) then
+                                emis_road=sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
+                            elseif (x.eq.nox_exhaust) then
+                                emis_road=0.
+                                if (available_airquality_data(NOX_emis_index)) then
+                                    emis_road=emis_road+airquality_data(NOX_emis_index,ti,ro)*conversion
+                                elseif (NOX_EF_available.ne.0) then
+                                    do v=1,num_veh
+                                        emis_road=emis_road+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                                    enddo
+                                else
+                                    emis_road=0.
+                                endif                              
+                            else
+                                emis_road=sum(E_road_data(total_dust_index,x,E_total_index,ti,:,ro))
+                            endif                    
+                            emis_grid(i,j,x,ti)=emis_grid(i,j,x,ti)+length_road_km(ro)*f_grid(ro)*emis_road*conversion
+                        enddo                                   
+                        !emis_grid(i,j,x,ti)=sum(length_road(:)*f_grid(:)*sum(E_road_data(total_dust_index,x,E_total_index,ti,:,:),1))                  
+                        !write(*,*) length_road(ro),f_grid(ro),E_road_data(total_dust_index,x,E_total_index,ti,tr,ro),conversion
+                    enddo
+                enddo
+
             enddo
         enddo
-
-    enddo
-    enddo
     endif
     
     !Save if the last road
     if (ro_tot.eq.n_roads_total) then 
     
-    unit_count=0
-    
-    !Set date text in file
-    n_time_save=max_time_save-min_time_save+1
-    call date_to_datestr(a_start,uemep_date_format_str,uemep_start_date_str)
-    call date_to_datestr(a_end,uemep_date_format_str,uemep_end_date_str)
+        unit_count=0
+        
+        !Set date text in file
+        n_time_save=max_time_save-min_time_save+1
+        call date_to_datestr(a_start,uemep_date_format_str,uemep_start_date_str)
+        call date_to_datestr(a_end,uemep_date_format_str,uemep_end_date_str)
 
     !Set the finished filename, but only if the emissions flag is false since this also saves a finished file.
     if (trim(finished_file_append).ne.''.and..not.NORTRIP_save_uEMEP_emissions_flag) then
@@ -723,89 +723,89 @@
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)
             call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
     endif
-    
-    do x_loop=1,4   
         
-        x=save_size(x_loop)
-        unit_count=x_loop
-        unit_out=unit_save_grid_emissions+unit_count
-      
-        if (x.eq.pm_25) pm_str='PM25'
-        if (x.eq.pm_10) pm_str='PM10'
-        if (x.eq.pm_exhaust) pm_str='EP'
-        if (x.eq.nox_exhaust) pm_str='NOX'
+        do x_loop=1,4   
+            
+            x=save_size(x_loop)
+            unit_count=x_loop
+            unit_out=unit_save_grid_emissions+unit_count
+        
+            if (x.eq.pm_25) pm_str='PM25'
+            if (x.eq.pm_10) pm_str='PM10'
+            if (x.eq.pm_exhaust) pm_str='EP'
+            if (x.eq.nox_exhaust) pm_str='NOX'
 
-        
-            !Open the outputfile for date
-            temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
-        
-            !Put in date in path and filename if required
-            call date_to_datestr_bracket(a_start,temp_name,temp_name)
-            call date_to_datestr_bracket(a_start,temp_name,temp_name)
-            call date_to_datestr_bracket(a_start,temp_name,temp_name)
+            
+                !Open the outputfile for date
+                temp_name=trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//trim(pm_str)//'_'//trim(uemep_start_date_str)//'-'//trim(uemep_end_date_str)//'.txt'
+            
+                !Put in date in path and filename if required
+                call date_to_datestr_bracket(a_start,temp_name,temp_name)
+                call date_to_datestr_bracket(a_start,temp_name,temp_name)
+                call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
-            write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
+                write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
 
-            open(unit_out,file=temp_name,status='replace')
-    
-            write(unit_out,'(A)') '# NORTRIP grid emission output for uEMEP. Ordered visually with max y position at top'
-            if (x.eq.pm_25.or.x.eq.pm_10) then
-            if (available_airquality_data(EP_emis_index).or.exhaust_EF_available.ne.0) then
-                write(unit_out,'(A,A)') '# Hourly traffic non-exhaust and exhaust emission for compound: ',trim(pm_str)
-            else
-                write(unit_out,'(A,A)') '# Hourly traffic non-exhaust only emission for compound: ',trim(pm_str)            
-            endif
-            endif
-            
-            if (x.eq.pm_exhaust) then
-            if (available_airquality_data(EP_emis_index).or.exhaust_EF_available.ne.0) then
-                write(unit_out,'(A,A)') '# Hourly traffic exhaust emission for compound: ',trim(pm_str)
-            else
-                write(unit_out,'(A)') '# No exhaust emission data available'          
-            endif
-            endif
-            
-            if (x.eq.nox_exhaust) then
-            if (available_airquality_data(NOX_emis_index).or.NOX_EF_available.ne.0) then
-                write(unit_out,'(A,A)') '# Hourly traffic exhaust emission for compound: ',trim(pm_str)
-            else
-                write(unit_out,'(A)') '# No exhaust emission data available'          
-            endif
-            endif
-            
-            write(unit_out,'(A)')   '# Emission data unit'
-            write(unit_out,'(A)')   'g/hr'
-            write(unit_out,'(A)')   '# Emission data start and end date'
-            write(unit_out,'(A)')    trim(uemep_start_date_str)//'   '//trim(uemep_end_date_str)
-            write(unit_out,'(A)')   '# Number of grids (i,j)     Number of hours'
-            write(unit_out,'(3i)')   grid_dim(1),grid_dim(2),n_time_save      
-            write(unit_out,'(A)')   '# Lower left center (x,y) grid position (m)'
-            write(unit_out,'(2f12.2)')   grid_0(1),grid_0(2)     
-            write(unit_out,'(A)')   '# Grid spacing (x,y) (m)'
-            write(unit_out,'(2f12.2)')   grid_delta(1),grid_delta(2)   
-            
-            emis_sum(x)=0.
-                    
+                open(unit_out,file=temp_name,status='replace')
         
-        !Save the emission data in time
-        do ti=min_time_save,max_time_save
-        
-            write(unit_out,'(i8)') ti
-            do j=grid_dim(2),1,-1
-                write(unit_out,'(<grid_dim(1)>es12.3)') (emis_grid(i,j,x,ti),i=1,grid_dim(1))
-                do i=1,grid_dim(1)
-                    emis_sum(x)=emis_sum(x)+emis_grid(i,j,x,ti)
+                write(unit_out,'(A)') '# NORTRIP grid emission output for uEMEP. Ordered visually with max y position at top'
+                if (x.eq.pm_25.or.x.eq.pm_10) then
+                if (available_airquality_data(EP_emis_index).or.exhaust_EF_available.ne.0) then
+                    write(unit_out,'(A,A)') '# Hourly traffic non-exhaust and exhaust emission for compound: ',trim(pm_str)
+                else
+                    write(unit_out,'(A,A)') '# Hourly traffic non-exhaust only emission for compound: ',trim(pm_str)            
+                endif
+                endif
+                
+                if (x.eq.pm_exhaust) then
+                if (available_airquality_data(EP_emis_index).or.exhaust_EF_available.ne.0) then
+                    write(unit_out,'(A,A)') '# Hourly traffic exhaust emission for compound: ',trim(pm_str)
+                else
+                    write(unit_out,'(A)') '# No exhaust emission data available'          
+                endif
+                endif
+                
+                if (x.eq.nox_exhaust) then
+                if (available_airquality_data(NOX_emis_index).or.NOX_EF_available.ne.0) then
+                    write(unit_out,'(A,A)') '# Hourly traffic exhaust emission for compound: ',trim(pm_str)
+                else
+                    write(unit_out,'(A)') '# No exhaust emission data available'          
+                endif
+                endif
+                
+                write(unit_out,'(A)')   '# Emission data unit'
+                write(unit_out,'(A)')   'g/hr'
+                write(unit_out,'(A)')   '# Emission data start and end date'
+                write(unit_out,'(A)')    trim(uemep_start_date_str)//'   '//trim(uemep_end_date_str)
+                write(unit_out,'(A)')   '# Number of grids (i,j)     Number of hours'
+                write(unit_out,'(3i)')   grid_dim(1),grid_dim(2),n_time_save      
+                write(unit_out,'(A)')   '# Lower left center (x,y) grid position (m)'
+                write(unit_out,'(2f12.2)')   grid_0(1),grid_0(2)     
+                write(unit_out,'(A)')   '# Grid spacing (x,y) (m)'
+                write(unit_out,'(2f12.2)')   grid_delta(1),grid_delta(2)   
+                
+                emis_sum(x)=0.
+                        
+            
+            !Save the emission data in time
+            do ti=min_time_save,max_time_save
+            
+                write(unit_out,'(i8)') ti
+                do j=grid_dim(2),1,-1
+                    write(unit_out,'(<grid_dim(1)>es12.3)') (emis_grid(i,j,x,ti),i=1,grid_dim(1))
+                    do i=1,grid_dim(1)
+                        emis_sum(x)=emis_sum(x)+emis_grid(i,j,x,ti)
+                    enddo
                 enddo
-            enddo
 
-        enddo
+            enddo
+            
+            close (unit_out)
         
-        close (unit_out)
+            write(unit_logfile,'(A,a,a,es12.2)') ' Total emissions of ',trim(pm_str),' (kg) for all grids over this period = ',emis_sum(x)*1.e-3*dt
     
-        write(unit_logfile,'(A,a,a,es12.2)') ' Total emissions of ',trim(pm_str),' (kg) for all grids over this period = ',emis_sum(x)*1.e-3*dt
- 
-        
-    enddo
+            
+        enddo
     
     endif
    
