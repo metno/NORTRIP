@@ -423,7 +423,7 @@ subroutine NORTRIP_save_road_summary_data_netcdf
         write(unit_logfile,'(A)') '================================================================'
         write(unit_logfile,'(A)') 'Create netcdf summary file'
         write(unit_logfile,'(A)') '================================================================'
-        write(*,*) "Filename: ", filename
+        write(unit_logfile,'(2A)') "Filename= ", trim(filename)
         call NORTRIP_create_summary_netcdf(filename,ncid)
         call check(nf90_open(filename,nf90_write,ncid))
 

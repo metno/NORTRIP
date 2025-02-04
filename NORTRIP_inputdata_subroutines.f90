@@ -841,7 +841,7 @@ subroutine read_NORTRIP_inputdata
         NORTRIP_save_uEMEP_grid_emissions_flag=.true.
         NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
-        NORTRIP_save_road_summary_data_flag=.false.
+        NORTRIP_save_road_summary_data_flag=.true.
         NORTRIP_save_road_emission_activity_data_flag=.true.
         use_ospm_flag=0
     endif
