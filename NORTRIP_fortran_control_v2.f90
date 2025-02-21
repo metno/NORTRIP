@@ -39,6 +39,7 @@
     implicit none
 
     logical :: init_exists 
+    integer :: write_count
 
     write(*,'(A)') ''
     write(*,'(A)') '################################################################'
@@ -90,11 +91,17 @@
         n_roads_end=n_roads
         n_roads_start=1   
     endif
-
+    if (save_road_summary_data_as_netcdf_flag > 0) then !TODO: Change this condition to be general (save_output_as_netcdf?)
+        n_save_links_netcdf =  sum(save_road_data_flag)
+        write_count = 1
+        if (.not.allocated(save_1d_vars)) allocate(save_1d_vars(num_1d_index,n_save_links_netcdf)) !Road_ID, lat, lon
+        call allocate_NORTRIP_save_arrays
+    end if
+    
     !Allocate arrays based on input data
     call allocate_NORTRIP_arrays
 
-    !Open netCDF file for reading init data. The file will be open 
+    !Open netCDF file from previous simulation for reading init data. The file will be open 
     !during the whole simulation.
     if ( save_init_data_as_netcdf_flag.eq.1 .and. use_single_road_loop_flag) then
         call open_NETCDF_init_file(ncid_init,init_exists)
@@ -113,24 +120,18 @@
     
         call NORTRIP_main_run
         
-        if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'   
+        if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'
+
+        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0) then !TODO: Only need to do this if output is saved as netcdf, should be a condition.
+            call NORTRIP_fill_save_array(write_count) 
+            write_count = write_count+1
+        end if
         if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
         if (NORTRIP_save_episode_emissions_flag) call NORTRIP_save_episode_emissions
         if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
-        if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data
-        if (NORTRIP_save_road_summary_data_flag) then
-            if ( save_road_summary_data_as_netcdf_flag.eq.0) then
-                call NORTRIP_save_road_summary_data
-            else if (save_road_summary_data_as_netcdf_flag.eq.1) then
-                call NORTRIP_save_road_summary_data_netcdf
-            else if (save_road_summary_data_as_netcdf_flag.eq.2) then
-                call NORTRIP_save_road_summary_data_netcdf
-                call NORTRIP_save_road_summary_data
-            else
-                write(*,*) "Warning: Do not write summary files, bc. save_road_summary_data_as_netcdf_flag = ", save_road_summary_data_as_netcdf_flag
-            end if 
-        end if          
+        if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data  
+        if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data    
         if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
@@ -138,11 +139,14 @@
         if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
-
     if (NORTRIP_save_init_data_flag.eq.1 .and. init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
-        
+
+    !Save netcdf output file(s): 
+    call NORTRIP_save_output_data_netcdf
+
+
     call deallocate_NORTRIP_arrays
     
     write(*,'(A)') ''

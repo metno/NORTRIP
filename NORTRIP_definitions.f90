@@ -241,6 +241,119 @@
     parameter (num_road_type_activity=5)   
     integer road_type_salt_index(2)
     data (road_type_salt_index(ii),ii=1,2) /road_type_salting_index,road_type_binding_index/
+
+    !Set netcdf output file indexes (save_<var name>_index)
+    integer,parameter :: save_T_surf_mod_index = 1
+    integer,parameter :: save_T_sub_mod_index = 2
+    integer,parameter :: save_T_freeze_mod_index = 3
+    integer,parameter :: save_T_surf_meteo_index = 4
+    integer,parameter :: save_T_air_index = 5
+    integer,parameter :: save_Td_air_index = 6
+    integer,parameter :: save_RH_air_index = 7
+    integer,parameter :: save_Rain_index = 8
+    integer,parameter :: save_Snow_index = 9
+    integer,parameter :: save_Wind_FF_index = 10
+    integer,parameter :: save_Wind_DD_index = 11
+    integer,parameter :: save_SW_rad_cls_index = 12
+    integer,parameter :: save_SW_rad_in_index = 13
+    integer,parameter :: save_SW_rad_net_index = 14
+    integer,parameter :: save_LW_rad_net_index = 15
+    integer,parameter :: save_LW_rad_in_index = 16
+    integer,parameter :: save_H_in_index = 17
+    integer,parameter :: save_L_in_index = 18
+    integer,parameter :: save_G_sub_index = 19
+    integer,parameter :: save_G_net_index = 20
+    integer,parameter :: save_Energy_correction_index = 21
+    integer,parameter :: save_Energy_difference_index = 22
+    integer,parameter :: save_W_surf_mod_index = 23
+    integer,parameter :: save_I_surf_mod_index = 24
+    integer,parameter :: save_S_surf_mod_index = 25
+    integer, parameter :: save_PM10_Emissions_tot_index = 26
+    integer, parameter :: save_PM25_Emissions_tot_index = 27
+    integer, parameter :: save_PM10_Emissions_roadwear_index = 28
+    integer, parameter :: save_PM10_Emissions_tyrewear_index = 29
+    integer, parameter :: save_PM10_Emissions_brakewear_index = 30
+    integer, parameter :: save_PM10_Emissions_sand_index = 31
+    integer, parameter :: save_PM10_Emissions_fugitive_index = 32
+    integer, parameter :: save_PM10_Emissions_exhaust_index = 33
+    integer, parameter :: save_PM10_Emissions_salt1_index = 34
+    integer, parameter :: save_PM10_Emissions_salt2_index = 35
+    integer, parameter :: save_PM10_Emissions_direct_index = 36
+    integer, parameter :: save_PM10_Emissions_suspension_index = 37
+    integer, parameter :: save_PM10_Emissions_windblown_index = 38
+    integer, parameter :: save_NOX_Emissions_tot_index = 39
+    integer, parameter :: save_Traffic_index = 40
+    integer, parameter :: save_HDV_index = 41
+    integer, parameter :: save_Studs_li_index = 42
+    integer, parameter :: save_Speed_li_index = 43
+    integer, parameter :: save_Studs_he_index = 44
+    integer, parameter :: save_Mass_dust_PM200_index = 45
+    integer, parameter :: save_Mass_dust_PM10_index = 46
+    integer, parameter :: save_Mass_dust_PM25_index = 47
+    integer, parameter :: save_Mass_sand_PM200_index = 48
+    integer, parameter :: save_Salt1_a_index = 49
+    integer, parameter :: save_Salt2_a_index = 50
+    integer, parameter :: save_Sand_a_index = 51
+    integer, parameter :: save_Wetting_a_index = 52
+    integer, parameter :: save_Ploughing_a_index = 53
+    integer, parameter :: save_Cleaning_a_index = 54
+    integer, parameter :: save_Mass_salt1_index = 55
+    integer, parameter :: save_Mass_salt2_index = 56
+    
+    integer, parameter :: save_PM10_Concentration_tot_index = 57
+    integer, parameter :: save_PM25_Concentration_tot_index = 58
+    integer, parameter :: save_PM10_Concentration_exhaust_index = 59
+    integer, parameter :: save_Mass_sand_PMall_index = 60
+    integer, parameter :: save_Mass_sand_PM10_index = 61 
+    integer, parameter :: save_Mass_cleaning_PMall_index = 62
+    integer, parameter :: save_Mass_cleaning_PM200_index = 63
+    integer, parameter :: save_Mass_cleaning_PM10_index = 64
+    integer, parameter :: save_Mass_drainage_PM10_index = 65
+    integer, parameter :: save_Mass_spraying_PM10_index = 66
+    integer, parameter :: save_Mass_ploughing_PM10_index = 67
+    integer, parameter :: save_f_q_index = 68
+
+    integer, parameter :: save_Speed_li_avg_index = 69
+    integer, parameter :: save_NOX_Emissions_sum_index = 70      
+    integer, parameter :: save_PM10_Emissions_sum_index =  71   
+    integer, parameter :: save_PM25_Emissions_sum_index =   72
+    integer, parameter :: save_PM10_Emissions_road_sum_index =  73
+    integer, parameter :: save_PM10_Emissions_tyre_sum_index =  74 
+    integer, parameter :: save_PM10_Emissions_brake_sum_index = 75
+    integer, parameter :: save_PM10_Emissions_sand_sum_index =  76
+    integer, parameter :: save_PM10_Emissions_fugitive_sum_index = 77 
+    integer, parameter :: save_PM10_Emissions_exhaust_sum_index =  78
+    integer, parameter :: save_PM10_Emissions_salt1_sum_index = 79
+    integer, parameter :: save_PM10_Emissions_salt2_sum_index = 80
+    integer, parameter :: save_PM10_Emissions_direct_sum_index =  81
+    integer, parameter :: save_PM10_Emissions_suspension_sum_index = 82 
+    integer, parameter :: save_PM10_Emissions_windblown_sum_index = 83
+    integer, parameter :: save_Mass_salt1_sum_index = 84
+    integer, parameter :: save_Mass_salt2_sum_index = 85
+    integer, parameter :: save_Mass_sand_PM200_sum_index = 86
+    integer, parameter :: save_Mass_sand_PMall_sum_index = 87
+    integer, parameter :: save_Mass_sand_PM10_sum_index = 88 
+    integer, parameter :: save_Mass_cleaning_PMall_sum_index = 89
+    integer, parameter :: save_Mass_cleaning_PM200_sum_index = 90
+    integer, parameter :: save_Mass_cleaning_PM10_sum_index = 91 
+    integer, parameter :: save_Mass_drain_PM10_sum_index = 92
+    integer, parameter :: save_Mass_spray_PM10_sum_index = 93
+    integer, parameter :: save_Mass_ploughing_PM10_sum_index = 94
+    integer, parameter :: save_PM10_Wear_road_sum_index = 95
+    integer, parameter :: save_PM10_Wear_tyre_sum_index = 96
+    integer, parameter :: save_PM10_Wear_brake_sum_index =  97 
+    integer, parameter :: save_Mass_dust_road_PM200_sum_index = 98
+    integer, parameter :: save_Mass_dust_road_PM10_sum_index = 99
+    integer, parameter :: save_Traffic_sum_index = 100
+    integer, parameter :: save_st_he_sum_index = 101
+    integer, parameter :: save_fr_hdv_sum_index = 102
+    integer, parameter :: save_st_li_sum_index = 103
+
+    !TODO: These can be put with the other indexes. 
+    integer, parameter :: save_road_id_index = 1
+    integer, parameter :: save_lat_index = 2
+    integer, parameter :: save_lon_index = 3
+    integer, parameter :: num_1d_index = 3
     
     end module NORTRIP_index_definitions    
 
@@ -253,6 +366,22 @@
     
     implicit none
     
+    type :: save_var !! Derived type used to save and write variables to netcdf output variables. 
+        character(100) :: varname
+        character(15) :: units
+        character(256) :: long_name
+        character(256) :: description 
+        real, allocatable :: data_2d(:,:)
+        real, allocatable :: data_1d(:)
+        logical :: save_in_summary =.false.
+        logical :: save_in_emissions =.false.
+        logical :: save_in_meteo =.false.
+        logical :: save_in_activity =.false.
+    end type
+
+    
+    type(save_var), dimension(110) :: save_vars !! Put all save variables in this array TODO: Could make this into an allocatable, to make length match the number of unique variables. 
+
     !Define the flag that determines if a single road option is to be used for large datasets
     logical :: use_single_road_loop_flag=.true.
     integer :: operating_system=1
@@ -365,6 +494,8 @@
     character(256) filename_output_roadmeteo
 
     integer :: ncid_init !! Identifier for the init file that are being read.
+    integer :: n_save_links_netcdf !! The number of roads for which output will be saved
+
 !Model parameter variables
 !-----------------------------------------------------------------------
     real W_0(num_wear,num_tyre,num_veh)
@@ -457,8 +588,7 @@
     real :: use_sanding_data_flag=1
     real :: retain_water_by_snow_flag=1
     
-    integer :: save_road_counter =0 !NOTE: Put this here so that its not reset to 0 for every call in single_road mode
-    
+    real, allocatable :: save_1d_vars(:,:) !! For saving vars to netcdf summary file !TODO: Could be incorporated into save_vars. 
 
     !Auto activity data
     real :: salting_hour_ref(2)
@@ -1165,6 +1295,281 @@
 
     
     end subroutine allocate_NORTRIP_arrays
+
+!==========================================================================
+!   allocate_NORTRIP_arrays
+!==========================================================================
+    subroutine allocate_NORTRIP_save_arrays !TODO: Maybe change name on this (define types or something?)
+    !! Define types that contain information needed to save data in netcdf files. 
+
+    use NORTRIP_definitions
+    implicit none
+    !TODO: Now the conditions for allocation of the data array member is hard coded to match the "save_in_*" property (E.g. (save_in_summary = .true., save_in_meteo = .true.) means that space is allocated if (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)). The condition to allocate should probably be more flexible.  
+    save_vars(save_T_surf_mod_index) = save_var(varname = "T_surf_mod",units = "Celsius", description = "Modeled surface temperature", long_name = "surface_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_T_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_surf_mod_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_T_sub_mod_index) = save_var(varname = "T_sub_mod",units = "Celsius", description = "Modeled subsurface temperature",  long_name = "sub_surface_temperature_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_T_sub_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_sub_mod_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_T_freeze_mod_index) = save_var(varname = "T_freeze_mod",units = "Celsius", description = "Freezing point temperature",  long_name = "freezing_point_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_T_freeze_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_freeze_mod_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_T_surf_meteo_index) = save_var(varname = "T_surf_meteo",units = "Celsius", description = "Observed surface temperature, otherwise nodata value",  long_name = "surface_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_T_surf_meteo_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_surf_meteo_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_T_air_index) = save_var(varname = "T_air",units = "Celsius", description = "Air temperature at 2 m above ground",  long_name = "air_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_T_air_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_air_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_Td_air_index) = save_var(varname = "Td_air",units = "Celsius", description = "Dew point temperature at 2 m above ground, calc. from relative humidity (RH).",  long_name = "dew_point_temperature", save_in_meteo = .true., save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Td_air_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Td_air_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_RH_air_index) = save_var(varname = "RH_air",units = "percent", description = "Relative humidity at 2 m above ground",  long_name = "relative_humidity", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_RH_air_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_RH_air_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_Rain_index) = save_var(varname = "Rain",units = "mm", description = "Amount of liquid precipitation within the model time step",  long_name = "rainfall_amount", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Rain_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Rain_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_Snow_index) = save_var(varname = "Snow",units = "mm", description = "Amount of solid precipitation within the model time step",  long_name = "snowfall_amount", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Snow_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag ))allocate(save_vars(save_Snow_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_Wind_FF_index) = save_var(varname = "Wind_FF",units = "m/s", description = "Wind speed at 10 m above ground",  long_name = "wind_speed", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Wind_FF_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Wind_FF_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_Wind_DD_index) = save_var(varname = "Wind_DD",units = "degree", description = "Wind from direction at 10 m above ground",  long_name = "wind_from_direction", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Wind_DD_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Wind_DD_index)%data_2d(n_save_links_netcdf,n_time))  
+    
+    save_vars(save_SW_rad_cls_index) = save_var(varname = "SW_rad_cls",units = "W/m2", description = "Clear sky incoming short wave radiation",  long_name = "downwelling_shortwave_flux_in_air_assuming_clear_sky", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_SW_rad_cls_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_SW_rad_cls_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_SW_rad_in_index) = save_var(varname = "SW_rad_in",units = "W/m2", description = "Incoming short wave radiation",  long_name = "downwelling_shortwave_flux_in_air", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_SW_rad_in_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_SW_rad_in_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_SW_rad_net_index) = save_var(varname = "SW_rad_net",units = "W/m2", description = "Net short wave radiation",  long_name = "net_downward_shortwave_flux_in_air", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_SW_rad_net_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_SW_rad_net_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_LW_rad_net_index) = save_var(varname = "LW_rad_net",units = "W/m2", description = "Net long wave radiation",  long_name = "net_downward_longwave_flux_in_air", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_LW_rad_net_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_LW_rad_net_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_LW_rad_in_index) = save_var(varname = "LW_rad_in",units = "W/m2", description = "Incoming long wave radiation",  long_name = "downwelling_longwave_flux_in_air", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_LW_rad_in_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_LW_rad_in_index)%data_2d(n_save_links_netcdf,n_time))  
+
+    save_vars(save_H_in_index) = save_var(varname = "H_in",units = "W/m2", description = "Surface sensible heat flux, positive downwards",  long_name = "surface_downward_sensible_heat_flux", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_H_in_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_H_in_index)%data_2d(n_save_links_netcdf,n_time)) 
+    
+    save_vars(save_L_in_index) = save_var(varname = "L_in",units = "W/m2", description = "Surface latent heat flux, positive downwards",  long_name = "surface_downward_latent_heat_flux", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_L_in_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_L_in_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_G_sub_index) = save_var(varname = "G_sub",units = "W/m2", description = "Sub-surface energy flux",  long_name = "sub_surface_energy_flux", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_G_sub_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_G_sub_index)%data_2d(n_save_links_netcdf,n_time)) 
+    
+    save_vars(save_G_net_index) = save_var(varname = "G_net",units = "W/m2", description = "Surface energy flux",  long_name = "surface_energy_flux", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_G_net_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_G_net_index)%data_2d(n_save_links_netcdf,n_time)) 
+    
+    save_vars(save_Energy_correction_index) = save_var(varname = "Energy_correction",units = "W/m2", description = "Energy correction term used in surface energy balance",  long_name = "surface_energy_flux", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Energy_correction_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .and. use_energy_correction_flag.eq.1)) allocate(save_vars(save_Energy_correction_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Energy_difference_index) = save_var(varname = "Energy_difference",units = "W/m2", description = "Energy difference needed to match observed surface temperature",  long_name = "energy_difference_to_match_observed_surface_temperature", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_Energy_difference_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .and. use_energy_correction_flag.eq.1)) allocate(save_vars(save_Energy_difference_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_W_surf_mod_index) = save_var(varname = "W_surf_mod",units = "mm", description = "Water mass on the road surface (water equivalent)",  long_name = "liquid_water_on_surface", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_W_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)) allocate(save_vars(save_W_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_I_surf_mod_index) = save_var(varname = "I_surf_mod",units = "mm", description = "Ice mass on the road surface (water equivalent)",  long_name = "ice_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_I_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)) allocate(save_vars(save_I_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_S_surf_mod_index) = save_var(varname = "S_surf_mod",units = "mm", description = "Snow mass on the road surface (water equivalent)",  long_name = "snow_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.)
+    if(.not.allocated(save_vars(save_S_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_S_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_tot_index) = save_var(varname = "PM10_Emissions_tot",units = "g/km/h", description = "Total non-exhaust emissions of PM10",  long_name = "pm10_emissions_total", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_tot_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_tot_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM25_Emissions_tot_index) = save_var(varname = "PM25_Emissions_tot",units = "g/km/h", description = "Total non-exhaust emissions of PM2.5",  long_name = "pm25_emissions_total", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM25_Emissions_tot_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM25_Emissions_tot_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_roadwear_index) = save_var(varname = "PM10_Emissions_roadwear",units = "g/km/h", description = "Emissions of PM10 from roadwear",  long_name = "pm10_emissions_roadwear", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_roadwear_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_roadwear_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_tyrewear_index) = save_var(varname = "PM10_Emissions_tyrewear",units = "g/km/h", description = "Emissions of PM10 from tyrewear",  long_name = "pm10_emissions_tyrewear", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_tyrewear_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_tyrewear_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_brakewear_index) = save_var(varname = "PM10_Emissions_brakewear",units = "g/km/h", description = "Emissions of PM10 from brakewear",  long_name = "pm10_emissions_brakewear", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_brakewear_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_brakewear_index)%data_2d(n_save_links_netcdf,n_time)) 
+    
+    save_vars(save_PM10_Emissions_sand_index) = save_var(varname = "PM10_Emissions_sand",units = "g/km/h", description = "Emissions of PM10 from sanding",  long_name = "pm10_emissions_sanding", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_sand_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_sand_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_fugitive_index) = save_var(varname = "PM10_Emissions_fugitive",units = "g/km/h", description = "Fugitive emissions of PM10",  long_name = "pm10_emissions_fugitive", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_fugitive_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_fugitive_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_exhaust_index) = save_var(varname = "PM10_Emissions_exhaust",units = "g/km/h", description = "Emissions of PM10 from exhaust",  long_name = "pm10_emissions_exhaust", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_exhaust_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_exhaust_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_salt1_index) = save_var(varname = "PM10_Emissions_salt1",units = "g/km/h", description = "Emissions of PM10 from salt1",  long_name = "pm10_emissions_salt1", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_salt1_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_salt2_index) = save_var(varname = "PM10_Emissions_salt2",units = "g/km/h", description = "Emissions of PM10 from salt2",  long_name = "pm10_emissions_salt2", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_salt2_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_salt2_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_direct_index) = save_var(varname = "PM10_Emissions_direct",units = "g/km/h", description = "Direct emissions of PM10",  long_name = "pm10_emissions_direct", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_direct_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_direct_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_suspension_index) = save_var(varname = "PM10_Emissions_suspension",units = "g/km/h", description = "Emissions of PM10 from suspension",  long_name = "pm10_emissions_suspension", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_suspension_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_suspension_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_PM10_Emissions_windblown_index) = save_var(varname = "PM10_Emissions_windblown",units = "g/km/h", description = "Windblown emissions of PM10",  long_name = "pm10_emissions_windblown", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_windblown_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_windblown_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_NOX_Emissions_tot_index) = save_var(varname = "NOX_Emissions_tot",units = "g/km/h", description = "Total emissions of NOX",  long_name = "nox_emissions_total", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_NOX_Emissions_tot_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_NOX_Emissions_tot_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Traffic_index) = save_var(varname = "Traffic",units = "veh", description = "Vehicles per hour",  long_name = "traffic", save_in_summary = .true., save_in_emissions = .true.,save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Traffic_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Traffic_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_HDV_index) = save_var(varname = "HDV",units = "veh", description = "Percentage of heavy duty vehicles",  long_name = "percentage_heavy_duty_vehicles", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_HDV_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_HDV_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Studs_li_index) = save_var(varname = "Studs_li",units = "%", description = "Percentage of light vehicles with studded tyres",  long_name = "percentage_studs_light_vehicles", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Studs_li_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Studs_li_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Studs_he_index) = save_var(varname = "Studs_he",units = "%", description = "Percentage of heavy vehicles with studded tyres",  long_name = "percentage_studs_heavy_vehicles", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Studs_he_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Studs_he_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Speed_li_index) = save_var(varname = "Speed_li",units = "km/h", description = "Speed of light vehicles",  long_name = "speed_light_vehicles", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Speed_li_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Speed_li_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_dust_PM200_index) = save_var(varname = "Mass_dust_PM200",units = "g/m2", description = "Mass of non-suspendable dust (>200 micrometer) on road",  long_name = "mass_pm200_dust", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Mass_dust_PM200_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_dust_PM200_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_dust_PM10_index) = save_var(varname = "Mass_dust_PM10",units = "g/m2", description = "Mass of PM10 particles on road",  long_name = "mass_pm10_dust", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Mass_dust_PM10_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_dust_PM10_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_dust_PM25_index) = save_var(varname = "Mass_dust_PM25",units = "g/m2", description = "Mass of PM25 particles on road",  long_name = "mass_pm25_dust", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Mass_dust_PM25_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_dust_PM25_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_sand_PM200_index) = save_var(varname = "Mass_sand_PM200",units = "g/m2", description = "Mass of non-suspendable sand (>200 micrometer) on road",  long_name = "mass_sand_pm200", save_in_summary = .true., save_in_emissions = .true.)
+    if(.not.allocated(save_vars(save_Mass_sand_PM200_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_sand_PM200_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Salt1_a_index) = save_var(varname = "Salt1_a",units = "g/m2", description = "Total mass of NaCl salt applied in the time step",  long_name = "applied_salt1", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Salt1_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt1_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Salt2_a_index) = save_var(varname = "Salt2_a",units = "g/m2", description = "Total mass of alternative salt applied in the time step",  long_name = "applied_salt2", save_in_summary = .true., save_in_activity = .true.) !TODO: In timestep or pr. hour?
+    if(.not.allocated(save_vars(save_Salt2_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt2_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Sand_a_index) = save_var(varname = "Sand_a",units = "g/m2", description = "Total mass of sand applied in the time step",  long_name = "applied_sand", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Sand_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Sand_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Wetting_a_index) = save_var(varname = "Wetting_a",units = "mm", description = "Water added to the road during cleaning or salting",  long_name = "applied_water_on_road", save_in_summary = .true., save_in_activity = .true.) 
+    if(.not.allocated(save_vars(save_Wetting_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Wetting_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Ploughing_a_index) = save_var(varname = "Ploughing_a",units = "1", description = "Snow ploughing event in time step (0 to 1)",  long_name = "plowing_event", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Ploughing_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Ploughing_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Cleaning_a_index) = save_var(varname = "Cleaning_a",units = "1", description = "Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency",  long_name = "cleaning_event", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Cleaning_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Cleaning_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_salt1_index) = save_var(varname = "Mass_salt1",units = "g/m2", description = "Mass of NaCl on the road",  long_name = "Mass_of_NaCl_on_road", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt1_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Mass_salt2_index) = save_var(varname = "Mass_salt2",units = "g/m2", description = "Mass of alternative salt on the road",  long_name = "Mass_of_alternative_salt_on_road", save_in_summary = .true., save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt2_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt2_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_f_q_index) = save_var(varname = "f_q",units = "1", description = "Surface retainment factor (0-1) based on the surface moisture. All is retained when value is zero.",  long_name = "surface_retainment_factor", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_f_q_index)%data_2d) .and. ( NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_f_q_index)%data_2d(n_save_links_netcdf,n_time)) 
+
+    save_vars(save_Speed_li_avg_index) = save_var(varname = "Speed_li_avg", units = "km/h", description = "Average light vehicle speed over the simulation period", long_name = "average_speed_light_vehicles", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Speed_li_avg_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Speed_li_avg_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_NOX_Emissions_sum_index) = save_var(varname = "NOX_Emissions_sum", units = "g", description = "Grams of NOX emitted on the road over the period", long_name = "nox_emissions_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_NOX_Emissions_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_NOX_Emissions_sum_index)%data_1d(n_save_links_netcdf))     
+
+    save_vars(save_PM10_Emissions_sum_index) = save_var(varname = "PM10_Emissions_sum", units = "g", description = "Grams of PM10 emitted over the period", long_name = "pm10_emissions_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_sum_index)%data_1d(n_save_links_netcdf))   
+
+    save_vars(save_PM25_Emissions_sum_index) = save_var(varname = "PM25_Emissions_sum", units = "g", description = "Grams of PM25 emitted over the period", long_name = "pm25_emissions_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM25_Emissions_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM25_Emissions_sum_index)%data_1d(n_save_links_netcdf))   
+
+    save_vars(save_PM10_Emissions_road_sum_index) = save_var(varname = "PM10_Emissions_road_sum", units = "g", description = "Grams of emitted PM10 from roadwear over the period", long_name = "pm10_emissions_road_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_road_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_road_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_tyre_sum_index) = save_var(varname = "PM10_Emissions_tyre_sum", units = "g", description = "Grams of emitted PM10 from tyrewear over the period", long_name = "pm10_emissions_tyre_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_tyre_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_tyre_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_brake_sum_index) = save_var(varname = "PM10_Emissions_brake_sum", units = "g", description = "Grams of emitted PM10 from brakewear over the period", long_name = "pm10_emissions_brake_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_brake_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_brake_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_sand_sum_index) = save_var(varname = "PM10_Emissions_sand_sum", units = "g", description = "Grams of emitted PM10 from sand over the period", long_name = "pm10_emissions_sand_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_sand_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_sand_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_fugitive_sum_index) = save_var(varname = "PM10_Emissions_fugitive_sum", units = "g", description = "Grams of fugitive emissions of PM10 over the period", long_name = "pm10_emissions_fugitive_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_fugitive_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_fugitive_sum_index)%data_1d(n_save_links_netcdf))
+
+    save_vars(save_PM10_Emissions_exhaust_sum_index) = save_var(varname = "PM10_Emissions_exhaust_sum", units = "g", description = "Grams of exhaust emissions of PM10 over the period", long_name = "pm10_emissions_exhaust_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_exhaust_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_exhaust_sum_index)%data_1d(n_save_links_netcdf))    
+    
+    save_vars(save_PM10_Emissions_salt1_sum_index) = save_var(varname = "PM10_Emissions_salt1_sum", units = "g", description = "Grams of NaCl in PM10 emitted over the period", long_name = "pm10_emissions_salt1_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_salt1_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_salt1_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_salt2_sum_index) = save_var(varname = "PM10_Emissions_salt2_sum", units = "g", description = "Grams of alternative salt in PM10 emitted over the period", long_name = "pm10_emissions_salt2_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_salt2_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_salt2_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_direct_sum_index) = save_var(varname = "PM10_Emissions_direct_sum", units = "g", description = "Grams of direct PM10 emissions over the period", long_name = "pm10_emissions_direct_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_direct_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_direct_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Emissions_suspension_sum_index) = save_var(varname = "PM10_Emissions_suspension_sum", units = "g", description = "Grams of PM10 emissions from suspension over the period", long_name = "pm10_emissions_suspension_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_suspension_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_suspension_sum_index)%data_1d(n_save_links_netcdf))     
+
+    save_vars(save_PM10_Emissions_windblown_sum_index) = save_var(varname = "PM10_Emissions_windblown_sum", units = "g", description = "Grams of PM10 windblown emissions over the period", long_name = "pm10_emissions_windblown_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Emissions_windblown_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Emissions_windblown_sum_index)%data_1d(n_save_links_netcdf)) 
+
+    save_vars(save_Mass_salt1_sum_index) = save_var(varname = "Mass_salt1_sum", units = "g", description = "Grams of applied NaCl over the period", long_name = "mass_applied_salt1_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt1_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_salt1_sum_index)%data_1d(n_save_links_netcdf))  
+    
+    save_vars(save_Mass_salt2_sum_index) = save_var(varname = "Mass_salt2_sum", units = "g", description = "Grams of applied alternative salt over the period", long_name = "mass_applied_salt2_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt2_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_salt2_sum_index)%data_1d(n_save_links_netcdf))  
+
+    save_vars(save_Mass_sand_PM200_sum_index) = save_var(varname = "Mass_sand_PM200_sum", units = "g", description = "Grams of applied sand of size PM200 over the period", long_name = "mass_sand_pm200_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_sand_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_sand_PM200_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_sand_PMall_sum_index) = save_var(varname = "Mass_sand_PMall_sum", units = "g", description = "Grams of applied sand of all sized over the period", long_name = "mass_sand_pmall_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_sand_PMall_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_sand_PMall_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_sand_PM200_sum_index) = save_var(varname = "Mass_sand_PM200_sum", units = "g", description = "Grams of applied sand of size PM200 over the period", long_name = "mass_sand_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_sand_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_sand_PM200_sum_index)%data_1d(n_save_links_netcdf))     
+
+    save_vars(save_Mass_cleaning_PMall_sum_index) = save_var(varname = "Mass_cleaning_PMall_sum", units = "g", description = "", long_name = "mass_cleaning_pmall_sum", save_in_activity = .true.) 
+    if(.not.allocated(save_vars(save_Mass_cleaning_PMall_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_cleaning_PMall_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_cleaning_PM200_sum_index) = save_var(varname = "Mass_cleaning_PM200_sum", units = "g", description = "", long_name = "mass_cleaning_pm200_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_cleaning_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_cleaning_PM200_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_cleaning_PM10_sum_index) = save_var(varname = "Mass_cleaning_PM10_sum", units = "g", description = "", long_name = "mass_cleaning_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_cleaning_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_cleaning_PM10_sum_index)%data_1d(n_save_links_netcdf))     
+
+    save_vars(save_Mass_drain_PM10_sum_index) = save_var(varname = "Mass_drain_PM10_sum", units = "g", description = "", long_name = "mass_drainage_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_drain_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_drain_PM10_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_spray_PM10_sum_index) = save_var(varname = "Mass_spray_PM10_sum", units = "g", description = "", long_name = "mass_spray_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_spray_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_spray_PM10_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_Mass_ploughing_PM10_sum_index) = save_var(varname = "Mass_ploughing_PM10_sum", units = "g", description = "", long_name = "mass_ploughing_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_ploughing_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_ploughing_PM10_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Wear_road_sum_index) = save_var(varname = "PM10_Wear_road_sum", units = "g", description = "", long_name = "pm10_wear_road_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Wear_road_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Wear_road_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_PM10_Wear_tyre_sum_index) = save_var(varname = "PM10_Wear_tyre_sum", units = "g", description = "", long_name = "pm10_wear_tyre_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Wear_tyre_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Wear_tyre_sum_index)%data_1d(n_save_links_netcdf))   
+
+    save_vars(save_PM10_Wear_brake_sum_index) = save_var(varname = "PM10_Wear_brake_sum", units = "g", description = "", long_name = "pm10_wear_brake_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_PM10_Wear_brake_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_PM10_Wear_brake_sum_index)%data_1d(n_save_links_netcdf))   
+
+    save_vars(save_Mass_dust_road_PM200_sum_index) = save_var(varname = "Mass_dust_road_PM200_sum", units = "g", description = "", long_name = "mass_dust_road_pm200_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_dust_road_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_dust_road_PM200_sum_index)%data_1d(n_save_links_netcdf))   
+
+    save_vars(save_Mass_dust_road_PM10_sum_index) = save_var(varname = "Mass_dust_road_PM10_sum", units = "", description = "", long_name = "mass_dust_road_pm10_sum", save_in_activity = .true.)
+    if(.not.allocated(save_vars(save_Mass_dust_road_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_dust_road_PM10_sum_index)%data_1d(n_save_links_netcdf))    
+
+    end subroutine allocate_NORTRIP_save_arrays
     
 !==========================================================================
 !   deallocate_NORTRIP_arrays
@@ -1221,5 +1626,8 @@
     if (allocated(zenith_ang)) deallocate (zenith_ang)
 
     if (allocated(emis_grid)) deallocate (emis_grid)
+
+    !if (allocated(save_vars)) deallocate (save_vars)
+    if (allocated(save_1d_vars)) deallocate(save_1d_vars)
     
     end subroutine deallocate_NORTRIP_arrays
