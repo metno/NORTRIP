@@ -355,9 +355,9 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     if (allocated(save_vars(save_Mass_salt1_index)%data_2d))   save_vars(save_Mass_salt1_index)%data_2d(save_road_counter,:)      = sum(M_road_data(salt_index(1),pm_all,:,:,ro),dim=2)*conversion
     if (allocated(save_vars(save_Mass_salt2_index)%data_2d))   save_vars(save_Mass_salt2_index)%data_2d(save_road_counter,:)      = sum(M_road_data(salt_index(2),pm_all,:,:,ro),dim=2)*conversion
     if (allocated(save_vars(save_f_q_index)%data_2d))          save_vars(save_f_q_index)%data_2d(save_road_counter, :)            = f_q(road_index,:,tr,ro)
-    if (allocated(save_vars(save_W_surf_mod_index)%data_2d))   save_vars(save_W_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(water_index,ti,tr,ro)
-    if (allocated(save_vars(save_I_surf_mod_index)%data_2d))   save_vars(save_I_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(ice_index,ti,tr,ro)
-    if (allocated(save_vars(save_S_surf_mod_index)%data_2d))   save_vars(save_S_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(snow_index,ti,tr,ro)
+    if (allocated(save_vars(save_W_surf_mod_index)%data_2d))   save_vars(save_W_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(water_index,:,tr,ro)
+    if (allocated(save_vars(save_I_surf_mod_index)%data_2d))   save_vars(save_I_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(ice_index,:,tr,ro)
+    if (allocated(save_vars(save_S_surf_mod_index)%data_2d))   save_vars(save_S_surf_mod_index)%data_2d(save_road_counter, :)            = g_road_data(snow_index,:,tr,ro)
     if (allocated(save_vars(save_Energy_difference_index)%data_2d))        save_vars(save_Energy_difference_index)%data_2d(save_road_counter,:)           = road_meteo_data(E_diff_index,:,tr,ro)
     if (allocated(save_vars(save_Energy_correction_index)%data_2d))        save_vars(save_Energy_correction_index)%data_2d(save_road_counter,:)           = road_meteo_data(E_corr_index,:,tr,ro)
     if (allocated(save_vars(save_NOX_emissions_tot_index)%data_2d))        save_vars(save_NOX_emissions_tot_index)%data_2d(save_road_counter,:)           = airquality_data(NOX_emis_index,:,ro)
