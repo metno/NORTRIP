@@ -92,7 +92,7 @@
         n_roads_start=1   
     endif
     if (save_road_summary_data_as_netcdf_flag > 0) then !TODO: Change this condition to be general (save_output_as_netcdf?)
-        n_save_links_netcdf =  sum(save_road_data_flag)
+        n_save_links_netcdf =  sum(save_road_data_flag(1:))
         write_count = 1
         if (.not.allocated(save_1d_vars)) allocate(save_1d_vars(num_1d_index,n_save_links_netcdf)) !Road_ID, lat, lon
         call allocate_NORTRIP_save_arrays
