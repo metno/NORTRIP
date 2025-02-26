@@ -348,6 +348,11 @@
     integer, parameter :: save_st_he_sum_index = 101
     integer, parameter :: save_fr_hdv_sum_index = 102
     integer, parameter :: save_st_li_sum_index = 103
+    integer, parameter :: save_AirportName_index = 104
+    integer, parameter :: save_AirportICAO_index = 105
+    integer, parameter :: save_RunwaySection_index = 106
+    integer, parameter :: save_PhysicalRunway_index = 107
+
 
     !TODO: These can be put with the other indexes. 
     integer, parameter :: save_road_id_index = 1
@@ -373,6 +378,7 @@
         character(256) :: description 
         real, allocatable :: data_2d(:,:)
         real, allocatable :: data_1d(:)
+        character(20), allocatable :: data_char_1d(:)
         logical :: save_in_summary =.false.
         logical :: save_in_emissions =.false.
         logical :: save_in_meteo =.false.
@@ -1566,8 +1572,20 @@
     save_vars(save_Mass_dust_road_PM200_sum_index) = save_var(varname = "Mass_dust_road_PM200_sum", units = "g", description = "", long_name = "mass_dust_road_pm200_sum", save_in_activity = .true.)
     if(.not.allocated(save_vars(save_Mass_dust_road_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_dust_road_PM200_sum_index)%data_1d(n_save_links_netcdf))   
 
-    save_vars(save_Mass_dust_road_PM10_sum_index) = save_var(varname = "Mass_dust_road_PM10_sum", units = "", description = "", long_name = "mass_dust_road_pm10_sum", save_in_activity = .true.)
+    save_vars(save_Mass_dust_road_PM10_sum_index) = save_var(varname = "Mass_dust_road_PM10_sum", units = "g", description = "", long_name = "mass_dust_road_pm10_sum", save_in_activity = .true.)
     if(.not.allocated(save_vars(save_Mass_dust_road_PM10_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_dust_road_PM10_sum_index)%data_1d(n_save_links_netcdf))    
+
+    save_vars(save_AirportName_index) = save_var(varname = "AirportName", units = "", description = "Name of the airport", long_name = "airport_name", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_AirportName_index)%data_char_1d) .and. (NORTRIP_save_road_summary_data_flag) .and. calculation_type == "Avinor") allocate(save_vars(save_AirportName_index)%data_char_1d(n_save_links_netcdf)) 
+
+    save_vars(save_AirportICAO_index) = save_var(varname = "AirportICAO", units = "", description = "ICAO code for airport", long_name = "airport_ICAO_code", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_AirportICAO_index)%data_char_1d) .and. (NORTRIP_save_road_summary_data_flag) .and. calculation_type == "Avinor") allocate(save_vars(save_AirportICAO_index)%data_char_1d(n_save_links_netcdf)) 
+
+    save_vars(save_RunwaySection_index) = save_var(varname = "RunwaySection", units = "", description = "Runway section", long_name = "runway_section", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_RunwaySection_index)%data_char_1d) .and. (NORTRIP_save_road_summary_data_flag) .and. calculation_type == "Avinor") allocate(save_vars(save_RunwaySection_index)%data_char_1d(n_save_links_netcdf)) 
+
+    save_vars(save_PhysicalRunway_index) = save_var(varname = "PhysicalRunway", units = "", description = "Identifies runway", long_name = "airport_name", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_PhysicalRunway_index)%data_char_1d) .and. (NORTRIP_save_road_summary_data_flag) .and. calculation_type == "Avinor") allocate(save_vars(save_PhysicalRunway_index)%data_char_1d(n_save_links_netcdf)) 
 
     end subroutine allocate_NORTRIP_save_arrays
     

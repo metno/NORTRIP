@@ -113,7 +113,7 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_def_dim(ncid_array(ncid_iterator),"time", nf90_unlimited, t_dimid))
             call check(nf90_def_dim(ncid_array(ncid_iterator),"road_id",n_save_links_netcdf, f_dimid))
             
-            call check(nf90_def_dim(ncid_array(ncid_iterator),"maxcharlength", int(24/dt) , char_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
+            call check(nf90_def_dim(ncid_array(ncid_iterator),"maxcharlength", 256 , char_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
 
             call check(nf90_def_var(ncid_array(ncid_iterator), "time", nf90_float, t_dimid,varid))
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "units", "seconds since "//trim(date_str(4,min_time)))) !Time dimension as seconds since start of simulation.
@@ -142,8 +142,9 @@ subroutine NORTRIP_save_output_data_netcdf
     !Define and give attributes to the variables going into the output files
     do v = 1, size(save_vars)
         if (save_vars(v)%save_in_summary .and. NORTRIP_save_road_summary_data_flag) then
-            if (allocated(save_vars(v)%data_1d)) call check(nf90_def_var(ncid_summary, trim(save_vars(v)%varname), nf90_float, (/f_dimid/),varid))
-            if (allocated(save_vars(v)%data_2d)) call check(nf90_def_var(ncid_summary, trim(save_vars(v)%varname), nf90_float, (/f_dimid,t_dimid/),varid))
+            if (allocated(save_vars(v)%data_1d))        call check(nf90_def_var(ncid_summary, trim(save_vars(v)%varname), nf90_float, (/f_dimid/),varid))
+            if (allocated(save_vars(v)%data_char_1d))   call check(nf90_def_var(ncid_summary, trim(save_vars(v)%varname), nf90_char, (/char_dimid,f_dimid/),varid))
+            if (allocated(save_vars(v)%data_2d))        call check(nf90_def_var(ncid_summary, trim(save_vars(v)%varname), nf90_float, (/f_dimid,t_dimid/),varid))
             call check(nf90_put_att(ncid_summary,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_summary,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_summary,varid, "units", trim(save_vars(v)%units)))
@@ -173,7 +174,6 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_meteo,varid, "units", trim(save_vars(v)%units)))
         end if 
     end do
-        
     !Put values into the variables that will be equal for all output files.
     do ncid_iterator = 1,size(ncid_array) 
         if (ncid_array(ncid_iterator) .ne. -99) then
@@ -208,6 +208,10 @@ subroutine NORTRIP_save_output_data_netcdf
             else if (allocated(save_vars(v)%data_1d)) then
                 call check(nf90_inq_varid(ncid_summary,trim(save_vars(v)%varname),varid))
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_1d, start = (/1/), count = (/n_save_links_netcdf/))) 
+
+            else if (allocated(save_vars(v)%data_char_1d)) then
+                call check(nf90_inq_varid(ncid_summary,trim(save_vars(v)%varname),varid))
+                call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_char_1d, start = (/1, 1/))) 
             else 
                 write(*,*) "Warning: Do not write variable ", trim(save_vars(v)%varname) , " to summary output file."
             end if
@@ -250,7 +254,7 @@ subroutine NORTRIP_save_output_data_netcdf
         end if
     end do
 
-        write(*,*) "Closing netcdf output file(s)."
+    write(*,*) "Closing netcdf output file(s)."
     do ncid_iterator = 1, size(ncid_array)
         if (ncid_array(ncid_iterator) .ne. -99) call check(nf90_close(ncid_array(ncid_iterator))) 
     end do   
@@ -276,6 +280,8 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     real    :: conversion
     real    :: conversion_sum
     real length_road_km(0:n_roads)
+    integer,dimension(2) :: runway_match
+    integer :: runway_index
     
     tr = 1 !NOTE: Assume there is only one track! Needs to be modified if the option for more then one track is implemented. 
     ro = 0 !NOTE: Assume that use_single_road_loop_flag is True!
@@ -314,6 +320,18 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     else
         length_road_km(ro)=length_road(ro)/1000.
     endif
+
+    ! if current road (ro_tot) is of type runway save the additional runway related variables, otherwise keep empty string.
+    if (calculation_type == "Avinor" .and. roadtype_index(ro_tot) == runway_roadtype) then 
+        !Find correct runway info: 
+        runway_match = findloc(runway_int_info_data,road_ID(ro_tot),dim=2)
+        runway_index = runway_match(2)
+        !Save info in array:
+        if (allocated(save_vars(save_AirportName_index)%data_char_1d))   save_vars(save_AirportName_index)%data_char_1d(save_road_counter)  = trim(runway_char_info_data(Airport_name_index,runway_index))
+        if (allocated(save_vars(save_RunwaySection_index)%data_char_1d)) save_vars(save_RunwaySection_index)%data_char_1d(save_road_counter)  = trim(runway_char_info_data(Airport_section_index,runway_index))
+        if (allocated(save_vars(save_AirportICAO_index)%data_char_1d))   save_vars(save_AirportICAO_index)%data_char_1d(save_road_counter)  = trim(runway_char_info_data(Airport_ICAO_index,runway_index))
+        if (allocated(save_vars(save_PhysicalRunway_index)%data_char_1d)) save_vars(save_PhysicalRunway_index)%data_char_1d(save_road_counter) = trim(runway_char_info_data(Airport_PhysRunway_index,runway_index))
+    end if
 
     !TODO: these could be put into the save_vars array
     save_1d_vars(save_road_id_index,save_road_counter) = road_ID(ro) 
