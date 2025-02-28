@@ -96,6 +96,8 @@
         write_count = 1
         if (.not.allocated(save_1d_vars)) allocate(save_1d_vars(num_1d_index,n_save_links_netcdf)) !Road_ID, lat, lon
         call allocate_NORTRIP_save_arrays
+    else 
+        write_count = 0
     end if
     
     !Allocate arrays based on input data
@@ -122,7 +124,7 @@
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'
 
-        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0) then !TODO: Only need to do this if output is saved as netcdf, should be a condition.
+        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0 .and. save_road_summary_data_as_netcdf_flag > 0) then !TODO: Only need to do this if output is saved as netcdf, should be a condition.
             call NORTRIP_fill_save_array(write_count) 
             write_count = write_count+1
         end if

@@ -52,8 +52,8 @@ subroutine NORTRIP_save_output_data_netcdf
     !TODO: The files all appear in /summary directory now. Should modify the paths here. 
     filename_summary    = trim(path_outputdata)//trim(filename_outputdata)//'_summary.nc'
     filename_activity   = trim(path_outputdata)//trim(filename_outputdata)//'_activities.nc'
-    filename_meteo      = trim(path_outputdata)//trim(filename_outputdata)//'_road_meteo.nc'
-    filename_emissions  = trim(path_outputdata)//trim(filename_outputdata)//'_emissions.nc'
+    filename_meteo      = trim(path_output_roadmeteo)//trim(filename_output_roadmeteo)//'_road_meteo.nc'
+    filename_emissions  = trim(path_output_emis)//trim(filename_output_emis)//'_emissions.nc'
 
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
@@ -199,7 +199,7 @@ subroutine NORTRIP_save_output_data_netcdf
         end if
     end do
 
-    !Put values into the output files. 
+    !Put values into the output files. NOTE: Assumes that varnames are unique, i.e. you cannot have a 1d and a 2d variable with the same varname. 
     do v = 1,size(save_vars)
         if (save_vars(v)%save_in_summary .and. save_road_summary_data_as_netcdf_flag) then
             if (allocated(save_vars(v)%data_2d)) then

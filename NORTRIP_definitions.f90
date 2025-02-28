@@ -70,8 +70,31 @@
     data (snow_ice_index(ii),ii=1,2) /snow_index,ice_index/
     
     !Size fraction index. pm_exhaust included here but only used for saving data purposes, not in the model
-    integer pm_all,pm_200,pm_10,pm_25,num_size,pm_exhaust,nox_exhaust
-    parameter(pm_all=1,pm_200=2,pm_10=3,pm_25=4,num_size=4,pm_exhaust=5,nox_exhaust=6)
+    integer, parameter :: pm_all=1
+    integer, parameter :: pm_200=2
+    integer, parameter :: pm_10=3
+    integer, parameter :: pm_25=4
+
+    integer, parameter :: num_size=4
+
+    !Below is for saving gridded emissions. Continuing the index numbering for sizes.
+    integer, parameter :: pm_exhaust=5
+    integer, parameter :: nox_exhaust=6
+    integer, parameter :: pm_co_road=7
+    integer, parameter :: pm_co_tyre=8
+    integer, parameter :: pm_co_brake=9
+    integer, parameter :: pm_co_sand=10
+    integer, parameter :: pm_co_salt1=11
+    integer, parameter :: pm_co_tot=12
+    integer, parameter :: pm_25_road=13
+    integer, parameter :: pm_25_tyre=14
+    integer, parameter :: pm_25_brake=15
+    integer, parameter :: pm_25_sand=16
+    integer, parameter :: pm_25_salt1=17
+    integer, parameter :: pm_25_tot=18
+
+    integer, parameter :: num_save_grid_vars = 18
+
     integer pm_sus(3)
     data (pm_sus(ii),ii=1,3) /pm_200,pm_10,pm_25/
     
@@ -376,17 +399,18 @@
         character(15) :: units
         character(256) :: long_name
         character(256) :: description 
-        real, allocatable :: data_2d(:,:)
         real, allocatable :: data_1d(:)
         character(20), allocatable :: data_char_1d(:)
+        real, allocatable :: data_2d(:,:)
+        real, allocatable :: data_3d(:,:,:)
         logical :: save_in_summary =.false.
         logical :: save_in_emissions =.false.
         logical :: save_in_meteo =.false.
         logical :: save_in_activity =.false.
     end type
 
-    
     type(save_var), dimension(110) :: save_vars !! Put all save variables in this array TODO: Could make this into an allocatable, to make length match the number of unique variables. 
+    type(save_var), dimension(10) :: save_grid_vars !! Put all variables to be saved in gridded output in this array 
 
     !Define the flag that determines if a single road option is to be used for large datasets
     logical :: use_single_road_loop_flag=.true.
@@ -1586,6 +1610,8 @@
 
     save_vars(save_PhysicalRunway_index) = save_var(varname = "PhysicalRunway", units = "", description = "Identifies runway", long_name = "airport_name", save_in_summary = .true.)
     if(.not.allocated(save_vars(save_PhysicalRunway_index)%data_char_1d) .and. (NORTRIP_save_road_summary_data_flag) .and. calculation_type == "Avinor") allocate(save_vars(save_PhysicalRunway_index)%data_char_1d(n_save_links_netcdf)) 
+
+    
 
     end subroutine allocate_NORTRIP_save_arrays
     
