@@ -38,7 +38,9 @@ subroutine NORTRIP_main_run
     integer :: forecast_index
     real,allocatable :: forecast_T_s(:,:)
     real    :: bias_correction
-
+    character(8)  :: date
+    character(10) :: time
+    character(5)  :: zone
     !Open log file for main run. Already established in NORTRIP_read_pathnames 
     !if (unit_logfile.gt.0) then
     !    open(unit_logfile,file=filename_log,status='old',position='append')
@@ -87,8 +89,13 @@ subroutine NORTRIP_main_run
         if ((mod(ro,10000).eq.0.and..not.use_single_road_loop_flag).or.(mod(ro_tot,10000).eq.0.and.use_single_road_loop_flag)) then
             if (unit_logfile.gt.0) then
                 write(*,'(A6,2I9)') 'ROAD: ',ro,ro_tot
+
+                call date_and_time(date = date,time=time,zone=zone)    
+                write(*,*) "time:  "//date//" "//time(1:2)//":"//time(3:4)//":"//time(5:6)//zone//"UTC"
             else
                 write(unit_logfile,'(A6,2I9)') 'ROAD: ',ro,ro_tot
+                call date_and_time(date = date,time=time,zone=zone)    
+                write(*,*) "time:  "//date//" "//time(1:2)//":"//time(3:4)//":"//time(5:6)//zone//"UTC"
             endif
         endif
         
