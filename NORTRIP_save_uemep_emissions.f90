@@ -689,18 +689,9 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
 
                         !Get PM2.5 from exhaust:
                         emis_road(pm_exhaust) = sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
-
                         !Get NOx exhaust emissions:
-                        emis_road(nox_exhaust) = 0
-                        if (available_airquality_data(NOX_emis_index)) then
-                            emis_road(nox_exhaust) = emis_road(nox_exhaust)+airquality_data(NOX_emis_index,ti,ro)*conversion
-                        elseif (NOX_EF_available.ne.0) then
-                            do v=1,num_veh
-                                emis_road(nox_exhaust)=emis_road(nox_exhaust)+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
-                            enddo
-                        else
-                            emis_road(nox_exhaust) = 0
-                        end if
+                        emis_road(nox_exhaust)=emis_road(nox_exhaust)+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+
 
                         !Add contribution of each term from the current road link to the appropriate grid cell
                         do x=1,size(emis_road,dim=1)

@@ -33,11 +33,11 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     real, dimension(grid_dim(2)) :: latitude_array
     real, dimension(grid_dim(1)) :: longitude_array
     
-    !TODO: The files all appear in /summary directory now. Should modify the paths here. 
-    filename_gridded    = trim(path_output_emis)//trim(filename_output_grid_emis)//'_gridded.nc'
+ 
+    filename_gridded    = trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//'<yyyymmdd>'//'.nc'
+
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
-
     !Put in date if required
     call date_to_datestr_bracket(a,filename_gridded,filename_gridded)
     call date_to_datestr_bracket(a,filename_gridded,filename_gridded)
@@ -207,12 +207,12 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     
     
     do j=0,grid_dim(2)-1
-        latitude_array(j+1)=grid_0(2)+grid_delta(2)*j
+        latitude_array(j+1)=grid_0(2)+grid_delta(2)*(j+0.5) !grid center
     end do 
 
     do i=0,grid_dim(1)-1
 
-        longitude_array(i+1)=grid_0(1)+grid_delta(1)*i
+        longitude_array(i+1)=grid_0(1)+grid_delta(1)*(i+0.5) !grid center
     end do 
     
         call check(nf90_inq_varid(ncid,"longitude",varid))
