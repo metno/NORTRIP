@@ -49,7 +49,7 @@ subroutine NORTRIP_save_output_data_netcdf
     
     integer, dimension(4) :: ncid_array = -99
     integer :: ncid_iterator
-    !TODO: The files all appear in /summary directory now. Should modify the paths here. 
+
     filename_summary    = trim(path_outputdata)//trim(filename_outputdata)//'_summary.nc'
     filename_activity   = trim(path_outputdata)//trim(filename_outputdata)//'_activities.nc'
     filename_meteo      = trim(path_output_roadmeteo)//trim(filename_output_roadmeteo)//'_road_meteo.nc'
@@ -352,13 +352,13 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     if (allocated(save_vars(save_Wind_DD_index)%data_2d))      save_vars(save_Wind_DD_index)%data_2d(save_road_counter,:)         = meteo_data(DD_index,:,ro)
     if (allocated(save_vars(save_SW_rad_cls_index)%data_2d))   save_vars(save_SW_rad_cls_index)%data_2d(save_road_counter,:)      = meteo_data(short_rad_in_clearsky_index,:,ro)
     if (allocated(save_vars(save_SW_rad_net_index)%data_2d))   save_vars(save_SW_rad_net_index)%data_2d(save_road_counter,:)      = road_meteo_data(short_rad_net_index,:,tr,ro)
-    if (allocated(save_vars(save_SW_rad_in_index)%data_2d))    save_vars(save_SW_rad_in_index)%data_2d(save_road_counter,:)       = road_meteo_data(short_rad_in_index,:,tr,ro)
-    if (allocated(save_vars(save_LW_rad_in_index)%data_2d))    save_vars(save_LW_rad_in_index)%data_2d(save_road_counter,:)       = road_meteo_data(long_rad_in_index,:,tr,ro)
+    if (allocated(save_vars(save_SW_rad_in_index)%data_2d))    save_vars(save_SW_rad_in_index)%data_2d(save_road_counter,:)       = meteo_data(short_rad_in_index,:,ro)
+    if (allocated(save_vars(save_LW_rad_in_index)%data_2d))    save_vars(save_LW_rad_in_index)%data_2d(save_road_counter,:)       = meteo_data(long_rad_in_index,:,ro)
     if (allocated(save_vars(save_LW_rad_net_index)%data_2d))   save_vars(save_LW_rad_net_index)%data_2d(save_road_counter,:)      = road_meteo_data(long_rad_net_index,:,tr,ro)
     if (allocated(save_vars(save_G_sub_index)%data_2d))        save_vars(save_G_sub_index)%data_2d(save_road_counter,:)           = road_meteo_data(G_sub_index,:,tr,ro)
     if (allocated(save_vars(save_G_net_index)%data_2d))        save_vars(save_G_net_index)%data_2d(save_road_counter,:)           = road_meteo_data(G_index,:,tr,ro)
-    if (allocated(save_vars(save_H_in_index)%data_2d))         save_vars(save_H_in_index)%data_2d(save_road_counter,:)            = road_meteo_data(H_index,:,tr,ro)
-    if (allocated(save_vars(save_L_in_index)%data_2d))         save_vars(save_L_in_index)%data_2d(save_road_counter,:)            = road_meteo_data(L_index,:,tr,ro)
+    if (allocated(save_vars(save_H_in_index)%data_2d))         save_vars(save_H_in_index)%data_2d(save_road_counter,:)            = -road_meteo_data(H_index,:,tr,ro)
+    if (allocated(save_vars(save_L_in_index)%data_2d))         save_vars(save_L_in_index)%data_2d(save_road_counter,:)            = -road_meteo_data(L_index,:,tr,ro)
     if (allocated(save_vars(save_Traffic_index)%data_2d))      save_vars(save_Traffic_index)%data_2d(save_road_counter,:)         = traffic_data(N_total_index,:,ro)
     if (allocated(save_vars(save_HDV_index)%data_2d))          save_vars(save_HDV_index)%data_2d(save_road_counter,:)             = fr_hdv
     if (allocated(save_vars(save_Studs_li_index)%data_2d))     save_vars(save_Studs_li_index)%data_2d(save_road_counter,:)        = st_li
