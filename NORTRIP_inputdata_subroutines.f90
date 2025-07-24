@@ -191,6 +191,11 @@ subroutine read_NORTRIP_inputdata
             call find_read_line_valn(unit_in,unit_logfile_temp,zen_skyview(i,1:n_roads),n_roads,'az_skyview:'//trim(temp_str),0.)
             !write(*,*) i,zen_skyview(i,:)
         enddo
+    else 
+        allocate (az_skyview(n_skyview,0:n_roads))
+        allocate (zen_skyview(n_skyview,0:n_roads))
+        az_skyview(n_skyview,0:n_roads) = nodata
+        zen_skyview(n_skyview,0:n_roads) = nodata
     endif
       
     call find_read_line_intn(unit_in,unit_logfile_temp,Road_ID(1:n_roads),n_roads,'Road ID',0)
@@ -378,20 +383,20 @@ subroutine read_NORTRIP_inputdata
 
     !Distribute the initial suspendable mass according to road wear over all tracks and convert from g/m^2 to g/km
     do s=1,num_source
-    do tr=1,num_track
-    !do ro=1,n_roads
-        M_road_init(s,pm_all,tr,:)=M_road_init_temp(s,:)*b_road_lanes(:)*1000
-        M_road_init(s,pm_200,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_200,st)*f_track(tr)*b_road_lanes(:)*1000
-        M_road_init(s,pm_10,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_10,st)*f_track(tr)*b_road_lanes(:)*1000
-        M_road_init(s,pm_25,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_25,st)*f_track(tr)*b_road_lanes(:)*1000
-    !enddo
-    enddo
+        do tr=1,num_track
+        !do ro=1,n_roads
+            M_road_init(s,pm_all,tr,:)=M_road_init_temp(s,:)*b_road_lanes(:)*1000
+            M_road_init(s,pm_200,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_200,st)*f_track(tr)*b_road_lanes(:)*1000
+            M_road_init(s,pm_10,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_10,st)*f_track(tr)*b_road_lanes(:)*1000
+            M_road_init(s,pm_25,tr,:)=M_road_init_temp(s,:)*f_PM(s,pm_25,st)*f_track(tr)*b_road_lanes(:)*1000
+        !enddo
+        enddo
     enddo
      
     do ro=1,n_roads
-    do m=1,num_moisture
-        g_road_init(m,1:num_track,ro)=g_road_init(m,1,ro)
-    enddo
+        do m=1,num_moisture
+            g_road_init(m,1:num_track,ro)=g_road_init(m,1,ro)
+        enddo
     enddo
 
     if (allocated(M_road_init_temp)) deallocate (M_road_init_temp)    
@@ -399,285 +404,285 @@ subroutine read_NORTRIP_inputdata
     !Loop through the different input files
     do input_file_type=1,n_file_type
  
-    write(unit_logfile_temp,'(A)') '================================================================'
-    if (input_file_type.eq.date_file_type) then
-        temp_file=trim(filename_inputdata)//'_traffic'
-        write(unit_logfile_temp,'(A)') 'Reading model traffic date input data (read_NORTRIP_inputdata)' 
-    endif
-    if (input_file_type.eq.traffic_file_type) then
-        temp_file=trim(filename_inputdata)//'_traffic'
-        write(unit_logfile_temp,'(A)') 'Reading model traffic input data (read_NORTRIP_inputdata)' 
-    endif
-    if (input_file_type.eq.meteo_file_type) then
-        temp_file=trim(filename_inputdata)//'_meteorology'
-        write(unit_logfile_temp,'(A)') 'Reading model meteorological input data (read_NORTRIP_inputdata)'   
-    endif
-    if (input_file_type.eq.activity_file_type) then
-        temp_file=trim(filename_inputdata)//'_activity'
-        write(unit_logfile_temp,'(A)') 'Reading model activity input data (read_NORTRIP_inputdata)'   
-    endif
-    if (input_file_type.eq.airquality_file_type) then
-        temp_file=trim(filename_inputdata)//'_airquality'
-        write(unit_logfile_temp,'(A)') 'Reading model airquality input data (read_NORTRIP_inputdata)'   
-    endif
-	write(unit_logfile_temp,'(A)') '================================================================'
-   
-    !Extract the timeseries zip files
-    if (read_timeseriesdata_in_zip_format) then
-        temp_name_zip=trim(temp_path)//trim(temp_file)//'.zip'
-        inquire(file=trim(temp_name_zip),exist=exists)
-        if (.not.exists.and.input_file_type.ne.activity_file_type) then
-            write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name_zip)//' does not exist.'
-            write(unit_logfile,'(a)')'STOPPING'
-            stop 34
+        write(unit_logfile_temp,'(A)') '================================================================'
+        if (input_file_type.eq.date_file_type) then
+            temp_file=trim(filename_inputdata)//'_traffic'
+            write(unit_logfile_temp,'(A)') 'Reading model traffic date input data (read_NORTRIP_inputdata)' 
         endif
-        !Unzip
-        write(unit_logfile,'(a,a)') 'Extracting from zip format: ',trim(temp_name_zip)       
-        command_line_zip='7za e -tzip '//trim(temp_name_zip)//' -o'//trim(temp_path)
-        write(unit_logfile,'(a,a)') 'Command line zip: ',trim(command_line_zip)      
-        CALL EXECUTE_COMMAND_LINE (trim(command_line_zip),wait=.true.)
-    endif
-    
-    !Open pathname file for reading
-    temp_name=trim(temp_path)//trim(temp_file)//'.txt'
-    inquire(file=trim(temp_name),exist=exists)
-    if (.not.exists) then
-        write(unit_logfile,'(A)')'WARNING: File '//trim(temp_name)//' does not exist.'
-        file_available(input_file_type)=.false.
-    else
-        file_available(input_file_type)=.true.
-    endif
-    
-    if (file_available(input_file_type)) then
-        
-    open(unit_in,file=temp_name,access='sequential',status='old',readonly)  
-    write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
-
-    !Read header string and split at tabs
-    temp_str1=''
-    temp_str2='Not available'
-    index_val=1
-    i_head=0
-    read(unit_in,'(a)',end=10) temp_str !Read the header string
-    do while (index_val.ne.0)
-        index_val=index(temp_str,achar(9))
-        temp_str1=temp_str(1:index_val-1)
-        i_head=i_head+1
-        header_str(i_head)=temp_str1
-        temp_str=temp_str(index_val+1:)
-        if (index_val.eq.0) then !end of the header
-            header_str(i_head)=temp_str
-        endif           
-        !write(*,*) i_head,index_val,trim(header_str(i_head))
-    end do
-    write(unit_logfile,*) 'Number of columns= ',i_head
-  
-    !Find out how long the file is, reading a dummy variable
-    !Does this only for the date file and assumes the rest are the same, as they should be
-    !Except for the activity data. This will not work with non-chronological activity data
-    if (input_file_type.eq.date_file_type) then
-        index_val=0
-        do while(.not.eof(unit_in))
-            index_val=index_val+1
-            read(unit_in,*,ERR=5)
-        enddo  
-5       write(unit_logfile,*) 'Number of rows= ',index_val
-    
-        !Read data
-        n_date=int(index_val/n_roads+.5)
-        !write(unit_logfile,*) 'Number of roads= ',n_roads
-        !write(unit_logfile,*) 'Number of dates= ',n_date
-    endif
-    
-    !allocate (input_array(i_head,index_val))
-    allocate (input_array(i_head,n_date,0:n_roads))
-    input_array=nodata
-    
-    rewind(unit_in)
-    read(unit_in,*,ERR=6) !Skip header
-6   write(unit_logfile,*) 'Number of roads= ',n_roads
-    write(unit_logfile,*) 'Number of dates= ',n_date
-
-    !do jj=1,index_val
-    !    read(unit_in,*) (input_array(ii,jj),ii=1,i_head)
-    !    write(*,*) jj
-    !enddo
-    
-    !write(*,*) input_array(:,1)
-    !read(unit_in,*) ((input_array(ii,jj),ii=1,i_head),jj=1,index_val)
-    read(unit_in,*) (((input_array(ii,jj,ro),ii=1,i_head),jj=1,n_date),ro=1,n_roads)
-    !write(unit_logfile,'(<i_head>a14)') (trim(header_str(ii)), ii=1,i_head)
-    !write(unit_logfile,'(<i_head>f14.2)') (input_array(ii,1), ii=1,i_head)
-    !write(unit_logfile,'(<i_head>f14.2)') (input_array(ii,index_val), ii=1,i_head)
-    write(unit_logfile,'(a32,a14,a14,a14)') 'Parameter','First value','Last value','Mean value'
-	write(unit_logfile,'(A)') '----------------------------------------------------------------'
-    do i=1,i_head
-        !write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') trim(header_str(i)), input_array(i,1),input_array(i,index_val),sum(input_Array(i,1:index_val)/index_val)
-        write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') trim(header_str(i)), &
-            input_array(i,1,1),input_array(i,n_date,n_roads), &
-            sum(input_array(i,1:n_date,1:n_roads)/(n_date*n_roads))
-    end do
-    write(unit_logfile,'(A)') '----------------------------------------------------------------'
-   
-    if (input_file_type.eq.date_file_type) then
-        !Allocate the date array
-        if (.not.allocated(date_data)) allocate(date_data(num_date_index,n_date))
-        if (.not.allocated(date_str)) allocate(date_str(3,n_date))
-        allocate(file_match_str(num_date_index))
-        file_match_str=date_match_str
-        n_index=num_date_index-1    !Does not include seconds
-        !n_date=index_val
-        date_data=0.
-        !This is the first read. Set n_time according to this
-        n_time=n_date
-    endif
-    if (input_file_type.eq.traffic_file_type) then
-        !Allocate the traffic array        
-        if (.not.allocated(traffic_data)) allocate(traffic_data(num_traffic_index,n_time,0:n_roads))
-        allocate(file_match_str(num_traffic_index))
-        file_match_str=traffic_match_str
-        n_index=num_traffic_index
-        traffic_data=nodata
-    endif
-    if (input_file_type.eq.meteo_file_type) then
-        !Allocate the meteorology array
-        if (n_time.ne.n_date) then
-            write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in meteo input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
-            stop 35
+        if (input_file_type.eq.traffic_file_type) then
+            temp_file=trim(filename_inputdata)//'_traffic'
+            write(unit_logfile_temp,'(A)') 'Reading model traffic input data (read_NORTRIP_inputdata)' 
         endif
-        if (.not.allocated(meteo_data)) allocate(meteo_data(num_meteo_index,n_time,0:n_roads))
-        allocate(file_match_str(num_meteo_index))
-        file_match_str=meteo_match_str
-        n_index=num_meteo_index
-        meteo_data=nodata
-    endif
-    if (input_file_type.eq.activity_file_type) then
-        !Allocate the activity array. different to the others because it is not chronological
-        !This allocation assumes it is using the same dimensions as the other inputs
-        if (.not.allocated(activity_input_data)) allocate(activity_input_data(num_activity_input_index,n_date,0:n_roads))
-        activity_input_data=nodata
-        !Note that this array size is set to n_time based on the size of the date_data array
-        if (.not.allocated(activity_data)) allocate(activity_data(num_activity_index,n_time,0:n_roads))
-        allocate(file_match_str(num_activity_input_index))
-        file_match_str=activity_match_str
-        n_index=num_activity_input_index
-        activity_input_data=nodata
-        activity_input_data(activity_hour_index:activity_minute_index,:,:)=0.
-    endif
-
-    if (input_file_type.eq.airquality_file_type) then
-        !Allocate the airquality array using n_time
-        if (n_time.ne.n_date) then
-            write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in airquality input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
-            stop 36
+        if (input_file_type.eq.meteo_file_type) then
+            temp_file=trim(filename_inputdata)//'_meteorology'
+            write(unit_logfile_temp,'(A)') 'Reading model meteorological input data (read_NORTRIP_inputdata)'   
         endif
-        if (.not.allocated(airquality_data)) allocate(airquality_data(num_airquality_index,n_time,0:n_roads))
-        allocate(file_match_str(num_airquality_index))
-        file_match_str=airquality_match_str
-        n_index=num_airquality_index
-        airquality_data=nodata
-    endif
-    
-    !Search for a string and retrieve index
-    match_str=''
-    do ii=1,i_head
-        match_found=.false.
-        do jj=1,n_index           
-            index_match=0 
-            match_str=trim(file_match_str(jj))
-            
-            !Special consideration for salt(1)
-            if (input_file_type.eq.activity_file_type.and.jj.eq.M_salting_index(1)) then
-                match_str=trim(file_match_str(jj))//trim(salt_match_str(na))
-                !write(*,*) match_str
-            endif
-            
-            !Special consideration for salt(2)
-            if (input_file_type.eq.activity_file_type.and.jj.eq.M_salting_index(2)) then
-                match_str='No match please'
-                do i=2,num_salt_max
-                    !write(*,'(I3,A,A,I)') i,trim(header_str(ii)),trim(salt_match_str(i)),index(header_str(ii),trim(salt_match_str(i)))
-                    if (index(header_str(ii),trim(salt_match_str(i))).gt.0) then
-                        salt_type(2)=i                       
-                        match_str=trim(file_match_str(jj))//trim(salt_match_str(i))
-                    endif
-                end do                
-            endif
-            
-            !Special consideration for observed moisture to retrieve the units
-            if (input_file_type.eq.meteo_file_type.and.jj.eq.road_wetness_obs_input_index) then                
-                if (index(header_str(ii),'(mm)').gt.0) then
-                    road_wetness_obs_in_mm=1                      
-                    match_str=trim(file_match_str(jj))//'(mm)'
-                endif
-                !write(*,*) match_str
-            endif
-            
-            !Find the matching string in the header
-            if (index(header_str(ii),trim(match_str)).ne.0) then
-                index_match=ii
-            else
-                index_match=0
-            endif
-            
-            !If a match then put into the apropriate arrays
-            if (index_match.gt.0) then         
-                match_found=.true.
-                write(unit_logfile,'(A18,i4,i4,A32,A32)') 'Matching index: ',jj,index_match,trim(match_str),trim(header_str(ii))
-                
-                if (input_file_type.eq.date_file_type) then
-                    date_data(jj,:)=input_array(index_match,:,1)
-                    available_date_data(jj)=.true.
-                endif
-                if (input_file_type.eq.activity_file_type) then
-                    activity_input_data(jj,:,:)=input_array(index_match,:,:)
-                    available_activity_data(jj)=.true.
-                endif
-                if (input_file_type.eq.traffic_file_type) then
-                    traffic_data(jj,:,:)=input_array(index_match,:,:)
-                    available_traffic_data(jj)=.true.
-                endif
-                if (input_file_type.eq.meteo_file_type) then
-                    meteo_data(jj,:,:)=input_array(index_match,:,:)
-                    available_meteo_data(jj)=.true.
-                endif
-                if (input_file_type.eq.airquality_file_type) then
-                    airquality_data(jj,:,:)=input_array(index_match,:,:)
-                    available_airquality_data(jj)=.true.
-                endif             
-
-            endif
-        end do
-
-        if (.not.match_found) then
-            write(unit_logfile,*) 'No match found for index: ',ii,trim(header_str(ii))
+        if (input_file_type.eq.activity_file_type) then
+            temp_file=trim(filename_inputdata)//'_activity'
+            write(unit_logfile_temp,'(A)') 'Reading model activity input data (read_NORTRIP_inputdata)'   
         endif
-  
-    enddo
-
-    !Set road wetness max and min. Needs to be rethought. Not used
-    if (available_meteo_data(road_wetness_obs_input_index)) then
-        max_road_wetness_obs=maxval(meteo_data(road_wetness_obs_input_index,:,:))
-        min_road_wetness_obs=minval(meteo_data(road_wetness_obs_input_index,:,:))
-    else
-        max_road_wetness_obs=nodata
-        min_road_wetness_obs=nodata
-    endif
-
-    deallocate (input_array)
-    deallocate (file_match_str)
+        if (input_file_type.eq.airquality_file_type) then
+            temp_file=trim(filename_inputdata)//'_airquality'
+            write(unit_logfile_temp,'(A)') 'Reading model airquality input data (read_NORTRIP_inputdata)'   
+        endif
+        write(unit_logfile_temp,'(A)') '================================================================'
     
-
-10  close(unit_in,status='keep')
-
-        !If zip file used then delete the text file that has been extracted
-        if (read_metadata_in_zip_format) then
-            command_line_zip=trim(delete_file_command)//' '//trim(temp_name)
+        !Extract the timeseries zip files
+        if (read_timeseriesdata_in_zip_format) then
+            temp_name_zip=trim(temp_path)//trim(temp_file)//'.zip'
+            inquire(file=trim(temp_name_zip),exist=exists)
+            if (.not.exists.and.input_file_type.ne.activity_file_type) then
+                write(unit_logfile,'(a)')'ERROR: File '//trim(temp_name_zip)//' does not exist.'
+                write(unit_logfile,'(a)')'STOPPING'
+                stop 34
+            endif
+            !Unzip
+            write(unit_logfile,'(a,a)') 'Extracting from zip format: ',trim(temp_name_zip)       
+            command_line_zip='7za e -tzip '//trim(temp_name_zip)//' -o'//trim(temp_path)
             write(unit_logfile,'(a,a)') 'Command line zip: ',trim(command_line_zip)      
             CALL EXECUTE_COMMAND_LINE (trim(command_line_zip),wait=.true.)
         endif
+        
+        !Open pathname file for reading
+        temp_name=trim(temp_path)//trim(temp_file)//'.txt'
+        inquire(file=trim(temp_name),exist=exists)
+        if (.not.exists) then
+            write(unit_logfile,'(A)')'WARNING: File '//trim(temp_name)//' does not exist.'
+            file_available(input_file_type)=.false.
+        else
+            file_available(input_file_type)=.true.
+        endif
+        
+        if (file_available(input_file_type)) then
+            
+        open(unit_in,file=temp_name,access='sequential',status='old',readonly)  
+        write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
 
-    endif   !File available
+        !Read header string and split at tabs
+        temp_str1=''
+        temp_str2='Not available'
+        index_val=1
+        i_head=0
+        read(unit_in,'(a)',end=10) temp_str !Read the header string
+        do while (index_val.ne.0)
+            index_val=index(temp_str,achar(9))
+            temp_str1=temp_str(1:index_val-1)
+            i_head=i_head+1
+            header_str(i_head)=temp_str1
+            temp_str=temp_str(index_val+1:)
+            if (index_val.eq.0) then !end of the header
+                header_str(i_head)=temp_str
+            endif           
+            !write(*,*) i_head,index_val,trim(header_str(i_head))
+        end do
+        write(unit_logfile,*) 'Number of columns= ',i_head
+    
+        !Find out how long the file is, reading a dummy variable
+        !Does this only for the date file and assumes the rest are the same, as they should be
+        !Except for the activity data. This will not work with non-chronological activity data
+        if (input_file_type.eq.date_file_type) then
+            index_val=0
+            do while(.not.eof(unit_in))
+                index_val=index_val+1
+                read(unit_in,*,ERR=5)
+            enddo  
+    5       write(unit_logfile,*) 'Number of rows= ',index_val
+        
+            !Read data
+            n_date=int(index_val/n_roads+.5)
+            !write(unit_logfile,*) 'Number of roads= ',n_roads
+            !write(unit_logfile,*) 'Number of dates= ',n_date
+        endif
+        
+        !allocate (input_array(i_head,index_val))
+        allocate (input_array(i_head,n_date,0:n_roads))
+        input_array=nodata
+        
+        rewind(unit_in)
+        read(unit_in,*,ERR=6) !Skip header
+    6   write(unit_logfile,*) 'Number of roads= ',n_roads
+        write(unit_logfile,*) 'Number of dates= ',n_date
+
+        !do jj=1,index_val
+        !    read(unit_in,*) (input_array(ii,jj),ii=1,i_head)
+        !    write(*,*) jj
+        !enddo
+        
+        !write(*,*) input_array(:,1)
+        !read(unit_in,*) ((input_array(ii,jj),ii=1,i_head),jj=1,index_val)
+        read(unit_in,*) (((input_array(ii,jj,ro),ii=1,i_head),jj=1,n_date),ro=1,n_roads)
+        !write(unit_logfile,'(<i_head>a14)') (trim(header_str(ii)), ii=1,i_head)
+        !write(unit_logfile,'(<i_head>f14.2)') (input_array(ii,1), ii=1,i_head)
+        !write(unit_logfile,'(<i_head>f14.2)') (input_array(ii,index_val), ii=1,i_head)
+        write(unit_logfile,'(a32,a14,a14,a14)') 'Parameter','First value','Last value','Mean value'
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
+        do i=1,i_head
+            !write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') trim(header_str(i)), input_array(i,1),input_array(i,index_val),sum(input_Array(i,1:index_val)/index_val)
+            write(unit_logfile,'(a32,f14.2,f14.2,f14.2)') trim(header_str(i)), &
+                input_array(i,1,1),input_array(i,n_date,n_roads), &
+                sum(input_array(i,1:n_date,1:n_roads)/(n_date*n_roads))
+        end do
+        write(unit_logfile,'(A)') '----------------------------------------------------------------'
+    
+        if (input_file_type.eq.date_file_type) then
+            !Allocate the date array
+            if (.not.allocated(date_data)) allocate(date_data(num_date_index,n_date))
+            if (.not.allocated(date_str)) allocate(date_str(3,n_date))
+            allocate(file_match_str(num_date_index))
+            file_match_str=date_match_str
+            n_index=num_date_index-1    !Does not include seconds
+            !n_date=index_val
+            date_data=0.
+            !This is the first read. Set n_time according to this
+            n_time=n_date
+        endif
+        if (input_file_type.eq.traffic_file_type) then
+            !Allocate the traffic array        
+            if (.not.allocated(traffic_data)) allocate(traffic_data(num_traffic_index,n_time,0:n_roads))
+            allocate(file_match_str(num_traffic_index))
+            file_match_str=traffic_match_str
+            n_index=num_traffic_index
+            traffic_data=nodata
+        endif
+        if (input_file_type.eq.meteo_file_type) then
+            !Allocate the meteorology array
+            if (n_time.ne.n_date) then
+                write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in meteo input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
+                stop 35
+            endif
+            if (.not.allocated(meteo_data)) allocate(meteo_data(num_meteo_index,n_time,0:n_roads))
+            allocate(file_match_str(num_meteo_index))
+            file_match_str=meteo_match_str
+            n_index=num_meteo_index
+            meteo_data=nodata
+        endif
+        if (input_file_type.eq.activity_file_type) then
+            !Allocate the activity array. different to the others because it is not chronological
+            !This allocation assumes it is using the same dimensions as the other inputs
+            if (.not.allocated(activity_input_data)) allocate(activity_input_data(num_activity_input_index,n_date,0:n_roads))
+            activity_input_data=nodata
+            !Note that this array size is set to n_time based on the size of the date_data array
+            if (.not.allocated(activity_data)) allocate(activity_data(num_activity_index,n_time,0:n_roads))
+            allocate(file_match_str(num_activity_input_index))
+            file_match_str=activity_match_str
+            n_index=num_activity_input_index
+            activity_input_data=nodata
+            activity_input_data(activity_hour_index:activity_minute_index,:,:)=0.
+        endif
+
+        if (input_file_type.eq.airquality_file_type) then
+            !Allocate the airquality array using n_time
+            if (n_time.ne.n_date) then
+                write(unit_logfile,'(A,i,a,i,a)')'ERROR: Number of dates in airquality input file (',n_date,') not the same as in traffic input file (',n_time,'). Stopping'
+                stop 36
+            endif
+            if (.not.allocated(airquality_data)) allocate(airquality_data(num_airquality_index,n_time,0:n_roads))
+            allocate(file_match_str(num_airquality_index))
+            file_match_str=airquality_match_str
+            n_index=num_airquality_index
+            airquality_data=nodata
+        endif
+        
+        !Search for a string and retrieve index
+        match_str=''
+        do ii=1,i_head
+            match_found=.false.
+            do jj=1,n_index           
+                index_match=0 
+                match_str=trim(file_match_str(jj))
+                
+                !Special consideration for salt(1)
+                if (input_file_type.eq.activity_file_type.and.jj.eq.M_salting_index(1)) then
+                    match_str=trim(file_match_str(jj))//trim(salt_match_str(na))
+                    !write(*,*) match_str
+                endif
+                
+                !Special consideration for salt(2)
+                if (input_file_type.eq.activity_file_type.and.jj.eq.M_salting_index(2)) then
+                    match_str='No match please'
+                    do i=2,num_salt_max
+                        !write(*,'(I3,A,A,I)') i,trim(header_str(ii)),trim(salt_match_str(i)),index(header_str(ii),trim(salt_match_str(i)))
+                        if (index(header_str(ii),trim(salt_match_str(i))).gt.0) then
+                            salt_type(2)=i                       
+                            match_str=trim(file_match_str(jj))//trim(salt_match_str(i))
+                        endif
+                    end do                
+                endif
+                
+                !Special consideration for observed moisture to retrieve the units
+                if (input_file_type.eq.meteo_file_type.and.jj.eq.road_wetness_obs_input_index) then                
+                    if (index(header_str(ii),'(mm)').gt.0) then
+                        road_wetness_obs_in_mm=1                      
+                        match_str=trim(file_match_str(jj))//'(mm)'
+                    endif
+                    !write(*,*) match_str
+                endif
+                
+                !Find the matching string in the header
+                if (index(header_str(ii),trim(match_str)).ne.0) then
+                    index_match=ii
+                else
+                    index_match=0
+                endif
+                
+                !If a match then put into the apropriate arrays
+                if (index_match.gt.0) then         
+                    match_found=.true.
+                    write(unit_logfile,'(A18,i4,i4,A32,A32)') 'Matching index: ',jj,index_match,trim(match_str),trim(header_str(ii))
+                    
+                    if (input_file_type.eq.date_file_type) then
+                        date_data(jj,:)=input_array(index_match,:,1)
+                        available_date_data(jj)=.true.
+                    endif
+                    if (input_file_type.eq.activity_file_type) then
+                        activity_input_data(jj,:,:)=input_array(index_match,:,:)
+                        available_activity_data(jj)=.true.
+                    endif
+                    if (input_file_type.eq.traffic_file_type) then
+                        traffic_data(jj,:,:)=input_array(index_match,:,:)
+                        available_traffic_data(jj)=.true.
+                    endif
+                    if (input_file_type.eq.meteo_file_type) then
+                        meteo_data(jj,:,:)=input_array(index_match,:,:)
+                        available_meteo_data(jj)=.true.
+                    endif
+                    if (input_file_type.eq.airquality_file_type) then
+                        airquality_data(jj,:,:)=input_array(index_match,:,:)
+                        available_airquality_data(jj)=.true.
+                    endif             
+
+                endif
+            end do
+
+            if (.not.match_found) then
+                write(unit_logfile,*) 'No match found for index: ',ii,trim(header_str(ii))
+            endif
+    
+        enddo
+
+        !Set road wetness max and min. Needs to be rethought. Not used
+        if (available_meteo_data(road_wetness_obs_input_index)) then
+            max_road_wetness_obs=maxval(meteo_data(road_wetness_obs_input_index,:,:))
+            min_road_wetness_obs=minval(meteo_data(road_wetness_obs_input_index,:,:))
+        else
+            max_road_wetness_obs=nodata
+            min_road_wetness_obs=nodata
+        endif
+
+        deallocate (input_array)
+        deallocate (file_match_str)
+        
+
+    10  close(unit_in,status='keep')
+
+            !If zip file used then delete the text file that has been extracted
+            if (read_metadata_in_zip_format) then
+                command_line_zip=trim(delete_file_command)//' '//trim(temp_name)
+                write(unit_logfile,'(a,a)') 'Command line zip: ',trim(command_line_zip)      
+                CALL EXECUTE_COMMAND_LINE (trim(command_line_zip),wait=.true.)
+            endif
+
+        endif   !File available
     enddo
     
     !Set the total number of time indexes
@@ -685,13 +690,13 @@ subroutine read_NORTRIP_inputdata
 
     !Set some physical limits on the meteorological data. None of it can be nodata
     do ro=1,n_roads
-    do ti=1,n_time
-        meteo_data(RH_index,ti,ro)=min(max(meteo_data(RH_index,ti,ro),0.),100.)
-        meteo_data(FF_index,ti,ro)=max(meteo_data(FF_index,ti,ro),0.)
-        meteo_data(DD_index,ti,ro)=min(max(meteo_data(DD_index,ti,ro),0.),360.)
-        meteo_data(Rain_precip_index,ti,ro)=max(meteo_data(Rain_precip_index,ti,ro),0.)
-        meteo_data(Snow_precip_index,ti,ro)=max(meteo_data(Snow_precip_index,ti,ro),0.)
-    enddo
+        do ti=1,n_time
+            meteo_data(RH_index,ti,ro)=min(max(meteo_data(RH_index,ti,ro),0.),100.)
+            meteo_data(FF_index,ti,ro)=max(meteo_data(FF_index,ti,ro),0.)
+            meteo_data(DD_index,ti,ro)=min(max(meteo_data(DD_index,ti,ro),0.),360.)
+            meteo_data(Rain_precip_index,ti,ro)=max(meteo_data(Rain_precip_index,ti,ro),0.)
+            meteo_data(Snow_precip_index,ti,ro)=max(meteo_data(Snow_precip_index,ti,ro),0.)
+        enddo
     enddo
         
     
@@ -706,6 +711,9 @@ subroutine read_NORTRIP_inputdata
         if (.not.allocated(activity_data)) allocate(activity_data(num_activity_index,n_time,0:n_roads))
         activity_data=0.
         available_activity_data=.true.
+
+        if (.not.allocated(activity_input_data)) allocate(activity_input_data(num_activity_input_index,n_date,0:n_roads))
+        activity_input_data = nodata
         !write(*,*) '####Setting activity data to 0'
     endif
     if (.not.file_available(airquality_file_type)) then
@@ -907,10 +915,10 @@ subroutine read_NORTRIP_inputdata
     write(unit_logfile,'(A)') 'Input activity data available (%) with min and max'
     do i=1,num_activity_index
         !call check_available_data_sub(activity_input_data(i,:,ro),available_activity_data(i),nodata_activity,percent_available)
-        write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
         !Special case, must be set to 0 if not available
         if (.not.available_activity_data(i)) then
-            activity_input_data(i,:,ro)=0.
+            write(unit_logfile,'(a32,f6.1,f10.1,f10.1)') trim(activity_match_str(i)),percent_available,minval(activity_input_data(i,:,ro)),maxval(activity_input_data(i,:,ro))
+            activity_input_data(i,:,ro)=nodata
         endif
         
     enddo

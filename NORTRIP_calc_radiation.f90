@@ -127,6 +127,11 @@
             !endif
             enddo
         endif
+        
+        if (canyon_shadow_flag .gt. 1 .and. n_skyview == 0) then 
+            write(*,*) "ERROR: No skyview data available (n_skyview = 0). Set canyon_shadow_flag=1. Stopping."
+            stop 
+        endif
 
         !Calculate the shadow fraction using the skyview data
         !Can only return 0 or 1 for shadow fraction

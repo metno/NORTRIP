@@ -60,9 +60,6 @@
         call read_NORTRIP_pathnames !Opens logfile here
     endif
     
-    call read_NORTRIP_parameters
-    call read_NORTRIP_flags
-    call read_NORTRIP_activities
     
     !Read in and check the input data
     if (unit_logfile.gt.0) write(*,'(A)') 'Reading inputdata'      
@@ -72,6 +69,10 @@
     call check_NORTRIP_inputdata
     call override_NORTRIP_inputdata
     
+    call read_NORTRIP_parameters
+    call read_NORTRIP_flags
+    call read_NORTRIP_activities
+
     !Set which file types to save based on the calculation_type
     call set_NORTRIP_save_file_flags
 
