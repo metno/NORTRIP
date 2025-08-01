@@ -112,7 +112,7 @@
     
     !Call main run time and road loop
     if (unit_logfile.gt.0) write(*,'(A)') 'Starting calculations'
-    
+    init_file_counter=0 !TODO: Not ideal, should maybe be set somewehere else
     do ro_tot=1,n_roads_total
 
         !Reassign input arrays to save memory
@@ -142,13 +142,16 @@
         if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
-    if (NORTRIP_save_init_data_flag.eq.1 .and. init_exists ) then
+    if (NORTRIP_save_init_data_flag .and. init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
 
     !Save netcdf output file(s): 
     call NORTRIP_save_output_data_netcdf
-
+    !Save netcdf init file(s):
+    if ( save_init_data_as_netcdf_flag.eq.1) then
+        call NORTRIP_save_init_data_netcdf
+    end if
 
     call deallocate_NORTRIP_arrays
     

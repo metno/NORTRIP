@@ -168,7 +168,7 @@ subroutine NORTRIP_main_run
             !If the single road loop is used then save the init files here
             if (use_single_road_loop_flag) then
                 if ( save_init_data_as_netcdf_flag.eq.1) then
-                    call NORTRIP_save_init_data_netcdf
+                    call NORTRIP_fill_init_data_array
                 else
                     call NORTRIP_save_init_data_single
                 end if

@@ -399,8 +399,8 @@
         character(15) :: units
         character(256) :: long_name
         character(256) :: description 
-        real, allocatable :: data_1d(:)
         character(20), allocatable :: data_char_1d(:)
+        real, allocatable :: data_1d(:)
         real, allocatable :: data_2d(:,:)
         logical :: save_in_summary =.false.
         logical :: save_in_emissions =.false.
@@ -409,6 +409,22 @@
     end type
 
     type(save_var), dimension(110) :: save_vars !! Put all save variables in this array TODO: Could make this into an allocatable, to make length match the number of unique variables. 
+
+    type :: save_init !! Derived type used to save and write values to init files. 
+        integer,dimension(num_date_index) :: date
+        real, allocatable :: M_road_data_(:,:,:,:)
+        real, allocatable :: road_meteo_data(:,:,:)
+        real, allocatable :: g_road_data(:,:,:)
+        real, allocatable :: time_since_salting(:)
+        real, allocatable :: time_since_ploughing(:)
+        real, allocatable :: time_since_binding(:) 
+        real, allocatable :: time_since_cleaning(:)
+        real, allocatable :: time_since_sanding(:)
+    end type
+
+    type(save_init), dimension(5) :: save_init_instances
+    integer :: init_file_counter
+
 
     !Define the flag that determines if a single road option is to be used for large datasets
     logical :: use_single_road_loop_flag=.true.
