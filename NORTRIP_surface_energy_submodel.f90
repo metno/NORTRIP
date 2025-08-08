@@ -41,7 +41,7 @@
     real TCs_0,TCs
     integer ti_sub
     real L_max,L_min
-    integer ti,i
+    integer i
 
     real g_s_surf,g_surf_fraction,s_surf_fraction
     real a_G,a_rad,a_RL,b_RL,a_H
@@ -291,7 +291,8 @@
                 endif
             endif
 
-            if ( E_correction > 1000 ) then
+
+            if ( abs(E_correction) > 1000 ) then
                 write(*,*) "Warning: Large energy correction: ", E_correction, " in timestep", time
             end if    
 
