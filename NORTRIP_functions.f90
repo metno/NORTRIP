@@ -491,7 +491,7 @@
         real :: end 
         real :: step 
         integer :: i 
-        integer,parameter :: h = 3 !Relaxation time: 3 hours 
+        integer,parameter :: h = 3 !Relaxation time: 3 hours !TODO: Should this value be more flexible?
         real, dimension(nint(h/dt)) :: lin_array !Length of array depends
 
         !result: 

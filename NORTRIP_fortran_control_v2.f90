@@ -125,7 +125,7 @@
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'
 
-        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0 .and. save_road_summary_data_as_netcdf_flag > 0) then !TODO: Only need to do this if output is saved as netcdf, should be a condition.
+        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0 .and. save_road_summary_data_as_netcdf_flag > 0) then 
             call NORTRIP_fill_save_array(write_count) 
             write_count = write_count+1
         end if
@@ -134,7 +134,7 @@
         if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
         if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
         if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data  
-        if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data    
+        if (NORTRIP_save_road_summary_data_flag .and. save_road_summary_data_as_netcdf_flag.ne.1) call NORTRIP_save_road_summary_data    
         if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
         if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
         if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
