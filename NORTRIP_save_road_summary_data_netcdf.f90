@@ -40,7 +40,7 @@ subroutine NORTRIP_save_output_data_netcdf
     character(256)      :: filename_meteo 
     character(256)      :: filename_emissions
     
-    real                :: timestamp
+    double precision                :: timestamp
     integer             :: a(num_date_index)
     character(len=256)  :: history_string
     character(8)        :: date
@@ -49,6 +49,8 @@ subroutine NORTRIP_save_output_data_netcdf
     
     integer, dimension(4) :: ncid_array = -99
     integer :: ncid_iterator
+    double precision :: time_since_epoch
+    double precision date_to_number
 
     filename_summary    = trim(path_outputdata)//trim(filename_outputdata)//'_summary.nc'
     filename_activity   = trim(path_outputdata)//trim(filename_outputdata)//'_activities.nc'
@@ -115,8 +117,8 @@ subroutine NORTRIP_save_output_data_netcdf
             
             call check(nf90_def_dim(ncid_array(ncid_iterator),"maxcharlength", 256 , char_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
 
-            call check(nf90_def_var(ncid_array(ncid_iterator), "time", nf90_float, t_dimid,varid))
-            call check(nf90_put_att(ncid_array(ncid_iterator),varid, "units", "seconds since "//trim(date_str(4,min_time)))) !Time dimension as seconds since start of simulation.
+            call check(nf90_def_var(ncid_array(ncid_iterator), "time", nf90_double, t_dimid,varid))
+            call check(nf90_put_att(ncid_array(ncid_iterator),varid, "units", "seconds since 1970-01-01 00:00:00")) !Time dimension as seconds since start of simulation.
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "calendar", "standard"))
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "long_name", "time"))
             
@@ -148,6 +150,9 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_summary,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_summary,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_summary,varid, "units", trim(save_vars(v)%units)))
+
+            if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_chunking(ncid_summary, varid, NF90_CHUNKED, (/8,24/)) ) 
+            if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_deflate(ncid_summary, varid, 1, 1, 3) ) 
         end if 
         
         if (save_vars(v)%save_in_emissions .and. NORTRIP_save_road_emission_and_mass_data_flag) then
@@ -156,14 +161,19 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_emissions,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_emissions,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_emissions,varid, "units", trim(save_vars(v)%units)))
+
+
         end if 
         
         if (save_vars(v)%save_in_activity .and. NORTRIP_save_road_emission_activity_data_flag) then
-            if (allocated(save_vars(v)%data_1d)) call check(nf90_def_var(ncid_activity, trim(save_vars(v)%varname), nf90_float, (/f_dimid/),varid))
+            if (allocated(save_vars(v)%data_1d)) call check(nf90_def_var(ncid_activity, trim(save_vars(v)%varname), nf90_float, (/f_dimid,t_dimid/),varid)) !NOTE: Variables are with a timestamp, so stored as 2d (f_dimid,t_dimid)
             if (allocated(save_vars(v)%data_2d)) call check(nf90_def_var(ncid_activity, trim(save_vars(v)%varname), nf90_float, (/f_dimid,t_dimid/),varid))
             call check(nf90_put_att(ncid_activity,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_activity,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_activity,varid, "units", trim(save_vars(v)%units)))
+
+            call check( nf90_def_var_chunking(ncid_activity, varid, NF90_CHUNKED, (/8,1/)) ) 
+            call check( nf90_def_var_deflate(ncid_activity, varid, 1, 1, 3) ) 
         end if 
 
         if (save_vars(v)%save_in_meteo .and. NORTRIP_save_road_meteo_data_flag) then
@@ -177,17 +187,30 @@ subroutine NORTRIP_save_output_data_netcdf
     !Put values into the variables that will be equal for all output files.
     do ncid_iterator = 1,size(ncid_array) 
         if (ncid_array(ncid_iterator) .ne. -99) then
-            ! !Calculate time as seconds since base date
+            a(6) = 0
             timestamp=0
-            do ti=min_time_save,max_time_save   
-                timestamp = (ti-1)*dt*60*60
+            if (ncid_array(ncid_iterator) .eq. ncid_activity) then 
+                !All variables are sums or averages in the activity files. They are timestamped with the first simulation timestep.
+                a(1:5)=date_data(1:5,min_time_save)
+                timestamp = date_to_number(a,1970)*24*60*60
                 call check(nf90_inq_varid(ncid_array(ncid_iterator), "time",varid))
-                call check(nf90_put_var(ncid_array(ncid_iterator), varid, timestamp, start = (/ti/)))
+                call check(nf90_put_var(ncid_array(ncid_iterator), varid, timestamp, start = (/min_time_save/)))
 
                 call check(nf90_inq_varid(ncid_array(ncid_iterator), "datetime",varid))
-                call check(nf90_put_var(ncid_array(ncid_iterator), varid, trim(date_str(4,ti)),start = (/1,ti/)))        
-            enddo
+                call check(nf90_put_var(ncid_array(ncid_iterator), varid, trim(date_str(4,min_time_save)),start = (/1,min_time_save/)))        
+            else
+                ! !Calculate time as seconds since base date
+                timestamp=0
+                do ti=min_time_save,max_time_save   
+                    a(1:5) = date_data(1:5,ti)
+                    timestamp = date_to_number(a,1970)*24*60*60
+                    call check(nf90_inq_varid(ncid_array(ncid_iterator), "time",varid))
+                    call check(nf90_put_var(ncid_array(ncid_iterator), varid, timestamp, start = (/ti/)))
 
+                    call check(nf90_inq_varid(ncid_array(ncid_iterator), "datetime",varid))
+                    call check(nf90_put_var(ncid_array(ncid_iterator), varid, trim(date_str(4,ti)),start = (/1,ti/)))        
+                enddo
+            end if
             call check(nf90_inq_varid(ncid_array(ncid_iterator), "road_id",varid))
             call check(nf90_put_var(ncid_array(ncid_iterator), varid, save_1d_vars(save_road_id_index,:), start = (/1/)))
 
@@ -201,14 +224,14 @@ subroutine NORTRIP_save_output_data_netcdf
 
     !Put values into the output files. NOTE: Assumes that varnames are unique, i.e. you cannot have a 1d and a 2d variable with the same varname. 
     do v = 1,size(save_vars)
-        if (save_vars(v)%save_in_summary .and. save_road_summary_data_as_netcdf_flag) then
+        if (save_vars(v)%save_in_summary .and. NORTRIP_save_road_summary_data_flag) then
             if (allocated(save_vars(v)%data_2d)) then
                 call check(nf90_inq_varid(ncid_summary,save_vars(v)%varname,varid))
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_2d, start = (/1,1/), count = (/n_save_links_netcdf,max_time_save/)))
+
             else if (allocated(save_vars(v)%data_1d)) then
                 call check(nf90_inq_varid(ncid_summary,trim(save_vars(v)%varname),varid))
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_1d, start = (/1/), count = (/n_save_links_netcdf/))) 
-
             else if (allocated(save_vars(v)%data_char_1d)) then
                 call check(nf90_inq_varid(ncid_summary,trim(save_vars(v)%varname),varid))
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_char_1d, start = (/1, 1/))) 
@@ -235,7 +258,7 @@ subroutine NORTRIP_save_output_data_netcdf
                 call check(nf90_put_var(ncid_activity, varid, save_vars(v)%data_2d, start = (/1,1/), count = (/n_save_links_netcdf,max_time_save/)))
             else if (allocated(save_vars(v)%data_1d)) then
                     call check(nf90_inq_varid(ncid_activity,trim(save_vars(v)%varname),varid))
-                    call check(nf90_put_var(ncid_activity, varid, save_vars(v)%data_1d, start = (/1/), count = (/n_save_links_netcdf/))) 
+                    call check(nf90_put_var(ncid_activity, varid, save_vars(v)%data_1d, start = (/1,1/), count = (/n_save_links_netcdf,min_time_save/))) 
             else 
                 write(*,*) "Warning: Do not write variable ", trim(save_vars(v)%varname) , " to activity output file."
             end if
