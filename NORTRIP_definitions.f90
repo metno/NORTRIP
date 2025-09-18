@@ -1493,29 +1493,29 @@
     save_vars(save_Mass_sand_PM200_index) = save_var(varname = "Mass_sand_PM200",units = "g/m2", description = "Mass of non-suspendable sand (>200 micrometer) on road",  long_name = "mass_sand_pm200", save_in_summary = .true., save_in_emissions = .true.)
     if(.not.allocated(save_vars(save_Mass_sand_PM200_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_sand_PM200_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Salt1_a_index) = save_var(varname = "Salt1_a",units = "g/m2", description = "Total mass of NaCl salt applied in the time step",  long_name = "applied_salt1", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Salt1_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt1_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Salt1_a_index) = save_var(varname = "Salt1_a",units = "g/m2", description = "Total mass of NaCl salt applied in the time step",  long_name = "applied_salt1", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Salt1_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt1_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Salt2_a_index) = save_var(varname = "Salt2_a",units = "g/m2", description = "Total mass of alternative salt applied in the time step",  long_name = "applied_salt2", save_in_summary = .true., save_in_activity = .true.) !TODO: In timestep or pr. hour?
-    if(.not.allocated(save_vars(save_Salt2_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt2_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Salt2_a_index) = save_var(varname = "Salt2_a",units = "g/m2", description = "Total mass of alternative salt applied in the time step",  long_name = "applied_salt2", save_in_summary = .true.) !TODO: In timestep or pr. hour?
+    if(.not.allocated(save_vars(save_Salt2_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Salt2_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Sand_a_index) = save_var(varname = "Sand_a",units = "g/m2", description = "Total mass of sand applied in the time step",  long_name = "applied_sand", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Sand_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Sand_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Sand_a_index) = save_var(varname = "Sand_a",units = "g/m2", description = "Total mass of sand applied in the time step",  long_name = "applied_sand", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Sand_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Sand_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Wetting_a_index) = save_var(varname = "Wetting_a",units = "mm", description = "Water added to the road during cleaning or salting",  long_name = "applied_water_on_road", save_in_summary = .true., save_in_activity = .true.) 
-    if(.not.allocated(save_vars(save_Wetting_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Wetting_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Wetting_a_index) = save_var(varname = "Wetting_a",units = "mm", description = "Water added to the road during cleaning or salting",  long_name = "applied_water_on_road", save_in_summary = .true.) 
+    if(.not.allocated(save_vars(save_Wetting_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Wetting_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Ploughing_a_index) = save_var(varname = "Ploughing_a",units = "1", description = "Snow ploughing event in time step (0 to 1)",  long_name = "plowing_event", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Ploughing_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Ploughing_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Ploughing_a_index) = save_var(varname = "Ploughing_a",units = "1", description = "Snow ploughing event in time step (0 to 1)",  long_name = "plowing_event", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Ploughing_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Ploughing_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Cleaning_a_index) = save_var(varname = "Cleaning_a",units = "1", description = "Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency",  long_name = "cleaning_event", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Cleaning_a_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Cleaning_a_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Cleaning_a_index) = save_var(varname = "Cleaning_a",units = "1", description = "Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency",  long_name = "cleaning_event", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Cleaning_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Cleaning_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Mass_salt1_index) = save_var(varname = "Mass_salt1",units = "g/m2", description = "Mass of NaCl on the road",  long_name = "Mass_of_NaCl_on_road", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Mass_salt1_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Mass_salt1_index) = save_var(varname = "Mass_salt1",units = "g/m2", description = "Mass of NaCl on the road",  long_name = "Mass_of_NaCl_on_road", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt1_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Mass_salt2_index) = save_var(varname = "Mass_salt2",units = "g/m2", description = "Mass of alternative salt on the road",  long_name = "Mass_of_alternative_salt_on_road", save_in_summary = .true., save_in_activity = .true.)
-    if(.not.allocated(save_vars(save_Mass_salt2_index)%data_2d) .and. (NORTRIP_save_road_emission_activity_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt2_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Mass_salt2_index) = save_var(varname = "Mass_salt2",units = "g/m2", description = "Mass of alternative salt on the road",  long_name = "Mass_of_alternative_salt_on_road", save_in_summary = .true.)
+    if(.not.allocated(save_vars(save_Mass_salt2_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt2_index)%data_2d(n_save_links_netcdf,n_time)) 
 
     save_vars(save_f_q_index) = save_var(varname = "f_q",units = "1", description = "Surface retainment factor (0-1) based on the surface moisture. All is retained when value is zero.",  long_name = "surface_retainment_factor", save_in_summary = .true.)
     if(.not.allocated(save_vars(save_f_q_index)%data_2d) .and. ( NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_f_q_index)%data_2d(n_save_links_netcdf,n_time)) 
@@ -1574,7 +1574,7 @@
     save_vars(save_Mass_sand_PM200_sum_index) = save_var(varname = "Mass_sand_PM200_sum", units = "g", description = "Grams of applied sand of size PM200 over the period", long_name = "mass_sand_pm200_sum", save_in_activity = .true.)
     if(.not.allocated(save_vars(save_Mass_sand_PM200_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_sand_PM200_sum_index)%data_1d(n_save_links_netcdf))    
 
-    save_vars(save_Mass_sand_PMall_sum_index) = save_var(varname = "Mass_sand_PMall_sum", units = "g", description = "Grams of applied sand of all sized over the period", long_name = "mass_sand_pmall_sum", save_in_activity = .true.)
+    save_vars(save_Mass_sand_PMall_sum_index) = save_var(varname = "Mass_sand_PMall_sum", units = "g", description = "Grams of applied sand of all sizes over the period", long_name = "mass_sand_pmall_sum", save_in_activity = .true.)
     if(.not.allocated(save_vars(save_Mass_sand_PMall_sum_index)%data_1d) .and. (NORTRIP_save_road_emission_activity_data_flag)) allocate(save_vars(save_Mass_sand_PMall_sum_index)%data_1d(n_save_links_netcdf))    
 
     save_vars(save_Mass_sand_PM200_sum_index) = save_var(varname = "Mass_sand_PM200_sum", units = "g", description = "Grams of applied sand of size PM200 over the period", long_name = "mass_sand_pm10_sum", save_in_activity = .true.)
