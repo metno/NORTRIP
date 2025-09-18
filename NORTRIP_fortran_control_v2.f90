@@ -142,7 +142,7 @@
         if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
     
     enddo
-    if (NORTRIP_save_init_data_flag.eq.1 .and. init_exists ) then
+    if (NORTRIP_save_init_data_flag .and. init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
 
