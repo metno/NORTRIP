@@ -118,16 +118,15 @@ subroutine NORTRIP_read_init_data_netcdf(ncid)
 
     !read M_road_data
     call check(nf90_inq_varid(ncid,"M_road_data",varid))
-    call check(nf90_get_var(ncid,varid, M_road_data(:,:,min_time,tr,0),start = (/1,1,1,ro_tot/)))
+    call check(nf90_get_var(ncid,varid, M_road_data(:,:,min_time,tr,ro),start = (/1,1,1,ro_tot/)))
 
     call check(nf90_inq_varid(ncid,"road_meteo_data",varid))
     call check(nf90_get_var(ncid,varid, road_meteo_data_tmp(:),start = (/1,1,ro_tot/)))
 
     !read g_road_data
     call check(nf90_inq_varid(ncid,"g_road_data",varid))
-    call check(nf90_get_var(ncid,varid, g_road_data(:,min_time,tr,0),start = (/1,1,ro_tot/)))
+    call check(nf90_get_var(ncid,varid, g_road_data(:,min_time,tr,ro),start = (/1,1,ro_tot/)))
 
-    ro = 0
     !read "time_since last" data
     call check(nf90_inq_varid(ncid,"time_since_last_salting",varid))
     call check(nf90_get_var(ncid,varid, time_since_last_salting(ro),start=(/ro_tot/)))
@@ -145,7 +144,7 @@ subroutine NORTRIP_read_init_data_netcdf(ncid)
     !NORTRIP_multiroad_save_meteodata.f90
     do i = 1,num_road_meteo
         if (i .ne. road_temperature_obs_index) then
-            road_meteo_data(i,1,1,0) = road_meteo_data_tmp(i) 
+            road_meteo_data(i,min_time,1,ro) = road_meteo_data_tmp(i) 
         endif
     end do
 
