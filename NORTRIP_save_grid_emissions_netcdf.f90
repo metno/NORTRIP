@@ -274,7 +274,7 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_salt1,:),start = (/1,1,1/)))
 
 
-    call check(nf90_inq_varid(ncid,"GNFR_brake_pm25",varid))
+    call check(nf90_inq_varid(ncid,"GNFR_F_brake_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_brake,:),start = (/1,1,1/)))
 
 
@@ -282,7 +282,7 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_road,:),start = (/1,1,1/)))
 
 
-    call check(nf90_inq_varid(ncid,"GNFR_sand_pm25",varid))
+    call check(nf90_inq_varid(ncid,"GNFR_F_sand_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_sand,:),start = (/1,1,1/)))
 
 

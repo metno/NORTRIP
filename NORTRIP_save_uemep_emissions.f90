@@ -56,6 +56,8 @@
     call date_to_datestr_bracket(a_start,temp_name,temp_name)
     call date_to_datestr_bracket(a_start,temp_name,temp_name)
     
+    write(unit_logfile,'(a)') ' Pathname= '//trim(temp_name)
+
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
         write(unit_logfile,'(A)')'ERROR: Path '//trim(temp_name)//' does not exist. No file saved'
@@ -112,7 +114,7 @@
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
             call date_to_datestr_bracket(a_start,temp_name,temp_name)
 
-            write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
+            !write(unit_logfile,'(a)') ' Filename= '//trim(temp_name)
             
             open(unit_out,file=temp_name,status='replace')
 
@@ -321,7 +323,9 @@
     call date_to_datestr_bracket(a_start,path_output_emis,temp_name)
     call date_to_datestr_bracket(a_start,temp_name,temp_name)
     call date_to_datestr_bracket(a_start,temp_name,temp_name)
-    
+
+    write(unit_logfile,'(a)') ' Pathname= '//trim(temp_name)
+   
     inquire(directory=trim(temp_name),exist=exists)
     if (.not.exists) then
         write(unit_logfile,'(A)')'ERROR: Path '//trim(temp_name)//' does not exist. No file saved'
@@ -555,6 +559,8 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
         call date_to_datestr_bracket(a_start,temp_name,temp_name)
         call date_to_datestr_bracket(a_start,temp_name,temp_name)
     
+        write(unit_logfile,'(a)') ' Pathname= '//trim(temp_name)
+
         inquire(directory=trim(temp_name),exist=exists)
         if (.not.exists) then
             write(unit_logfile,'(A)')'ERROR: Path '//trim(temp_name)//' does not exist. No file saved'
