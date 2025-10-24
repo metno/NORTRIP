@@ -33,8 +33,10 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     real, dimension(grid_dim(2)) :: latitude_array
     real, dimension(grid_dim(1)) :: longitude_array
     
- 
-    filename_gridded    = trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//'<yyyymmdd>'//'.nc'
+    character(24) :: uemep_date_format_str='yyyymmddHH'
+
+    !filename_gridded    = trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//'<yyyymmdd>'//'.nc'
+    filename_gridded    = trim(path_output_emis)//trim(filename_output_grid_emis)//'_'//'<'//trim(uemep_date_format_str)//'>'//'.nc'
 
     !Check that path exists after filling in date stamp
     a=date_data(:,min_time_save)
@@ -89,7 +91,7 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_def_var(ncid, "GNFR_F_total_pmco", nf90_float, (/x_dimid,y_dimid, t_dimid/),varid))
     call check(nf90_put_att(ncid, varid, "units", "g/h"))
     call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_total_pmco"))
-    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PMco from non-exhaust sources"))
+    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PMco from non-exhaust sources, excluding salt"))
     call check(nf90_put_att(ncid, varid, "grid_mapping", "projection_regular_ll"))
     call check( nf90_def_var_chunking(ncid, varid, NF90_CHUNKED, (/grid_dim(1),grid_dim(2),1/)) )     
     call check( nf90_def_var_deflate(ncid, varid, 1, 1, 3) ) 
@@ -97,21 +99,21 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_def_var(ncid, "GNFR_F_total_pm25", nf90_float, (/x_dimid,y_dimid, t_dimid/),varid))
     call check(nf90_put_att(ncid, varid, "units", "g/h"))
     call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_total_pm25"))
-    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PM2.5 from non-exhaust sources"))
+    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PM2.5 from non-exhaust sources, excluding salt"))
     call check(nf90_put_att(ncid, varid, "grid_mapping", "projection_regular_ll"))
     call check( nf90_def_var_chunking(ncid, varid, NF90_CHUNKED, (/grid_dim(1),grid_dim(2),1/)) ) 
     call check( nf90_def_var_deflate(ncid, varid, 1, 1, 3) ) 
     
     call check(nf90_def_var(ncid, "GNFR_F_total_pm10", nf90_float, (/x_dimid,y_dimid, t_dimid/),varid))
     call check(nf90_put_att(ncid, varid, "units", "g/h"))
-    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PM10 from non-exhaust sources"))
+    call check(nf90_put_att(ncid, varid, "description", "Total emissions of PM10 from non-exhaust sources, excluding salt"))
     call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_total_pm10"))
     call check(nf90_put_att(ncid, varid, "grid_mapping", "projection_regular_ll"))
 
     call check(nf90_def_var(ncid, "GNFR_F_exhaust_pm25", nf90_float, (/x_dimid,y_dimid, t_dimid/),varid))
     call check(nf90_put_att(ncid, varid, "units", "g/h"))
-    call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_exhaust_nox"))
-    call check(nf90_put_att(ncid, varid, "description", "Exhaust emission from road transport sources."))
+    call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_exhaust_pm25"))
+    call check(nf90_put_att(ncid, varid, "description", "Exhaust emission of PM2.5 road transport sources."))
     call check(nf90_put_att(ncid, varid, "grid_mapping", "projection_regular_ll"))
     call check( nf90_def_var_chunking(ncid, varid, NF90_CHUNKED, (/grid_dim(1),grid_dim(2),1/)) ) 
     call check( nf90_def_var_deflate(ncid, varid, 1, 1, 3) ) 
@@ -167,7 +169,7 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_def_var(ncid, "GNFR_F_tyre_pm25", nf90_float, (/x_dimid,y_dimid, t_dimid/),varid))
     call check(nf90_put_att(ncid, varid, "units", "g/h"))
     call check(nf90_put_att(ncid, varid, "long_name", "GNFR_F_tyre_pm25"))
-    call check(nf90_put_att(ncid, varid, "standard_name", "emissions"))
+    call check(nf90_put_att(ncid, varid, "standard_name", "Emissions of PM2.5 from tyre wear."))
     call check(nf90_put_att(ncid, varid, "grid_mapping", "projection_regular_ll"))
     call check( nf90_def_var_chunking(ncid, varid, NF90_CHUNKED, (/grid_dim(1),grid_dim(2),1/)) ) 
     call check( nf90_def_var_deflate(ncid, varid, 1, 1, 3) ) 
@@ -255,14 +257,11 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_inq_varid(ncid,"GNFR_F_salt_pmco",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_co_salt1,:),start = (/1,1,1/)))
 
-
     call check(nf90_inq_varid(ncid,"GNFR_F_brake_pmco",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_co_brake,:),start = (/1,1,1/)))
 
-
     call check(nf90_inq_varid(ncid,"GNFR_F_road_pmco",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_co_road,:),start = (/1,1,1/)))
-
 
     call check(nf90_inq_varid(ncid,"GNFR_F_sand_pmco",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_co_sand,:),start = (/1,1,1/)))
@@ -273,16 +272,13 @@ subroutine NORTRIP_save_gridded_emissions_netcdf
     call check(nf90_inq_varid(ncid,"GNFR_F_salt_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_salt1,:),start = (/1,1,1/)))
 
-
-    call check(nf90_inq_varid(ncid,"GNFR_brake_pm25",varid))
+    call check(nf90_inq_varid(ncid,"GNFR_F_brake_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_brake,:),start = (/1,1,1/)))
-
 
     call check(nf90_inq_varid(ncid,"GNFR_F_road_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_road,:),start = (/1,1,1/)))
 
-
-    call check(nf90_inq_varid(ncid,"GNFR_sand_pm25",varid))
+    call check(nf90_inq_varid(ncid,"GNFR_F_sand_pm25",varid))
     call check(nf90_put_var(ncid,varid,emis_grid(:,:,pm_25_sand,:),start = (/1,1,1/)))
 
 

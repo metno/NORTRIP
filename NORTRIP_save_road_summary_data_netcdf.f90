@@ -201,7 +201,7 @@ subroutine NORTRIP_save_output_data_netcdf
 
     !Put values into the output files. NOTE: Assumes that varnames are unique, i.e. you cannot have a 1d and a 2d variable with the same varname. 
     do v = 1,size(save_vars)
-        if (save_vars(v)%save_in_summary .and. save_road_summary_data_as_netcdf_flag) then
+        if (save_vars(v)%save_in_summary .and. NORTRIP_save_road_summary_data_flag) then
             if (allocated(save_vars(v)%data_2d)) then
                 call check(nf90_inq_varid(ncid_summary,save_vars(v)%varname,varid))
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_2d, start = (/1,1/), count = (/n_save_links_netcdf,max_time_save/)))

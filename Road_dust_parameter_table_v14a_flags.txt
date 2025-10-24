@@ -47,9 +47,10 @@ activity_in_tunnels_flag        	1           Sets flag disabling activities in t
 salt_after_ploughing_flag       	1           Will salt after all snow ploughing in addition to other salting events
 OUTPUT                          	                                                                                                                                            	
 plot_type_flag                  	2           1 = hourly, 2 = daily, 3 = daily cycle, 4 = 1/2 daily means , 5 = day of week, 7= weekly , 8= monthly                           	
-save_type_flag                  	1           1 = save data, 2 = save plots, 3 = save both, 4 = save data as text, 0 = none                                                   	
-save_init_data_as_netcdf_flag   	1   	       0 = save as .txt files, 1 = save as .nc files
-save_road_summary_data_as_netcdf_flag	1 	       0 = save as .txt files, 1 = save as .nc files, 3 = save as both .txt files and .nc files.
+save_type_flag                  	1           0 = save data, 2 = save plots, 3 = save both, 4 = save data as text, 0 = none                                                   	
+save_init_data_as_netcdf_flag   	1   	    0 = save as .txt files, 1 = save as .nc files
+save_road_summary_data_as_netcdf_flag	0       0 = save as .txt files, 1 = save as .nc files, 2 = save as both .txt files and .nc files.
+save_gridded_emissions_as_netcdf	1 	        0 = save as .txt files, 1 = save as .nc files, 2 = save as both .txt files and .nc files.
 OSPM                            	                                                                                                                                            	
 use_ospm_flag                   	0           Runs OSPM for dispersion. 1 uses NORTRIP data, 2 uses ospm data in input file sheet 'OSPM' (2 NOT ACTIVE!)                      	
 FORECAST

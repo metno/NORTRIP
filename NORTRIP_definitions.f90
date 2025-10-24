@@ -605,6 +605,7 @@
     integer :: save_type_flag=1   
     integer :: save_road_summary_data_as_netcdf_flag=0 
     integer :: save_init_data_as_netcdf_flag=0  
+    integer :: save_gridded_emissions_as_netcdf=1
     integer :: use_ospm_flag=0   
     integer :: activity_in_tunnels_flag=0
     integer :: use_melt_freeze_energy_flag=0
@@ -734,11 +735,11 @@
     real :: P_fugitive=0.0
 
 !Override parameters in the flag file, for overriding metadata values
-    real :: override_long_rad_in_offset
-    real :: override_RH_offset
-    real :: override_T_a_offset
-    real :: override_wind_speed_correction
-    real :: override_albedo_road_offset
+    real :: override_long_rad_in_offset=0.0
+    real :: override_RH_offset=0.0
+    real :: override_T_a_offset=0.0
+    real :: override_wind_speed_correction=1.0
+    real :: override_albedo_road_offset=0.0
 
 !Salt type defined in the input file header name
     integer salt_type(2)
