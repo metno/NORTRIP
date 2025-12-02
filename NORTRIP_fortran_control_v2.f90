@@ -93,7 +93,7 @@
         n_roads_end=n_roads
         n_roads_start=1   
     endif
-    if (save_road_summary_data_as_netcdf_flag > 0) then !TODO: Change this condition to be general (save_output_as_netcdf?)
+    if (save_output_as_netcdf_flag > 0) then 
         n_save_links_netcdf =  sum(save_road_data_flag(1:))
         write_count = 1
         if (.not.allocated(save_1d_vars)) allocate(save_1d_vars(num_1d_index,n_save_links_netcdf)) !Road_ID, lat, lon
@@ -126,23 +126,26 @@
         
         if (unit_logfile.gt.0.and.ro_tot.eq.1) write(*,'(A)') 'Saving data'
 
-        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0 .and. save_road_summary_data_as_netcdf_flag > 0) then 
+        if (use_single_road_loop_flag .and. save_road_data_flag(0) .ne. 0 .and. save_output_as_netcdf_flag > 0) then 
             call NORTRIP_fill_save_array(write_count) 
             write_count = write_count+1
         end if
-        if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
-        if (NORTRIP_save_episode_emissions_flag) call NORTRIP_save_episode_emissions
-        if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
-        if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
-        if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data  
-        if (NORTRIP_save_road_summary_data_flag .and. save_road_summary_data_as_netcdf_flag.ne.1) call NORTRIP_save_road_summary_data    
-        if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
-        if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
-        if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
-        if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions_all
-        if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
-    
+        if (save_output_as_netcdf_flag == 0 .or. save_output_as_netcdf_flag == 2) then
+            if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
+            if (NORTRIP_save_episode_emissions_flag) call NORTRIP_save_episode_emissions
+            if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
+            if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
+            if (NORTRIP_save_road_emission_and_mass_data_flag) call NORTRIP_save_road_emission_and_mass_data  
+            if (NORTRIP_save_road_summary_data_flag) call NORTRIP_save_road_summary_data    
+            if (NORTRIP_save_road_emission_activity_data_flag) call NORTRIP_save_road_emission_activity_data
+            if (NORTRIP_save_road_emission_and_mass_data_stats_flag) call NORTRIP_save_road_emission_and_mass_data_stats
+            if (NORTRIP_save_all_data_flag) call NORTRIP_save_all_data
+            if (NORTRIP_save_uEMEP_emissions_flag) call NORTRIP_save_uEMEP_emissions_all
+            if (NORTRIP_save_uEMEP_grid_emissions_flag) call NORTRIP_save_uEMEP_grid_emissions
+        endif
     enddo
+    if (save_output_as_netcdf_flag>0 .and. NORTRIP_save_uEMEP_grid_emissions_flag ) call NORTRIP_save_gridded_emissions_netcdf
+    
     if (NORTRIP_save_init_data_flag .and. init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
