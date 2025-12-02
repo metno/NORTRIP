@@ -8,9 +8,9 @@
     !Tab delimitted before and after
     implicit none
     
-    character(2048) match_string_char_2048
+    character(8192) match_string_char_2048
     character (*) match_str,default_char
-    character(2048) temp_str1,temp_str2,temp_str
+    character(8192) temp_str1,temp_str2,temp_str
     integer unit_in,unit_output
     integer index_val
     

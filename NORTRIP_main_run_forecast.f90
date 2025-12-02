@@ -38,7 +38,7 @@
         if (forecast_hour.gt.0.and.forecast_type.ne.4.and.forecast_type.ne.5) then
             tr=1       
             if (road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro).ne.nodata) then
-                road_meteo_data(T_s_index,max(min_time,tf-1),:,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),:,ro)
+                road_meteo_data(T_s_index,max(min_time,tf-1),tr,ro)=road_meteo_data(road_temperature_obs_index,max(min_time,tf-1),tr,ro)
                 
             endif
         endif
@@ -85,8 +85,8 @@
             end if
         end if
 
-        if ( forecast_type .eq. 5 .and. tf > 1/dt ) then
-            road_meteo_data(E_corr_index,tf,tr,ro) = road_meteo_data(E_corr_index,1/dt,tr,ro)
+        if ( forecast_type .eq. 5 .and. tf > nint(1/dt) ) then
+            road_meteo_data(E_corr_index,tf,tr,ro) = road_meteo_data(E_corr_index,nint(1/dt),tr,ro)
         end if
     end subroutine NORTRIP_main_run_forecast_prepare
 

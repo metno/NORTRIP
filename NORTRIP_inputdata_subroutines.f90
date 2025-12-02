@@ -844,13 +844,25 @@ subroutine read_NORTRIP_inputdata
     endif
     if (index(calculation_type,'gridded').gt.0) then
         !if (unit_logfile.gt.0) write(*,'(A)') 'Saving gridded emission and initial files'
-        write(unit_logfile,'(A)') 'Saving gridded emission and initial files'
+        write(unit_logfile,'(A)') 'Reading gridded network data. Saving gridded emission and initial files'
         NORTRIP_save_init_data_flag=.true.
         NORTRIP_save_uEMEP_emissions_flag=.false.
         NORTRIP_save_uEMEP_grid_emissions_flag=.true.
         NORTRIP_save_road_meteo_data_flag=.false.
         NORTRIP_save_road_emission_and_mass_data_flag=.false.
-        NORTRIP_save_road_summary_data_flag=.true.
+        NORTRIP_save_road_summary_data_flag=.false.
+        NORTRIP_save_road_emission_activity_data_flag=.true.
+        use_ospm_flag=0
+    endif
+    if (index(calculation_type,'gridded').gt.0.and.index(calculation_type,'uEMEP').gt.0) then
+        !if (unit_logfile.gt.0) write(*,'(A)') 'Saving gridded emission and initial files'
+        write(unit_logfile,'(A)') 'Reading normal road network data. Saving gridded emission and initial files'
+        NORTRIP_save_init_data_flag=.true.
+        NORTRIP_save_uEMEP_emissions_flag=.false.
+        NORTRIP_save_uEMEP_grid_emissions_flag=.true.
+        NORTRIP_save_road_meteo_data_flag=.false.
+        NORTRIP_save_road_emission_and_mass_data_flag=.false.
+        NORTRIP_save_road_summary_data_flag=.false.
         NORTRIP_save_road_emission_activity_data_flag=.true.
         use_ospm_flag=0
     endif

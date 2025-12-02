@@ -551,7 +551,7 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
         !Set start and end date stamps
         a_start=date_data(:,min_time_save)
         a_end=date_data(:,max_time_save)
-        !Chnage the date stamp to follow NILU conventions
+        !Change the date stamp to follow NILU conventions
         !call incrtm(-1,a_start(1),a_start(2),a_start(3),a_start(4))
 
         !Check that path exists after filling in date stamp
@@ -675,8 +675,8 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
                 do ti=min_time_save,max_time_save             
                     do ro=n_roads_start,n_roads_end
                         !Get total emissions for pm2.5 and pm10
-                        emis_road(pm_10) = sum(E_road_data(total_dust_index,pm_10,E_total_index,ti,:,ro))  
-                        emis_road(pm_25) = sum(E_road_data(total_dust_index,pm_25,E_total_index,ti,:,ro))  
+                        !emis_road(pm_10) = sum(E_road_data(total_dust_index,pm_10,E_total_index,ti,:,ro))  
+                        !emis_road(pm_25) = sum(E_road_data(total_dust_index,pm_25,E_total_index,ti,:,ro))  
 
                         !Get pm2.5 emissions from different sources:
                         emis_road(pm_25_road) = sum(E_road_data(road_index,pm_25,E_total_index,ti,:,ro))
@@ -691,13 +691,22 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
                         emis_road(pm_co_brake) = sum(E_road_data(brake_index,pm_10,E_total_index,ti,:,ro)) - sum(E_road_data(brake_index,pm_25,E_total_index,ti,:,ro))
                         emis_road(pm_co_sand)  = sum(E_road_data(sand_index,pm_10,E_total_index,ti,:,ro)) - sum(E_road_data(sand_index,pm_25,E_total_index,ti,:,ro))
                         emis_road(pm_co_salt1) = sum(E_road_data(salt_index(1),pm_10,E_total_index,ti,:,ro)) - sum(E_road_data(salt_index(1),pm_25,E_total_index,ti,:,ro))
-                        emis_road(pm_co_tot)   = sum(E_road_data(total_dust_index,pm_10,E_total_index,ti,:,ro)) - sum(E_road_data(total_dust_index,pm_25,E_total_index,ti,:,ro))
+                        !emis_road(pm_co_tot)   = sum(E_road_data(total_dust_index,pm_10,E_total_index,ti,:,ro)) - sum(E_road_data(total_dust_index,pm_25,E_total_index,ti,:,ro))
+
+                        emis_road(pm_co_tot)   = emis_road(pm_co_road) + emis_road(pm_co_tyre) + emis_road(pm_co_brake) + emis_road(pm_co_sand)
+                        emis_road(pm_25)   = emis_road(pm_25_road) + emis_road(pm_25_tyre) + emis_road(pm_25_brake) + emis_road(pm_25_sand)
+                        emis_road(pm_10) = emis_road(pm_25) + emis_road(pm_co_tot)
 
                         !Get PM2.5 from exhaust:
                         emis_road(pm_exhaust) = sum(E_road_data(exhaust_index,pm_25,E_total_index,ti,:,ro))
                         !Get NOx exhaust emissions:
-                        emis_road(nox_exhaust)=emis_road(nox_exhaust)+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
-
+                        if (available_airquality_data(NOX_emis_index)) then
+                            emis_road(nox_exhaust)=airquality_data(NOX_emis_index,ti,ro)*conversion
+                        elseif (NOX_EF_available.ne.0) then
+                            do v=1,num_veh
+                                emis_road(nox_exhaust)=emis_road(nox_exhaust)+traffic_data(N_v_index(v),ti,ro)*NOX_EF(v,ro)*conversion
+                            enddo
+                        endif                              
 
                         !Add contribution of each term from the current road link to the appropriate grid cell
                         do x=1,size(emis_road,dim=1)
@@ -711,7 +720,7 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
 
     !Save if the last road
     if (ro_tot.eq.n_roads_total) then 
-    
+
         unit_count=0
         
         !Set date text in file
@@ -727,6 +736,8 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
                 call date_to_datestr_bracket(a_start,finished_filename,finished_filename)           
         endif
         
+     if (save_gridded_emissions_as_netcdf.eq.0.or.save_gridded_emissions_as_netcdf.eq.2) then
+       
         do x_loop=1,4   
             
             x=save_size(x_loop)
@@ -803,10 +814,13 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
         
             write(unit_logfile,'(A,a,a,es12.2)') ' Total emissions of ',trim(pm_str),' (kg) for all grids over this period = ',emis_sum(x)*1.e-3*dt
         enddo
+    
+    endif
+    
+    if (save_gridded_emissions_as_netcdf.eq.1.or.save_gridded_emissions_as_netcdf.eq.2) then
+        call NORTRIP_save_gridded_emissions_netcdf
+    endif   
 
-        if (save_output_as_netcdf_flag > 0) then
-            call NORTRIP_save_gridded_emissions_netcdf
-        endif      
     endif
    
     end subroutine NORTRIP_save_uEMEP_grid_emissions
