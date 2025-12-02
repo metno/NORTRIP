@@ -29,6 +29,7 @@ subroutine NORTRIP_save_output_data_netcdf
     integer :: ncid_emissions 
     integer :: ncid_activity
     integer :: ncid_meteo 
+    integer :: ncid_roadweather 
 
     integer :: varid
     integer :: t_dimid
@@ -36,23 +37,25 @@ subroutine NORTRIP_save_output_data_netcdf
     integer :: char_dimid
     
     character(256)      :: filename_summary
+    character(256)      :: filename_roadweather
     character(256)      :: filename_activity
     character(256)      :: filename_meteo 
     character(256)      :: filename_emissions
     
-    double precision                :: timestamp
+    integer                :: timestamp
     integer             :: a(num_date_index)
     character(len=256)  :: history_string
     character(8)        :: date
     character(10)       :: time
     character(5)        :: zone
     
-    integer, dimension(4) :: ncid_array = -99
+    integer, dimension(5) :: ncid_array = -99
     integer :: ncid_iterator
     double precision :: time_since_epoch
     double precision date_to_number
 
     filename_summary    = trim(path_outputdata)//trim(filename_outputdata)//'_summary.nc'
+    filename_roadweather    = trim(path_outputdata)//trim(filename_outputdata)//'_roadweather.nc'
     filename_activity   = trim(path_outputdata)//trim(filename_outputdata)//'_activities.nc'
     filename_meteo      = trim(path_output_roadmeteo)//trim(filename_output_roadmeteo)//'_road_meteo.nc'
     filename_emissions  = trim(path_output_emis)//trim(filename_output_emis)//'_emissions.nc'
@@ -64,6 +67,10 @@ subroutine NORTRIP_save_output_data_netcdf
     call date_to_datestr_bracket(a,filename_summary,filename_summary)
     call date_to_datestr_bracket(a,filename_summary,filename_summary)
     call date_to_datestr_bracket(a,filename_summary,filename_summary)
+
+    call date_to_datestr_bracket(a,filename_roadweather,filename_roadweather)
+    call date_to_datestr_bracket(a,filename_roadweather,filename_roadweather)
+    call date_to_datestr_bracket(a,filename_roadweather,filename_roadweather)
 
     call date_to_datestr_bracket(a,filename_activity,filename_activity)
     call date_to_datestr_bracket(a,filename_activity,filename_activity)
@@ -85,22 +92,28 @@ subroutine NORTRIP_save_output_data_netcdf
 
     history_string = "Created at: "//date//" "//time(1:2)//":"//time(3:4)//zone//"UTC"
     if (NORTRIP_save_road_summary_data_flag) then 
-         call check(nf90_create(trim(filename_summary),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_summary))
-         ncid_array(1) = ncid_summary 
+        call check(nf90_create(trim(filename_summary),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_summary))
+        ncid_array(1) = ncid_summary 
     end if
+
+    if (NORTRIP_save_roadweather_data_flag) then 
+        call check(nf90_create(trim(filename_roadweather),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_roadweather))
+        ncid_array(2) = ncid_roadweather 
+    end if
+
     if (NORTRIP_save_road_emission_and_mass_data_flag) then 
-         call check(nf90_create(trim(filename_emissions),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_emissions))
-        ncid_array(2) = ncid_emissions 
+        call check(nf90_create(trim(filename_emissions),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_emissions))
+        ncid_array(3) = ncid_emissions 
     end if
 
     if (NORTRIP_save_road_emission_activity_data_flag) then 
         call check(nf90_create(trim(filename_activity),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_activity))
-        ncid_array(3) = ncid_activity
+        ncid_array(4) = ncid_activity
     end if    
     
     if (NORTRIP_save_road_meteo_data_flag) then 
         call check(nf90_create(trim(filename_meteo),IOR(NF90_NETCDF4, NF90_CLOBBER),ncid_meteo))
-        ncid_array(4) = ncid_meteo 
+        ncid_array(5) = ncid_meteo 
     end if
 
     !Add global attributes to output files: 
@@ -117,7 +130,7 @@ subroutine NORTRIP_save_output_data_netcdf
             
             call check(nf90_def_dim(ncid_array(ncid_iterator),"maxcharlength", 256 , char_dimid)) !NOTE: This might not be needed if the writing to variable "datetime" (string) is handled better..
 
-            call check(nf90_def_var(ncid_array(ncid_iterator), "time", nf90_double, t_dimid,varid))
+            call check(nf90_def_var(ncid_array(ncid_iterator), "time", nf90_int, t_dimid,varid))
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "units", "seconds since 1970-01-01 00:00:00")) !Time dimension as seconds since start of simulation.
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "calendar", "standard"))
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "long_name", "time"))
@@ -150,9 +163,21 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_summary,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_summary,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_summary,varid, "units", trim(save_vars(v)%units)))
-
+            
             if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_chunking(ncid_summary, varid, NF90_CHUNKED, (/8,24/)) ) 
             if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_deflate(ncid_summary, varid, 1, 1, 3) ) 
+        end if 
+
+        if (save_vars(v)%save_in_roadweather .and. NORTRIP_save_roadweather_data_flag) then
+            if (allocated(save_vars(v)%data_1d))        call check(nf90_def_var(ncid_roadweather, trim(save_vars(v)%varname), nf90_float, (/f_dimid/),varid))
+            if (allocated(save_vars(v)%data_char_1d))   call check(nf90_def_var(ncid_roadweather, trim(save_vars(v)%varname), nf90_char, (/char_dimid,f_dimid/),varid))
+            if (allocated(save_vars(v)%data_2d))        call check(nf90_def_var(ncid_roadweather, trim(save_vars(v)%varname), nf90_float, (/f_dimid,t_dimid/),varid))
+            call check(nf90_put_att(ncid_roadweather,varid, "description", trim(save_vars(v)%description)))
+            call check(nf90_put_att(ncid_roadweather,varid, "long_name", trim(save_vars(v)%long_name)))
+            call check(nf90_put_att(ncid_roadweather,varid, "units", trim(save_vars(v)%units)))
+
+            if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_chunking(ncid_roadweather, varid, NF90_CHUNKED, (/8,24/)) ) 
+            if (allocated(save_vars(v)%data_2d))  call check( nf90_def_var_deflate(ncid_roadweather, varid, 1, 1, 3) ) 
         end if 
         
         if (save_vars(v)%save_in_emissions .and. NORTRIP_save_road_emission_and_mass_data_flag) then
@@ -161,8 +186,6 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_emissions,varid, "description", trim(save_vars(v)%description)))
             call check(nf90_put_att(ncid_emissions,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_emissions,varid, "units", trim(save_vars(v)%units)))
-
-
         end if 
         
         if (save_vars(v)%save_in_activity .and. NORTRIP_save_road_emission_activity_data_flag) then
@@ -189,7 +212,7 @@ subroutine NORTRIP_save_output_data_netcdf
         if (ncid_array(ncid_iterator) .ne. -99) then
             a(6) = 0
             timestamp=0
-            if (ncid_array(ncid_iterator) .eq. ncid_activity) then 
+            if (NORTRIP_save_road_emission_activity_data_flag .and. ncid_array(ncid_iterator) .eq. ncid_activity ) then 
                 !All variables are sums or averages in the activity files. They are timestamped with the first simulation timestep.
                 a(1:5)=date_data(1:5,min_time_save)
                 timestamp = date_to_number(a,1970)*24*60*60
@@ -237,6 +260,22 @@ subroutine NORTRIP_save_output_data_netcdf
                 call check(nf90_put_var(ncid_summary, varid, save_vars(v)%data_char_1d, start = (/1, 1/))) 
             else 
                 write(*,*) "Warning: Do not write variable ", trim(save_vars(v)%varname) , " to summary output file."
+            end if
+        end if
+
+        if (save_vars(v)%save_in_roadweather .and. NORTRIP_save_roadweather_data_flag) then
+            if (allocated(save_vars(v)%data_2d)) then
+                call check(nf90_inq_varid(ncid_roadweather,save_vars(v)%varname,varid))
+                call check(nf90_put_var(ncid_roadweather, varid, save_vars(v)%data_2d, start = (/1,1/), count = (/n_save_links_netcdf,max_time_save/)))
+
+            else if (allocated(save_vars(v)%data_1d)) then
+                call check(nf90_inq_varid(ncid_roadweather,trim(save_vars(v)%varname),varid))
+                call check(nf90_put_var(ncid_roadweather, varid, save_vars(v)%data_1d, start = (/1/), count = (/n_save_links_netcdf/))) 
+            else if (allocated(save_vars(v)%data_char_1d)) then
+                call check(nf90_inq_varid(ncid_roadweather,trim(save_vars(v)%varname),varid))
+                call check(nf90_put_var(ncid_roadweather, varid, save_vars(v)%data_char_1d, start = (/1, 1/))) 
+            else 
+                write(*,*) "Warning: Do not write variable ", trim(save_vars(v)%varname) , " to roadweather output file."
             end if
         end if
         
@@ -345,7 +384,7 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     endif
 
     ! if current road (ro_tot) is of type runway save the additional runway related variables, otherwise keep empty string.
-    if (calculation_type == "Avinor" .and. roadtype_index(ro_tot) == runway_roadtype) then 
+    if (calculation_type == "Avinor" .and. roadtype_index(ro_tot) == runway_roadtype .and. allocated(runway_char_info_data)) then 
         !Find correct runway info: 
         runway_match = findloc(runway_int_info_data,road_ID(ro_tot),dim=2)
         runway_index = runway_match(2)

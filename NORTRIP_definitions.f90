@@ -406,6 +406,7 @@
         logical :: save_in_emissions =.false.
         logical :: save_in_meteo =.false.
         logical :: save_in_activity =.false.
+        logical :: save_in_roadweather =.false.
     end type
 
     type(save_var), dimension(110) :: save_vars !! Put all save variables in this array TODO: Could make this into an allocatable, to make length match the number of unique variables. 
@@ -488,6 +489,7 @@
     logical :: NORTRIP_save_road_emission_and_mass_data_flag=.false.
     logical :: NORTRIP_save_road_emission_and_mass_data_stats_flag=.false.
     logical :: NORTRIP_save_road_summary_data_flag=.false.
+    logical :: NORTRIP_save_roadweather_data_flag=.false.
     logical :: NORTRIP_save_all_data_flag=.false.
     logical :: NORTRIP_save_uEMEP_emissions_flag=.false.
     logical :: NORTRIP_save_uEMEP_grid_emissions_flag=.false.
@@ -1349,8 +1351,8 @@
     use NORTRIP_definitions
     implicit none
     !TODO: Now the conditions for allocation of the data array member is hard coded to match the "save_in_*" property (E.g. (save_in_summary = .true., save_in_meteo = .true.) means that space is allocated if (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)). The condition to allocate should probably be more flexible.  
-    save_vars(save_T_surf_mod_index) = save_var(varname = "T_surf_mod",units = "Celsius", description = "Modeled surface temperature", long_name = "surface_temperature", save_in_summary = .true., save_in_meteo = .true.)
-    if(.not.allocated(save_vars(save_T_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_surf_mod_index)%data_2d(n_save_links_netcdf,n_time))  
+    save_vars(save_T_surf_mod_index) = save_var(varname = "T_surf_mod",units = "Celsius", description = "Modeled surface temperature", long_name = "surface_temperature", save_in_summary = .true., save_in_meteo = .true.,save_in_roadweather=.true.)
+    if(.not.allocated(save_vars(save_T_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .or. NORTRIP_save_roadweather_data_flag)) allocate(save_vars(save_T_surf_mod_index)%data_2d(n_save_links_netcdf,n_time))  
 
     save_vars(save_T_sub_mod_index) = save_var(varname = "T_sub_mod",units = "Celsius", description = "Modeled subsurface temperature",  long_name = "sub_surface_temperature_temperature", save_in_summary = .true., save_in_meteo = .true.)
     if(.not.allocated(save_vars(save_T_sub_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_T_sub_mod_index)%data_2d(n_save_links_netcdf,n_time))  
@@ -1415,14 +1417,14 @@
     save_vars(save_Energy_difference_index) = save_var(varname = "Energy_difference",units = "W/m2", description = "Energy difference needed to match observed surface temperature",  long_name = "energy_difference_to_match_observed_surface_temperature", save_in_summary = .true., save_in_meteo = .true.)
     if(.not.allocated(save_vars(save_Energy_difference_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .and. use_energy_correction_flag.eq.1)) allocate(save_vars(save_Energy_difference_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_W_surf_mod_index) = save_var(varname = "W_surf_mod",units = "mm", description = "Water mass on the road surface (water equivalent)",  long_name = "liquid_water_on_surface", save_in_summary = .true., save_in_meteo = .true.)
-    if(.not.allocated(save_vars(save_W_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)) allocate(save_vars(save_W_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_W_surf_mod_index) = save_var(varname = "W_surf_mod",units = "mm", description = "Water mass on the road surface (water equivalent)",  long_name = "liquid_water_on_surface", save_in_summary = .true., save_in_meteo = .true.,save_in_roadweather=.true.)
+    if(.not.allocated(save_vars(save_W_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .or. NORTRIP_save_roadweather_data_flag)) allocate(save_vars(save_W_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_I_surf_mod_index) = save_var(varname = "I_surf_mod",units = "mm", description = "Ice mass on the road surface (water equivalent)",  long_name = "ice_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.)
-    if(.not.allocated(save_vars(save_I_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag)) allocate(save_vars(save_I_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_I_surf_mod_index) = save_var(varname = "I_surf_mod",units = "mm", description = "Ice mass on the road surface (water equivalent)",  long_name = "ice_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.,save_in_roadweather=.true.)
+    if(.not.allocated(save_vars(save_I_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .or. NORTRIP_save_roadweather_data_flag)) allocate(save_vars(save_I_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_S_surf_mod_index) = save_var(varname = "S_surf_mod",units = "mm", description = "Snow mass on the road surface (water equivalent)",  long_name = "snow_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.)
-    if(.not.allocated(save_vars(save_S_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_S_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_S_surf_mod_index) = save_var(varname = "S_surf_mod",units = "mm", description = "Snow mass on the road surface (water equivalent)",  long_name = "snow_on_surface_as_water_equivalent", save_in_summary = .true., save_in_meteo = .true.,save_in_roadweather=.true.)
+    if(.not.allocated(save_vars(save_S_surf_mod_index)%data_2d) .and. (NORTRIP_save_road_meteo_data_flag .or. NORTRIP_save_road_summary_data_flag .or. NORTRIP_save_roadweather_data_flag)) allocate(save_vars(save_S_surf_mod_index)%data_2d(n_save_links_netcdf,n_time)) 
 
     save_vars(save_PM10_Emissions_tot_index) = save_var(varname = "PM10_Emissions_tot",units = "g/km/h", description = "Total non-exhaust emissions of PM10",  long_name = "pm10_emissions_total", save_in_summary = .true., save_in_emissions = .true.)
     if(.not.allocated(save_vars(save_PM10_Emissions_tot_index)%data_2d) .and. (NORTRIP_save_road_emission_and_mass_data_flag .or. NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_PM10_Emissions_tot_index)%data_2d(n_save_links_netcdf,n_time)) 
@@ -1511,8 +1513,8 @@
     save_vars(save_Cleaning_a_index) = save_var(varname = "Cleaning_a",units = "1", description = "Road cleaning event in time step (0 to 1). Value denote max. cleaning efficiency",  long_name = "cleaning_event", save_in_summary = .true.)
     if(.not.allocated(save_vars(save_Cleaning_a_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Cleaning_a_index)%data_2d(n_save_links_netcdf,n_time)) 
 
-    save_vars(save_Mass_salt1_index) = save_var(varname = "Mass_salt1",units = "g/m2", description = "Mass of NaCl on the road",  long_name = "Mass_of_NaCl_on_road", save_in_summary = .true.)
-    if(.not.allocated(save_vars(save_Mass_salt1_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
+    save_vars(save_Mass_salt1_index) = save_var(varname = "Mass_salt1",units = "g/m2", description = "Mass of NaCl on the road",  long_name = "Mass_of_NaCl_on_road", save_in_summary = .true.,save_in_roadweather=.true.)
+    if(.not.allocated(save_vars(save_Mass_salt1_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag .or. NORTRIP_save_roadweather_data_flag)) allocate(save_vars(save_Mass_salt1_index)%data_2d(n_save_links_netcdf,n_time)) 
 
     save_vars(save_Mass_salt2_index) = save_var(varname = "Mass_salt2",units = "g/m2", description = "Mass of alternative salt on the road",  long_name = "Mass_of_alternative_salt_on_road", save_in_summary = .true.)
     if(.not.allocated(save_vars(save_Mass_salt2_index)%data_2d) .and. (NORTRIP_save_road_summary_data_flag )) allocate(save_vars(save_Mass_salt2_index)%data_2d(n_save_links_netcdf,n_time)) 

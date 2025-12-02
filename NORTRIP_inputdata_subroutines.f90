@@ -802,6 +802,7 @@ subroutine read_NORTRIP_inputdata
         !NORTRIP_save_episode_grid_emissions_flag=.true.
         NORTRIP_save_road_emission_and_mass_data_stats_flag=.true.
         NORTRIP_save_road_summary_data_flag=.true.
+        NORTRIP_save_roadweather_data_flag=.true.
     endif
 
     if (trim(calculation_type).eq.'SLB') then
