@@ -66,14 +66,13 @@
     if (.not.NORTRIP_fortran_combined_flag) then
         call read_NORTRIP_inputdata        
     endif
-    call check_NORTRIP_inputdata
     
     call read_NORTRIP_parameters
     call read_NORTRIP_flags
     call read_NORTRIP_activities
-    
     call override_NORTRIP_inputdata
     
+    call check_NORTRIP_inputdata
     !Set which file types to save based on the calculation_type
     call set_NORTRIP_save_file_flags
 

@@ -115,6 +115,11 @@ subroutine NORTRIP_save_init_data_netcdf
     integer current_date(num_date_index)
     integer :: ncid 
 
+    write(unit_logfile,'(A)') '================================================================'
+    write(unit_logfile,'(A)') 'Saving init file as netcdf (NORTRIP_save_init_data_netcdf)'
+    write(unit_logfile,'(A)') '================================================================'
+
+
     !Leave this if it is not relevant !NOTE Don't really understand this, copied from NORTRIP_save_init_single.f90
     if (hours_between_init.lt.0) then
         if (ro_tot.eq.1) then

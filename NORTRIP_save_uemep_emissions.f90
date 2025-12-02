@@ -804,8 +804,9 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
             write(unit_logfile,'(A,a,a,es12.2)') ' Total emissions of ',trim(pm_str),' (kg) for all grids over this period = ',emis_sum(x)*1.e-3*dt
         enddo
 
-        call NORTRIP_save_gridded_emissions_netcdf
-            
+        if (save_output_as_netcdf_flag > 0) then
+            call NORTRIP_save_gridded_emissions_netcdf
+        endif      
     endif
    
     end subroutine NORTRIP_save_uEMEP_grid_emissions

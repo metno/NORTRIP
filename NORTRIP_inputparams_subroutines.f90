@@ -976,6 +976,7 @@ subroutine read_NORTRIP_runway_info
     inquire(file=trim(filename),exist=exists)
     if (.not.exists) then
         write(unit_logfile,'(A,A)') ' WARNING: Runway info file does not exist ', trim(filename)
+        write(unit_logfile,'(A,A)') ' Will not add runway info variables to output netcdf file. '
         return
     endif
 
@@ -999,26 +1000,26 @@ subroutine read_NORTRIP_runway_info
         if (.not.allocated(runway_char_info_data)) allocate(runway_char_info_data(n_char_columns,n_info))
         if (.not.allocated(runway_real_info_data)) allocate(runway_real_info_data(n_real_columns,n_info))
         if (.not.allocated(runway_int_info_data)) allocate(runway_int_info_data(n_int_columns,n_info))
+
+        rewind(unit_in)
+
+        !Read header
+        read(unit_in,*) temp_str
+
+        do n=1,n_info
+            read(unit_in,*) &
+            runway_char_info_data(Airport_ICAO_index, n), &
+            runway_char_info_data(Airport_name_index, n), &
+            runway_int_info_data(Airport_section_station_ID_index, n), &
+            runway_real_info_data(Airport_section_lon_index, n), &
+            runway_real_info_data(Airport_section_lat_index, n), &
+            runway_char_info_data(Airport_section_index, n), &
+            runway_char_info_data(Airport_PhysRunway_index, n),&
+            runway_int_info_data(Airport_section_RoadID_index,n)
+        enddo 
+
+        close(unit_in)
     end if
-
-    rewind(unit_in)
-
-    !Read header
-    read(unit_in,*) temp_str
-
-    do n=1,n_info
-        read(unit_in,*) &
-        runway_char_info_data(Airport_ICAO_index, n), &
-        runway_char_info_data(Airport_name_index, n), &
-        runway_int_info_data(Airport_section_station_ID_index, n), &
-        runway_real_info_data(Airport_section_lon_index, n), &
-        runway_real_info_data(Airport_section_lat_index, n), &
-        runway_char_info_data(Airport_section_index, n), &
-        runway_char_info_data(Airport_PhysRunway_index, n),&
-        runway_int_info_data(Airport_section_RoadID_index,n)
-    enddo 
-
-    close(unit_in)
 
 end subroutine read_NORTRIP_runway_info
 
