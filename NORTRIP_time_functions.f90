@@ -68,7 +68,15 @@
     end subroutine number_to_date
 !----------------------------------------------------------------------
 
-!----------------------------------------------------------------------
+    !----------------------------------------------------------------------
+    ! Function: date_to_number
+    ! Purpose: Converts a date array (year, month, day, hour, minute, second) to a serial number
+    ! Inputs:
+    !   a        - Integer array of size 6 containing [year, month, day, hour, minute, second]
+    !   ref_year - Reference year for the serial number calculation
+    ! Output:
+    !   Returns a double precision value representing the serial date number
+    !----------------------------------------------------------------------
     function date_to_number(a,ref_year)
     
     implicit none
@@ -93,7 +101,7 @@
                 daysinmonth(2)=28
             endif
             do m=1,12            
-                date_to_number=date_to_number+sngl(daysinmonth(m))
+                date_to_number=date_to_number+dble(daysinmonth(m))
             end do     
         end do
     endif
@@ -105,18 +113,17 @@
     endif
     if (a(2).gt.1) then
         do m=1,a(2)-1
-            date_to_number=date_to_number+sngl(daysinmonth(m))
+            date_to_number=date_to_number+dble(daysinmonth(m))
         enddo
     endif
     
-    date_to_number=date_to_number+sngl(a(3))-1.
-    date_to_number=date_to_number+sngl(a(4))/24. !starts at 0
-    date_to_number=date_to_number+sngl(a(5))/24./60. !starts at 0  
-    date_to_number=date_to_number+sngl(a(6))/24./60./60. !starts at 0  
+    date_to_number=date_to_number+dble(a(3))-1.
+    date_to_number=date_to_number+dble(a(4))/24. !starts at 0
+    date_to_number=date_to_number+dble(a(5))/24./60. !starts at 0  
+    date_to_number=date_to_number+dble(a(6))/24./60./60. !starts at 0  
     !write(*,*) date_to_number
 
     end function date_to_number
-!----------------------------------------------------------------------
 
 !----------------------------------------------------------------------
     function date_to_julian(a,ref_year)
