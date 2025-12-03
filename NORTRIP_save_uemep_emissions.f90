@@ -816,10 +816,7 @@ subroutine NORTRIP_save_uEMEP_grid_emissions
         enddo
     
     endif
-    
-    if (save_gridded_emissions_as_netcdf.eq.1.or.save_gridded_emissions_as_netcdf.eq.2) then
-        call NORTRIP_save_gridded_emissions_netcdf
-    endif   
+
 
     endif
    
