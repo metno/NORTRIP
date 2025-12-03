@@ -195,8 +195,6 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_activity,varid, "long_name", trim(save_vars(v)%long_name)))
             call check(nf90_put_att(ncid_activity,varid, "units", trim(save_vars(v)%units)))
 
-            call check( nf90_def_var_chunking(ncid_activity, varid, NF90_CHUNKED, (/8,1/)) ) 
-            call check( nf90_def_var_deflate(ncid_activity, varid, 1, 1, 3) ) 
         end if 
 
         if (save_vars(v)%save_in_meteo .and. NORTRIP_save_road_meteo_data_flag) then
