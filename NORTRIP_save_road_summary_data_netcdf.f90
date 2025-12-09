@@ -151,6 +151,13 @@ subroutine NORTRIP_save_output_data_netcdf
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "description", "longitude for road link"))
             call check(nf90_put_att(ncid_array(ncid_iterator),varid, "long_name", "longitude"))
             call check(nf90_enddef(ncid_array(ncid_iterator)))
+
+            call check(nf90_def_var(ncid_array(ncid_iterator), "use_obs_T_surf", nf90_float, f_dimid,varid))
+            call check(nf90_put_att(ncid_array(ncid_iterator),varid, "description", "0: Observed surface temperature is not used, 1: Observed surface temperature is used."))
+            call check(nf90_put_att(ncid_array(ncid_iterator),varid, "long_name", "observed surface temperature use"))
+            call check(nf90_enddef(ncid_array(ncid_iterator)))
+
+            
         end if
     end do
 
@@ -240,6 +247,9 @@ subroutine NORTRIP_save_output_data_netcdf
 
             call check(nf90_inq_varid(ncid_array(ncid_iterator), "lon",varid))
             call check(nf90_put_var(ncid_array(ncid_iterator), varid, save_1d_vars(save_lon_index,:), start = (/1/)))
+
+            call check(nf90_inq_varid(ncid_array(ncid_iterator), "use_obs_T_surf",varid))
+            call check(nf90_put_var(ncid_array(ncid_iterator), varid, save_1d_vars(save_use_obs_T_surf_index,:), start = (/1/)))
         end if
     end do
 
@@ -397,6 +407,12 @@ subroutine NORTRIP_fill_save_array(save_road_counter)
     save_1d_vars(save_road_id_index,save_road_counter) = road_ID(ro) 
     save_1d_vars(save_lat_index,save_road_counter) = LAT(ro) 
     save_1d_vars(save_lon_index,save_road_counter) = LON(ro)
+
+    if ( ANY(road_meteo_data(road_temperature_obs_index,:,tr,ro) /= nodata) ) then 
+        save_1d_vars(save_use_obs_T_surf_index, save_road_counter) = 1
+    else 
+        save_1d_vars(save_use_obs_T_surf_index, save_road_counter) = 0
+    end if 
 
     !If the "data" arrays are allocated, it means they will be saved in at least one of the output files, and should therefore be filled.
     if (allocated(save_vars(save_T_surf_mod_index)%data_2d))   save_vars(save_T_surf_mod_index)%data_2d(save_road_counter,:)      = road_meteo_data(T_s_index,:,tr,ro)

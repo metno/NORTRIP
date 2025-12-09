@@ -381,7 +381,8 @@
     integer, parameter :: save_road_id_index = 1
     integer, parameter :: save_lat_index = 2
     integer, parameter :: save_lon_index = 3
-    integer, parameter :: num_1d_index = 3
+    integer, parameter :: save_use_obs_T_surf_index = 4
+    integer, parameter :: num_1d_index = 4
     
     end module NORTRIP_index_definitions    
 
