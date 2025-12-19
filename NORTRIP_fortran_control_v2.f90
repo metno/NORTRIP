@@ -129,8 +129,9 @@
             call NORTRIP_fill_save_array(write_count) 
             write_count = write_count+1
         end if
-        if (save_output_as_netcdf_flag == 0 .or. save_output_as_netcdf_flag == 2) then
-            if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
+        if (NORTRIP_save_init_data_flag.and..not.use_single_road_loop_flag .and. save_init_data_as_netcdf_flag.eq.0) call NORTRIP_save_init_data
+
+        if (save_output_as_netcdf_flag == 0 .or. save_output_as_netcdf_flag == 2) then !if output is to be saved as either .txt only, or both .nc and .txt
             if (NORTRIP_save_episode_emissions_flag) call NORTRIP_save_episode_emissions
             if (NORTRIP_save_episode_grid_emissions_flag) call NORTRIP_save_episode_grid_emissions
             if (NORTRIP_save_road_meteo_data_flag) call NORTRIP_save_road_meteo_data
@@ -145,14 +146,14 @@
     enddo
     if (save_output_as_netcdf_flag>0 .and. NORTRIP_save_uEMEP_grid_emissions_flag ) call NORTRIP_save_gridded_emissions_netcdf
     
-    if (NORTRIP_save_init_data_flag .and. init_exists ) then
+    if ( init_exists ) then
         call close_NETCDF_file(ncid_init)
     end if
 
     !Save netcdf output file(s): 
     call NORTRIP_save_output_data_netcdf
     !Save netcdf init file(s):
-    if ( save_init_data_as_netcdf_flag.eq.1) then
+    if ( NORTRIP_save_init_data_flag .and. save_init_data_as_netcdf_flag.eq.1) then
         call NORTRIP_save_init_data_netcdf
     end if
 
