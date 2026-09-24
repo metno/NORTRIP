@@ -93,12 +93,12 @@
     !More realistic than using the running mean air temperature and must be used when using init files
     !If the road is a bridge then the atmospheric temperature is used as subsurface and this is not adjusted here
     !--------------------------------------------------------------------------
-    if (ti.gt.min_time.and.use_subsurface_flag.eq.2.and.roadtype_index(ro).ne.bridge_roadtype) then
+    if (use_subsurface_flag.eq.2.and.roadtype_index(ro).ne.bridge_roadtype) then
         road_meteo_data(T_sub_index,ti,tr,ro)= &
         road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/sub_surf_average_time) &
         +road_meteo_data(T_s_index,max(1,ti-1),tr,ro)*dt/sub_surf_average_time
     endif
-    if (ti.gt.min_time.and.use_subsurface_flag.eq.3.and.roadtype_index(ro).ne.bridge_roadtype) then
+    if (use_subsurface_flag.eq.3.and.roadtype_index(ro).ne.bridge_roadtype) then
         road_meteo_data(T_sub_index,ti,tr,ro)= &
         road_meteo_data(T_sub_index,max(1,ti-1),tr,ro)*(1.-dt/sub_surf_average_time) &
         +meteo_data(T_a_index,max(1,ti-1),ro)*dt/sub_surf_average_time
